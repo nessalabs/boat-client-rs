@@ -127,3 +127,47 @@ Final reviewed key-file SHA-256 values:
 - `tests/boat_boundaries.rs`: `a2d203ac43d0ccabbccc8cf721152144734000ae2a8a38f52055dc6b1d218497`
 
 - `tests/client_performance.rs`: `25e8f73691d05cd10e73c0e9328921812cf621e088d3dd5259f1bf0c5cd26a25`
+
+## Current-only follow-up after explicit compatibility removal
+
+The user explicitly removed the backward-compatibility requirement. This
+follow-up supersedes the earlier acceptance of legacy Handoff wire field
+retention. Reviewed the small diff from 070431a: HandoffPlan now serializes
+source_sandbox_id and target_sandbox_id directly and denies unknown fields.
+Obsolete source_box_id/target_box_id fields cannot silently substitute or coexist
+with current target identities. No automatic migration, alias, target fallback
+or receipt reinterpretation was added. Retaining the existing receipt version
+with a deliberately breaking field schema is acceptable within this explicit
+current-only, pre-publication scope; old receipts are rejected.
+
+The public boundary test round-trips the complete current receipt and rejects
+each obsolete identity field separately and together. Its retained
+boat-current-only-red log fails on the former source_box_id requirement (six
+other tests pass), and the final suite passes the corrected contract. Existing
+Handoff compare/exchange, intent-binding and uncertainty behavior is unchanged.
+The retry classifier now accepts only documented boat_starting for HTTP 409;
+box_starting and box_securing no longer receive legacy treatment. Checked the
+published SDK command documentation for boat_starting and the non-retryable
+sandbox_not_ready distinction. GET-only automatic retry ownership is unchanged,
+so removing aliases cannot introduce mutation replay.
+
+Completed boat-current-only logs report 166 passed all-target tests, nine
+ignored, 12 passing documentation tests, passing strict Clippy, 59 SDK operation
+comparisons and 13 runtime fixture comparisons. The same 384-request loopback
+performance scenario passes with samples 18.032458, 17.453584 and 13.627917 ms.
+No source-level hot-path work was added; these samples retain the previously
+stated debug/local/mock limitations and do not establish a speedup or regression
+budget. No reviewer build or benchmark rerun was performed.
+
+Final current-only scope: PASS, no unresolved P1/P2 quality or scoped-performance
+finding. Historical compatibility claims above describe superseded revisions.
+
+Reviewed follow-up hashes:
+
+- `src/handoff/mod.rs`: `0cc0fab00f7d5156a16560dedc788a21cf1459f74adc63405d0a44ddee1afadd`
+
+- `src/error.rs`: `c86a3be4d8a2fa914f74af8e249bed2e74fba686a71c3429dfb7058dbedcbf03`
+
+- `tests/boat_boundaries.rs`: `9ecec8b5f89ce45eb45ac486db8ca5e45cdc85b8af8bfdb5a12a1b067c356b5a`
+
+- `README.md`: `ebfaaeb5978dc2236090417daef287a6761161e45fa535f1bfc01f655aee8d06`

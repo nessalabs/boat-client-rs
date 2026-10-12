@@ -46,7 +46,7 @@ pub enum Error {
     #[error("unexpected response (body redacted)")]
     Unexpected(String),
 
-    #[error("invalid box id `{0}` (expected bx_ + 8 chars)")]
+    #[error("invalid sandbox id `{0}` (expected bx_ + 8 chars)")]
     InvalidSandboxId(String),
 
     #[error("timeout waiting for box {sandbox_id} (last state={last_state})")]
@@ -148,14 +148,14 @@ impl Error {
     /// Whether a **safe automatic retry** of an idempotent request may help.
     ///
     /// Does **not** treat every 409 as retryable — only known transient codes
-    /// (`box_starting`, `box_securing`). Never retry `command` via this alone;
+    /// (`boat_starting`). Never retry `command` via this alone;
     /// Ascii documents that command execution is not safely auto-retried.
     pub fn is_retryable(&self) -> bool {
         match self {
             Error::Api { status, code, .. } => match *status {
                 429 => true,
                 502..=504 => true,
-                409 => code == "boat_starting" || code == "box_starting" || code == "box_securing",
+                409 => code == "boat_starting",
                 _ => false,
             },
             Error::Http(e) => e.is_timeout() || e.is_connect(),

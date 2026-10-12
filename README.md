@@ -105,9 +105,10 @@ and `BoatClientConfig` are public aliases declared in `src/lib.rs`. Service URL,
 credential environment variables, organization header and user-agent defaults
 live in `src/service.rs`. Resource models use the neutral term `Sandbox`.
 Protocol names remain distinct from branding: Boat retains `bx_` resource IDs,
-`X-Ascii-Confirm-Delete`, webhook signing headers and legacy OAuth scopes.
-Version-1 handoff receipts retain their original `source_box_id`/`target_box_id`
-wire fields while Rust exposes `source_sandbox_id`/`target_sandbox_id`.
+`X-Ascii-Confirm-Delete`, webhook signing headers and the currently documented OAuth scopes.
+Handoff receipts use `source_sandbox_id`/`target_sandbox_id`; obsolete Box
+identity fields are rejected. No Box API, environment-variable or receipt aliases
+are supported.
 
 This migration verifies the existing 59-operation surface against the published
 `@boatdev/sdk@1.9.7` request builders and response converters. The explicit

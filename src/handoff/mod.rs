@@ -57,10 +57,9 @@ impl fmt::Debug for HandoffError {
 /// work (workspace, exclusions, continuation inputs, etc.). Reusing an operation
 /// id with a different plan is rejected. Do not put credentials in this record.
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct HandoffPlan {
-    #[serde(rename = "source_box_id")]
     pub source_sandbox_id: String,
-    #[serde(rename = "target_box_id")]
     pub target_sandbox_id: String,
     pub intent: String,
 }

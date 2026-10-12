@@ -119,15 +119,14 @@ async fn environments_use_query_scope_while_sandboxes_keep_the_wallet_header() {
 }
 
 #[test]
-fn legacy_handoff_receipts_keep_their_original_identity_field_names() {
-    // A persisted schema-v1 receipt from before the API and Rust type rename.
+fn current_handoff_receipts_use_sandbox_identity_fields_and_reject_old_only_names() {
     let persisted = json!({
         "schema_version": 1,
         "id": "existing-transfer",
         "revision": 0,
         "plan": {
-            "source_box_id": "bx_23456789",
-            "target_box_id": "bx_abcdefgh",
+            "source_sandbox_id": "bx_23456789",
+            "target_sandbox_id": "bx_abcdefgh",
             "intent": "immutable-work-manifest"
         },
         "phase": "prepared",
@@ -140,6 +139,26 @@ fn legacy_handoff_receipts_keep_their_original_identity_field_names() {
     assert_eq!(receipt.plan().target_sandbox_id, "bx_abcdefgh");
     assert_eq!(receipt.plan().intent, "immutable-work-manifest");
     assert_eq!(serde_json::to_value(receipt).unwrap(), persisted);
+
+    for replacements in [
+        vec![("source_sandbox_id", "source_box_id")],
+        vec![("target_sandbox_id", "target_box_id")],
+        vec![
+            ("source_sandbox_id", "source_box_id"),
+            ("target_sandbox_id", "target_box_id"),
+        ],
+    ] {
+        let mut obsolete = persisted.clone();
+        let plan = obsolete["plan"].as_object_mut().unwrap();
+        for (current, old) in replacements {
+            let identity = plan.remove(current).unwrap();
+            plan.insert(old.into(), identity);
+        }
+        assert!(
+            serde_json::from_value::<HandoffReceipt>(obsolete).is_err(),
+            "old names must not substitute for required current identities"
+        );
+    }
 }
 
 #[tokio::test]

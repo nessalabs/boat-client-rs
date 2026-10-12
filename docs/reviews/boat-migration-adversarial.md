@@ -87,3 +87,32 @@ Final scoped verdict: no unresolved P1/P2 findings in the reviewed migration.
 Adversarial acceptance passes for the supported offline-verified operation
 surface with documented NDJSON and live/performance limitations. This does not
 extend to unimplemented newer endpoints or certify current cloud behavior.
+
+## Current-only cleanup re-review
+
+The user subsequently explicitly removed the backward-compatibility requirement.
+This supersedes the earlier receipt-key preservation conclusion above. Reviewed
+the small follow-up diff against 070431a: HandoffPlan now writes only
+source_sandbox_id/target_sandbox_id, requires those fields on read, and rejects
+unknown fields. Old-only, mixed old/new and extra obsolete fields cannot silently
+select another identity. Existing durable files that use obsolete names fail
+with Corrupt rather than being treated as missing or overwritten; this is an
+intentional breaking change. Journal locking, CAS, phase transitions and unknown
+delivery handling remain unchanged.
+
+409 retry classification now recognizes only the verified boat_starting code;
+obsolete box_starting/box_securing no longer trigger retry. This narrows retry
+eligibility and does not enable mutation replay. Verified current service
+identifiers and required deletion/webhook protocol names remain intact.
+
+Inspected work/boat-current-only-red.log (six boundary tests pass, the new receipt
+contract fails), followed by boat-current-only-tests.log (166 enabled tests pass,
+including all seven boundaries), boat-current-only-clippy.log,
+boat-current-only-doc.log (12 pass), boat-current-only-sdk.log (59 operation and
+13 runtime comparisons) and boat-current-only-performance.log. The scoped
+loopback samples are 18.032458, 17.453584 and 13.627917 ms with unchanged workload
+and limitations. No reviewer builds were run.
+
+Current-only scoped verdict: PASS, with no unresolved P1/P2 findings. Obsolete
+receipt files are deliberately incompatible, as requested; this verdict does
+not reinstate the prior compatibility guarantee or broaden live coverage.
