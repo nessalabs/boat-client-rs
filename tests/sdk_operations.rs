@@ -1,6 +1,6 @@
-//! HTTP request/response/error contracts produced by the real SDK 0.0.34.
+//! HTTP request/response/error contracts produced by the real SDK 1.9.7.
 mod common;
-use box_client::*;
+use boat_client::*;
 use common::*;
 use serde::{de::DeserializeOwned, Serialize};
 use serde_json::{json, Value};
@@ -12,7 +12,13 @@ fn decode<T: DeserializeOwned>(v: Value) -> T {
 fn encode<T: Serialize>(v: T) -> Value {
     serde_json::to_value(v).unwrap()
 }
-async fn invoke(api: &BoxApi, operation: &str, p: &Value) -> Result<Value> {
+async fn invoke(api: &BoatApi, operation: &str, p: &Value) -> Result<Value> {
+    let scoped = if operation.to_ascii_lowercase().contains("environment") {
+        api.clone().with_org(p["org"].as_str().map(str::to_owned))
+    } else {
+        api.clone()
+    };
+    let api = &scoped;
     let s = |key: &str| p[key].as_str().unwrap();
     Ok(match operation {
         "addEnvironmentRepo" => encode(
@@ -24,15 +30,15 @@ async fn invoke(api: &BoxApi, operation: &str, p: &Value) -> Result<Value> {
         ),
         "apiKeyUsage" => encode(api.api_key_usage(s("apiKeyId")).await?),
         "apiKeys" => encode(api.api_keys().await?),
-        "artifact" => encode(api.artifact(s("boxId"), s("path")).await?),
-        "boxes" => encode(api.boxes(Some(&decode(p.clone()))).await?),
+        "artifact" => encode(api.artifact(s("sandboxId"), s("path")).await?),
+        "sandboxes" => encode(api.sandboxes(Some(&decode(p.clone()))).await?),
         "command" => encode(
-            api.command_raw(s("boxId"), decode(p["commandRequest"].clone()))
+            api.command_raw(s("sandboxId"), decode(p["commandRequest"].clone()))
                 .await?,
         ),
         "commandStatus" => encode(
             api.command_status(
-                s("boxId"),
+                s("sandboxId"),
                 &p["processId"].to_string(),
                 Some(&decode(p.clone())),
             )
@@ -40,24 +46,24 @@ async fn invoke(api: &BoxApi, operation: &str, p: &Value) -> Result<Value> {
         ),
         "create" => encode(
             api.create(
-                p.get("createBoxRequest").cloned().map(decode),
+                p.get("createSandboxRequest").cloned().map(decode),
                 &CreateOptions {
                     org: p["org"].as_str().map(str::to_owned),
-                    x_box_org: p["xBoxOrg"].as_str().map(str::to_owned),
+                    x_boat_org: p["xBoatOrg"].as_str().map(str::to_owned),
                     idempotency_key: p["idempotencyKey"].as_str().map(str::to_owned),
                 },
             )
             .await?,
         ),
         "createEnvironment" => encode(
-            api.create_environment(decode(p["createBoxEnvironmentRequest"].clone()))
+            api.create_environment(decode(p["createSandboxEnvironmentRequest"].clone()))
                 .await?,
         ),
         "createWebhook" => encode(
             api.create_webhook(decode(p["webhookCreateRequest"].clone()))
                 .await?,
         ),
-        "deleteBox" => encode(api.delete_box(s("boxId")).await?),
+        "deleteSandbox" => encode(api.delete_sandbox(s("sandboxId")).await?),
         "deleteEnvironment" => encode(api.delete_environment(s("environmentId")).await?),
         "deleteEnvironmentRepo" => encode(
             api.delete_environment_repo(s("environmentId"), s("repositoryId"))
@@ -76,26 +82,26 @@ async fn invoke(api: &BoxApi, operation: &str, p: &Value) -> Result<Value> {
         "deleteWebhook" => encode(api.delete_webhook(s("webhookId")).await?),
         "desktop" => encode(
             api.desktop(
-                s("boxId"),
+                s("sandboxId"),
                 Some(&decode(p.clone())),
                 p.get("desktopRequest").cloned().map(decode),
             )
             .await?,
         ),
         "environments" => encode(api.environments().await?),
-        "events" => encode(api.events(s("boxId"), Some(&decode(p.clone()))).await?),
+        "events" => encode(api.events(s("sandboxId"), Some(&decode(p.clone()))).await?),
         "fork" => encode(
             api.fork(
-                s("boxId"),
+                s("sandboxId"),
                 p.get("forkRequest").cloned().map(decode),
                 p["idempotencyKey"].as_str(),
             )
             .await?,
         ),
-        "get" => encode(api.get(s("boxId")).await?),
+        "get" => encode(api.get(s("sandboxId")).await?),
         "getDataRetention" => encode(api.get_data_retention().await?),
         "getDeletionOperation" => encode(api.get_deletion_operation(s("operationId")).await?),
-        "getLatestBoxSnapshot" => encode(api.latest_box_snapshot(s("boxId")).await?),
+        "getLatestSandboxSnapshot" => encode(api.latest_sandbox_snapshot(s("sandboxId")).await?),
         "getNamedSnapshot" => encode(api.get_named_snapshot(s("name")).await?),
         "getSnapshotDownload" => encode(api.snapshot_download(s("snapshotId")).await?),
         "getSnapshotFile" => encode(
@@ -105,20 +111,23 @@ async fn invoke(api: &BoxApi, operation: &str, p: &Value) -> Result<Value> {
         "getSnapshotTree" => encode(api.snapshot_tree(s("snapshotId")).await?),
         "getWebhook" => encode(api.get_webhook(s("webhookId")).await?),
         "hostPort" => encode(
-            api.host_port(s("boxId"), decode(p["hostPortRequest"].clone()))
+            api.host_port(s("sandboxId"), decode(p["hostPortRequest"].clone()))
                 .await?,
         ),
-        "interrupt" => encode(api.interrupt(s("boxId")).await?),
+        "interrupt" => encode(
+            api.interrupt_with_query(s("sandboxId"), Some(&decode(p.clone())))
+                .await?,
+        ),
         "limits" => encode(
             api.limits(&LimitsOptions {
                 org: p["org"].as_str().map(str::to_owned),
                 team_id: p["teamId"].as_str().map(str::to_owned),
-                x_box_org: p["xBoxOrg"].as_str().map(str::to_owned),
+                x_boat_org: p["xBoatOrg"].as_str().map(str::to_owned),
             })
             .await?,
         ),
-        "listBoxSnapshots" => encode(
-            api.list_box_snapshots(s("boxId"), Some(&decode(p.clone())))
+        "listSandboxSnapshots" => encode(
+            api.list_sandbox_snapshots(s("sandboxId"), Some(&decode(p.clone())))
                 .await?,
         ),
         "listNamedSnapshots" => encode(api.list_named_snapshots().await?),
@@ -126,17 +135,17 @@ async fn invoke(api: &BoxApi, operation: &str, p: &Value) -> Result<Value> {
         "listWebhooks" => encode(api.list_webhooks().await?),
         "me" => encode(api.me().await?),
         "prompt" => encode(
-            api.prompt(s("boxId"), decode(p["promptRequest"].clone()))
+            api.prompt(s("sandboxId"), decode(p["promptRequest"].clone()))
                 .await?,
         ),
-        "promptRunStatus" => encode(api.prompt_run_status(s("boxId"), s("promptId")).await?),
+        "promptRunStatus" => encode(api.prompt_run_status(s("sandboxId"), s("promptId")).await?),
         "readFile" => encode(
-            api.read_file(s("boxId"), s("path"), p["encoding"].as_str())
+            api.read_file(s("sandboxId"), s("path"), p["encoding"].as_str())
                 .await?,
         ),
         "repos" => encode(api.repos(Some(&decode(p.clone()))).await?),
         "resume" => encode(
-            api.resume(s("boxId"), p.get("resumeRequest").cloned().map(decode))
+            api.resume(s("sandboxId"), p.get("resumeRequest").cloned().map(decode))
                 .await?,
         ),
         "rotateWebhookSigningSecret" => {
@@ -167,15 +176,15 @@ async fn invoke(api: &BoxApi, operation: &str, p: &Value) -> Result<Value> {
             .await?,
         ),
         "sshKey" => encode(
-            api.ssh_key(s("boxId"), p["sshKeyRequest"]["key"].as_str().unwrap())
+            api.ssh_key(s("sandboxId"), p["sshKeyRequest"]["key"].as_str().unwrap())
                 .await?,
         ),
         "stop" => encode(
-            api.stop(s("boxId"), p.get("stopRequest").cloned().map(decode))
+            api.stop(s("sandboxId"), p.get("stopRequest").cloned().map(decode))
                 .await?,
         ),
         "update" => encode(
-            api.update(s("boxId"), decode(p["updateBoxRequest"].clone()))
+            api.update(s("sandboxId"), decode(p["updateSandboxRequest"].clone()))
                 .await?,
         ),
         "updateDataRetention" => encode(
@@ -185,7 +194,7 @@ async fn invoke(api: &BoxApi, operation: &str, p: &Value) -> Result<Value> {
         "updateEnvironment" => encode(
             api.update_environment(
                 s("environmentId"),
-                decode(p["updateBoxEnvironmentRequest"].clone()),
+                decode(p["updateSandboxEnvironmentRequest"].clone()),
             )
             .await?,
         ),
@@ -200,12 +209,14 @@ async fn invoke(api: &BoxApi, operation: &str, p: &Value) -> Result<Value> {
         "upgradeEnvironment" => encode(
             api.upgrade_environment(
                 s("environmentId"),
-                p.get("upgradeBoxEnvironmentRequest").cloned().map(decode),
+                p.get("upgradeSandboxEnvironmentRequest")
+                    .cloned()
+                    .map(decode),
             )
             .await?,
         ),
         "writeFile" => encode(
-            api.write_file(s("boxId"), decode(p["fileWriteRequest"].clone()))
+            api.write_file(s("sandboxId"), decode(p["fileWriteRequest"].clone()))
                 .await?,
         ),
         _ => panic!("missing Rust adapter for {operation}"),
@@ -321,9 +332,17 @@ async fn check(operation: &str) {
         if !expected["headers"]
             .as_object()
             .unwrap()
-            .contains_key("X-Box-Org")
+            .contains_key("X-Boat-Org")
         {
-            assert_eq!(request.headers["x-box-org"], "configured-org");
+            if expected["path"]
+                .as_str()
+                .unwrap()
+                .starts_with("/environments")
+            {
+                assert!(!request.headers.contains_key("x-boat-org"));
+            } else {
+                assert_eq!(request.headers["x-boat-org"], "configured-org");
+            }
         }
         if let Some(body) = expected.get("body") {
             assert_eq!(
@@ -368,8 +387,8 @@ async fn artifact() {
     check("artifact").await;
 }
 #[tokio::test]
-async fn boxes() {
-    check("boxes").await;
+async fn sandboxes() {
+    check("sandboxes").await;
 }
 #[tokio::test]
 async fn command() {
@@ -392,8 +411,8 @@ async fn create_webhook() {
     check("createWebhook").await;
 }
 #[tokio::test]
-async fn delete_box() {
-    check("deleteBox").await;
+async fn delete_sandbox() {
+    check("deleteSandbox").await;
 }
 #[tokio::test]
 async fn delete_environment() {
@@ -452,8 +471,8 @@ async fn get_deletion_operation() {
     check("getDeletionOperation").await;
 }
 #[tokio::test]
-async fn get_latest_box_snapshot() {
-    check("getLatestBoxSnapshot").await;
+async fn get_latest_sandbox_snapshot() {
+    check("getLatestSandboxSnapshot").await;
 }
 #[tokio::test]
 async fn get_named_snapshot() {
@@ -488,8 +507,8 @@ async fn limits() {
     check("limits").await;
 }
 #[tokio::test]
-async fn list_box_snapshots() {
-    check("listBoxSnapshots").await;
+async fn list_sandbox_snapshots() {
+    check("listSandboxSnapshots").await;
 }
 #[tokio::test]
 async fn list_named_snapshots() {

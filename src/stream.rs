@@ -8,7 +8,7 @@ use futures_util::{stream, StreamExt};
 use tokio_util::sync::CancellationToken;
 
 use crate::wait::PollBudget;
-use crate::{BoxApi, BoxEvent, Error, EventsQuery, PromptRequest, Result, WaitOptions};
+use crate::{Api, Error, EventsQuery, PromptRequest, Result, SandboxEvent, WaitOptions};
 
 #[derive(Clone, Debug)]
 pub struct StreamEventsOptions {
@@ -47,13 +47,13 @@ impl Default for StreamPromptOptions {
 /// Poll new event pages in ascending order. No work starts until the stream is
 /// polled. Dropping it cancels local work; the token can interrupt in-flight I/O.
 pub fn stream_events(
-    api: &BoxApi,
-    box_id: &str,
+    api: &Api,
+    sandbox_id: &str,
     options: Option<StreamEventsOptions>,
-) -> impl Stream<Item = Result<BoxEvent>> + Send + 'static {
+) -> impl Stream<Item = Result<SandboxEvent>> + Send + 'static {
     make_stream(EventStreamState::new(
         api.clone(),
-        box_id.into(),
+        sandbox_id.into(),
         options.unwrap_or_default(),
         None,
     ))
@@ -62,15 +62,15 @@ pub fn stream_events(
 /// Queue exactly one prompt and yield only its events, draining all pages before
 /// completion. Cancellation does not undo an already accepted prompt.
 pub fn stream_prompt(
-    api: &BoxApi,
-    box_id: &str,
+    api: &Api,
+    sandbox_id: &str,
     request: PromptRequest,
     options: Option<StreamPromptOptions>,
-) -> impl Stream<Item = Result<BoxEvent>> + Send + 'static {
+) -> impl Stream<Item = Result<SandboxEvent>> + Send + 'static {
     let opts = options.unwrap_or_default();
     make_stream(EventStreamState::new(
         api.clone(),
-        box_id.into(),
+        sandbox_id.into(),
         StreamEventsOptions {
             wait: opts.wait,
             cancellation: opts.cancellation,
@@ -81,7 +81,9 @@ pub fn stream_prompt(
     ))
 }
 
-fn make_stream(state: EventStreamState) -> impl Stream<Item = Result<BoxEvent>> + Send + 'static {
+fn make_stream(
+    state: EventStreamState,
+) -> impl Stream<Item = Result<SandboxEvent>> + Send + 'static {
     stream::try_unfold(state, |mut state| async move {
         let event = state.next_event().await?;
         Ok(event.map(|event| (event, state)))
@@ -90,14 +92,14 @@ fn make_stream(state: EventStreamState) -> impl Stream<Item = Result<BoxEvent>> 
 }
 
 struct EventStreamState {
-    api: BoxApi,
-    box_id: String,
+    api: Api,
+    sandbox_id: String,
     options: StreamEventsOptions,
     request: Option<PromptRequest>,
     prompt_id: Option<String>,
     budget: Option<PollBudget>,
     cursor: Option<String>,
-    pending: VecDeque<BoxEvent>,
+    pending: VecDeque<SandboxEvent>,
     after_page: bool,
     more: bool,
     terminal_event: bool,
@@ -105,14 +107,14 @@ struct EventStreamState {
 }
 impl EventStreamState {
     fn new(
-        api: BoxApi,
-        box_id: String,
+        api: Api,
+        sandbox_id: String,
         options: StreamEventsOptions,
         request: Option<PromptRequest>,
     ) -> Self {
         Self {
             api,
-            box_id,
+            sandbox_id,
             options,
             request,
             prompt_id: None,
@@ -136,7 +138,7 @@ impl EventStreamState {
         tokio::select! {
             biased;
             _=cancelled=>Err(Error::Aborted),
-            result=self.budget.as_ref().expect("stream initialized").run(&self.box_id,"event stream",future)=>result,
+            result=self.budget.as_ref().expect("stream initialized").run(&self.sandbox_id,"event stream",future)=>result,
         }
     }
 
@@ -148,6 +150,7 @@ impl EventStreamState {
         // Start after the latest event so existing history is excluded at any size.
         if !self.options.include_existing || self.request.is_some() {
             let query = EventsQuery {
+                conversation: None,
                 limit: Some(1),
                 sort: Some("desc".into()),
                 type_: if self.request.is_some() {
@@ -158,7 +161,7 @@ impl EventStreamState {
                 ..Default::default()
             };
             let existing = self
-                .run(self.api.events(&self.box_id, Some(&query)))
+                .run(self.api.events(&self.sandbox_id, Some(&query)))
                 .await?;
             if let Some(last) = existing.events.first() {
                 self.cursor = event_cursor(last)
@@ -171,13 +174,13 @@ impl EventStreamState {
             }
         }
         if let Some(request) = self.request.take() {
-            let response = self.run(self.api.prompt(&self.box_id, request)).await?;
+            let response = self.run(self.api.prompt(&self.sandbox_id, request)).await?;
             self.prompt_id = Some(response.prompt_id);
         }
         Ok(())
     }
 
-    async fn next_event(&mut self) -> Result<Option<BoxEvent>> {
+    async fn next_event(&mut self) -> Result<Option<SandboxEvent>> {
         if self.budget.is_none() {
             self.initialize().await?;
         }
@@ -204,7 +207,7 @@ impl EventStreamState {
                         return Ok(None);
                     }
                     let run = self
-                        .run(self.api.prompt_run_status(&self.box_id, prompt_id))
+                        .run(self.api.prompt_run_status(&self.sandbox_id, prompt_id))
                         .await?
                         .prompt_run;
                     if is_terminal(&run.status) {
@@ -219,13 +222,14 @@ impl EventStreamState {
                 }
             }
             let query = EventsQuery {
+                conversation: None,
                 limit: Some(self.options.limit),
                 cursor: self.cursor.clone(),
                 sort: Some("asc".into()),
                 type_: self.options.type_.clone(),
             };
             let page = self
-                .run(self.api.events(&self.box_id, Some(&query)))
+                .run(self.api.events(&self.sandbox_id, Some(&query)))
                 .await?;
             self.more = page
                 .page_info
@@ -270,7 +274,7 @@ impl EventStreamState {
 fn is_terminal(status: &str) -> bool {
     matches!(status, "finished" | "failed")
 }
-fn event_cursor(event: &BoxEvent) -> Option<String> {
+fn event_cursor(event: &SandboxEvent) -> Option<String> {
     let timestamp = event.timestamp.filter(|value| value.is_finite())?;
     let id = event.id.as_ref().filter(|id| !id.is_empty())?;
     Some(URL_SAFE_NO_PAD.encode(format!("{timestamp}:{id}")))

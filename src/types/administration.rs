@@ -11,9 +11,9 @@ pub struct ApiKeyUsageResponse {
     pub name: String,
     pub key_prefix: String,
     pub key_last_four: String,
-    pub sandbox_id: String,
+    pub sandbox_id: Option<String>,
     pub created_at: String,
-    pub last_used_at: String,
+    pub last_used_at: Option<String>,
     pub usage: ApiKeyRequestUsage,
     pub resources: ApiKeyResourceTotals,
     pub created_resources: Vec<ApiKeyCreatedResource>,
@@ -29,9 +29,12 @@ impl fmt::Debug for ApiKeyUsageResponse {
             .field("name_len", &self.name.len())
             .field("key_prefix_len", &self.key_prefix.len())
             .field("key_last_four_len", &self.key_last_four.len())
-            .field("sandbox_id_len", &self.sandbox_id.len())
+            .field("sandbox_id_len", &self.sandbox_id.as_ref().map(String::len))
             .field("created_at_len", &self.created_at.len())
-            .field("last_used_at_len", &self.last_used_at.len())
+            .field(
+                "last_used_at_len",
+                &self.last_used_at.as_ref().map(String::len),
+            )
             .field("created_resources_count", &self.created_resources.len())
             .field("extra_count", &self.extra.len())
             .finish_non_exhaustive()
@@ -83,7 +86,7 @@ impl fmt::Debug for ApiKeyCreatedResource {
 #[serde(rename_all = "camelCase")]
 pub struct ApiKeyResourceTotals {
     pub total: u64,
-    pub boxes: u64,
+    pub sandboxes: u64,
     pub agents: u64,
     #[serde(flatten)]
     pub extra: HashMap<String, serde_json::Value>,
@@ -92,7 +95,7 @@ impl fmt::Debug for ApiKeyResourceTotals {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("ApiKeyResourceTotals")
             .field("total", &self.total)
-            .field("boxes", &self.boxes)
+            .field("sandboxes", &self.sandboxes)
             .field("agents", &self.agents)
             .field("extra_count", &self.extra.len())
             .finish_non_exhaustive()
@@ -154,9 +157,10 @@ pub struct DataRetentionPolicyResponse {
     pub ok: bool,
     #[serde(rename = "type")]
     pub type_: String,
-    pub enabled: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub enabled: Option<bool>,
     pub enabled_at: Option<String>,
-    pub queued_boxes: Option<u64>,
+    pub queued_sandboxes: Option<u64>,
     pub accepted_deletion_operations_irreversible: Option<bool>,
     #[serde(flatten)]
     pub extra: HashMap<String, serde_json::Value>,
@@ -175,9 +179,16 @@ impl fmt::Debug for DataRetentionPolicyResponse {
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DataRetentionUpdateRequest {
-    pub enabled: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub enabled: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub confirmation: Option<String>,
+    /// Boat v1 `snapshotsOff` field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub snapshots_off: Option<bool>,
+    /// Boat v1 `monitoringOff` field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub monitoring_off: Option<bool>,
 }
 impl fmt::Debug for DataRetentionUpdateRequest {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

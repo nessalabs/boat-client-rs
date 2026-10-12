@@ -1,57 +1,71 @@
-//! Live API smoke — gated behind `#[ignore]` + `BOX_API_KEY`.
+//! Live API smoke — gated behind `#[ignore]` + `BOAT_API_KEY`.
 //!
 //! ```bash
-//! BOX_API_KEY=… cargo test --test live -- --ignored --nocapture
-//! BOX_API_KEY=… BOX_ID=bx_… cargo test --test live -- --ignored
+//! BOAT_API_KEY=… cargo test --test live -- --ignored --nocapture
+//! BOAT_API_KEY=… SANDBOX_ID=bx_… cargo test --test live -- --ignored
 //! ```
 
-use box_client::{exec_command, BoxApi, BoxClientConfig};
+use boat_client::{exec_command, BoatApi, BoatClientConfig};
 
-fn client() -> BoxApi {
-    let key = std::env::var("BOX_API_KEY").expect("BOX_API_KEY required for live tests");
-    BoxApi::new(BoxClientConfig::new(key).expect("config")).expect("client")
+fn client() -> BoatApi {
+    let key = std::env::var("BOAT_API_KEY").expect("BOAT_API_KEY required for live tests");
+    BoatApi::new(BoatClientConfig::new(key).expect("config")).expect("client")
 }
 
 #[tokio::test]
-#[ignore = "requires BOX_API_KEY; live network"]
+#[ignore = "requires BOAT_API_KEY; live network"]
 async fn live_me_and_boxes() {
     let api = client();
     let me = api.me().await.expect("me");
     assert!(me.ok);
-    let list = api.boxes(None).await.expect("boxes");
+    let list = api.sandboxes(None).await.expect("sandboxes");
     assert!(list.ok);
-    eprintln!("user={:?} boxes={}", me.user.email, list.boxes.len());
+    eprintln!(
+        "user={:?} sandboxes={}",
+        me.user.email,
+        list.sandboxes.len()
+    );
 }
 
 #[tokio::test]
-#[ignore = "requires BOX_API_KEY and BOX_ID; live network"]
+#[ignore = "requires BOAT_API_KEY and SANDBOX_ID; live network"]
 async fn live_get_and_exec_existing_box() {
     let api = client();
-    let box_id = std::env::var("BOX_ID").expect("BOX_ID required");
-    let info = api.get(&box_id).await.expect("get");
-    eprintln!("box {} state={}", info.box_.id, info.box_.state.as_str());
-    assert!(
-        info.box_.state.is_operable(),
-        "box must be ready/idle/running (got {})",
-        info.box_.state.as_str()
+    let sandbox_id = std::env::var("SANDBOX_ID").expect("SANDBOX_ID required");
+    let info = api.get(&sandbox_id).await.expect("get");
+    eprintln!(
+        "box {} state={}",
+        info.sandbox.id,
+        info.sandbox.state.as_str()
     );
-    let out = exec_command(&api, &box_id, "echo parity-ok && uname -s", None, Some(30))
-        .await
-        .expect("exec");
+    assert!(
+        info.sandbox.state.is_operable(),
+        "box must be ready/idle/running (got {})",
+        info.sandbox.state.as_str()
+    );
+    let out = exec_command(
+        &api,
+        &sandbox_id,
+        "echo parity-ok && uname -s",
+        None,
+        Some(30),
+    )
+    .await
+    .expect("exec");
     assert!(out.stdout.contains("parity-ok"), "stdout={}", out.stdout);
     assert!(!out.timed_out);
 }
 
 /// Read-only coverage for the response models and routes corrected in the review.
 #[tokio::test]
-#[ignore = "requires BOX_API_KEY; live network, read-only"]
+#[ignore = "requires BOAT_API_KEY; live network, read-only"]
 async fn live_runtime_read_contracts() {
     let api = client();
     let environments = api.environments().await.expect("environments");
     // Do not print environment contents, snapshot paths, or signed URLs.
     eprintln!("environment count={}", environments.environments.len());
     let snapshots = api
-        .list_snapshots(Some(&box_client::SnapshotsQuery {
+        .list_snapshots(Some(&boat_client::SnapshotsQuery {
             limit: Some(1),
             sort: Some("desc".into()),
             ..Default::default()
@@ -80,9 +94,9 @@ async fn live_runtime_read_contracts() {
 /// Mutations are limited to a newly created fixture environment, which is cleaned
 /// up even when assertions fail. This never updates an existing environment.
 #[tokio::test]
-#[ignore = "requires BOX_API_KEY and BOX_TEST_MUTATIONS=1; creates a temporary environment"]
+#[ignore = "requires BOAT_API_KEY and BOAT_TEST_MUTATIONS=1; creates a temporary environment"]
 async fn live_environment_round_trip() {
-    assert_eq!(std::env::var("BOX_TEST_MUTATIONS").as_deref(), Ok("1"));
+    assert_eq!(std::env::var("BOAT_TEST_MUTATIONS").as_deref(), Ok("1"));
     let api = client();
     let unique = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -90,7 +104,7 @@ async fn live_environment_round_trip() {
         .as_nanos();
     let name = format!("rust-contract-{unique}");
     let created = api
-        .create_environment(box_client::CreateBoxEnvironmentRequest { name: name.clone() })
+        .create_environment(boat_client::CreateSandboxEnvironmentRequest { name: name.clone() })
         .await
         .expect("create environment");
     let env = created
@@ -102,37 +116,37 @@ async fn live_environment_round_trip() {
         let updated = api
             .update_environment(
                 &env.id,
-                box_client::UpdateBoxEnvironmentRequest {
+                boat_client::UpdateSandboxEnvironmentRequest {
                     env_contents: Some("CONTRACT_MARKER=fixture-value".into()),
                     ..Default::default()
                 },
             )
             .await?;
         if !updated.success {
-            return Err(box_client::Error::Unexpected("update unsuccessful".into()));
+            return Err(boat_client::Error::Unexpected("update unsuccessful".into()));
         }
         let listed = api.environments().await?;
         let fixture = listed
             .environments
             .iter()
             .find(|value| value.id == env.id)
-            .ok_or_else(|| box_client::Error::Unexpected("fixture missing after update".into()))?;
+            .ok_or_else(|| boat_client::Error::Unexpected("fixture missing after update".into()))?;
         if !fixture
             .env_contents
             .contains("CONTRACT_MARKER=fixture-value")
         {
-            return Err(box_client::Error::Unexpected(
+            return Err(boat_client::Error::Unexpected(
                 "environment marker mismatch".into(),
             ));
         }
         if format!("{fixture:?}").contains("fixture-value")
             || format!("{listed:?}").contains("fixture-value")
         {
-            return Err(box_client::Error::Unexpected(
+            return Err(boat_client::Error::Unexpected(
                 "Debug exposed environment marker".into(),
             ));
         }
-        Ok::<_, box_client::Error>(())
+        Ok::<_, boat_client::Error>(())
     }
     .await;
     let cleanup = api.delete_environment(&env.id).await;
@@ -147,16 +161,16 @@ async fn live_environment_round_trip() {
     result.expect("environment round trip");
 }
 
-/// Creates one disposable box; Rust and the actual SDK read each other's writes.
-/// The box is permanently deleted and deletion completion is observed on failure too.
+/// Creates one disposable sandbox; Rust and the actual SDK read each other's writes.
+/// The sandbox is permanently deleted and deletion completion is observed on failure too.
 #[tokio::test]
-#[ignore = "requires BOX_API_KEY, BOX_TEST_MUTATIONS=1 and BOX_SDK_PATH; creates and deletes a disposable box"]
+#[ignore = "requires BOAT_API_KEY, BOAT_TEST_MUTATIONS=1 and BOAT_SDK_PATH; creates and deletes a disposable box"]
 async fn live_sdk_file_round_trip() {
-    use box_client::{
-        read_text, wait_for_deletion, wait_until_ready, write_text, CreateBoxRequest, Error,
+    use boat_client::{
+        read_text, wait_for_deletion, wait_until_ready, write_text, CreateSandboxRequest, Error,
     };
-    assert_eq!(std::env::var("BOX_TEST_MUTATIONS").as_deref(), Ok("1"));
-    let sdk_path = std::env::var("BOX_SDK_PATH").expect("BOX_SDK_PATH required");
+    assert_eq!(std::env::var("BOAT_TEST_MUTATIONS").as_deref(), Ok("1"));
+    let sdk_path = std::env::var("BOAT_SDK_PATH").expect("BOAT_SDK_PATH required");
     let api = client();
     assert!(
         api.limits(&Default::default())
@@ -167,38 +181,41 @@ async fn live_sdk_file_round_trip() {
     );
     let created = api
         .create(
-            Some(CreateBoxRequest {
+            Some(CreateSandboxRequest {
                 no_env: Some(true),
-                ..CreateBoxRequest::ttl(300)
+                ..CreateSandboxRequest::ttl(300)
             }),
             &Default::default(),
         )
         .await
         .expect("create fixture box");
-    let box_id = &created.box_.id;
+    let sandbox_id = &created.sandbox.id;
     let result = async {
-        wait_until_ready(&api, box_id).await?;
+        wait_until_ready(&api, sandbox_id).await?;
         let path = "/tmp/rust-sdk-file-contract.txt";
-        write_text(&api, box_id, path, "written-by-rust").await?;
+        write_text(&api, sandbox_id, path, "written-by-rust").await?;
         let output = std::process::Command::new("node")
             .arg("tests/live_sdk_files.cjs")
-            .env("BOX_SDK_PATH", sdk_path)
-            .env("BOX_ID", box_id)
-            .env("BOX_TEST_PATH", path)
+            .env("BOAT_SDK_PATH", sdk_path)
+            .env("SANDBOX_ID", sandbox_id)
+            .env("BOAT_TEST_PATH", path)
             .output()
             .map_err(|_| Error::Config("could not start Node SDK probe".into()))?;
         if !output.status.success() {
             return Err(Error::Unexpected("SDK file round trip failed".into()));
         }
-        let actual = read_text(&api, box_id, path).await?;
+        let actual = read_text(&api, sandbox_id, path).await?;
         if actual != "written-by-typescript" {
             return Err(Error::Unexpected("cross-SDK file contents differ".into()));
         }
         Ok::<_, Error>(())
     }
     .await;
-    eprintln!("file parity result={result:?}; fixture box={box_id}");
-    let cleanup = api.delete_box(box_id).await.expect("delete disposable box");
+    eprintln!("file parity result={result:?}; fixture box={sandbox_id}");
+    let cleanup = api
+        .delete_sandbox(sandbox_id)
+        .await
+        .expect("delete disposable box");
     wait_for_deletion(&api, &cleanup.operation.id, None)
         .await
         .expect("verify disposable box deletion completed");

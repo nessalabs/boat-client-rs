@@ -5,14 +5,19 @@ mod config;
 mod error;
 pub mod handoff;
 mod helpers;
+pub mod service;
 mod stream;
 mod types;
 mod wait;
 pub use stream::{stream_events, stream_prompt, StreamEventsOptions, StreamPromptOptions};
 pub use tokio_util::sync::CancellationToken;
 
-pub use client::BoxApi;
-pub use config::{BoxClientConfig, RetryConfig};
+pub use client::Api;
+/// Branded entry point; internal transport uses the stable `Api` type.
+pub use client::Api as BoatApi;
+/// Branded configuration alias; defaults live in `service`.
+pub use config::ClientConfig as BoatClientConfig;
+pub use config::{ClientConfig, RetryConfig};
 pub use error::{Error, Result};
 pub use helpers::{exec_command, read_text, stop_and_remove, stop_and_remove_with, write_text};
 pub use types::*;

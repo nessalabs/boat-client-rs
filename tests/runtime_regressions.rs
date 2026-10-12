@@ -5,19 +5,19 @@ use std::sync::{
 };
 use std::time::{Duration, Instant};
 
-use box_client::*;
+use boat_client::*;
 use serde_json::{json, Value};
 use wiremock::matchers::{body_json, header, method, path, query_param};
 use wiremock::{Mock, MockServer, Request, ResponseTemplate};
 
-const BOX_ID: &str = "bx_23456789";
+const SANDBOX_ID: &str = "bx_23456789";
 const ENV_ID: &str = "11111111-2222-3333-4444-555555555555";
 fn fixture(name: &str) -> Value {
     serde_json::from_str::<Value>(include_str!("fixtures/runtime.json")).unwrap()[name].clone()
 }
-fn client(server: &MockServer) -> BoxApi {
-    BoxApi::new(
-        BoxClientConfig::new("test-key")
+fn client(server: &MockServer) -> BoatApi {
+    BoatApi::new(
+        BoatClientConfig::new("test-key")
             .unwrap()
             .with_base_path(server.uri())
             .unwrap(),
@@ -25,7 +25,7 @@ fn client(server: &MockServer) -> BoxApi {
     .unwrap()
 }
 fn box_info(state: &str) -> Value {
-    json!({"ok":true,"box":{"id":BOX_ID,"name":"test","state":state}})
+    json!({"ok":true,"sandbox":{"id":SANDBOX_ID,"name":"test","state":state}})
 }
 
 #[tokio::test]
@@ -48,14 +48,14 @@ async fn identifiers_work_across_environment_snapshot_and_prompt_routes() {
             .await;
     }
     Mock::given(method("GET"))
-        .and(path(format!("/boxes/{BOX_ID}/prompts/pr_test-1")))
+        .and(path(format!("/sandboxes/{SANDBOX_ID}/prompts/pr_test-1")))
         .respond_with(ResponseTemplate::new(200).set_body_json(fixture("promptRun")))
         .expect(1)
         .mount(&server)
         .await;
     let api = client(&server);
     assert!(
-        api.update_environment(ENV_ID, UpdateBoxEnvironmentRequest::default())
+        api.update_environment(ENV_ID, UpdateSandboxEnvironmentRequest::default())
             .await
             .unwrap()
             .success
@@ -69,7 +69,7 @@ async fn identifiers_work_across_environment_snapshot_and_prompt_routes() {
     assert_eq!(download.chunks[0].chunk_index, 0);
     assert!(download.inventory.is_some());
     assert_eq!(
-        api.prompt_run_status(BOX_ID, "pr_test-1")
+        api.prompt_run_status(SANDBOX_ID, "pr_test-1")
             .await
             .unwrap()
             .prompt_run
@@ -127,7 +127,8 @@ async fn snapshot_file_path_is_a_query_and_binary_is_preserved() {
 
 #[test]
 fn nested_debug_hides_secrets_but_explicit_payload_access_remains() {
-    let env: BoxEnvironmentListResponse = serde_json::from_value(fixture("environments")).unwrap();
+    let env: SandboxEnvironmentListResponse =
+        serde_json::from_value(fixture("environments")).unwrap();
     assert_eq!(env.environments[0].env_contents, "TOKEN=secret-env");
     assert_eq!(env.environments[0].secret_files[0].contents, "secret-file");
     assert_eq!(
@@ -142,8 +143,8 @@ fn nested_debug_hides_secrets_but_explicit_payload_access_remains() {
         event.events[0].data.as_ref().unwrap()["text"],
         "secret-output"
     );
-    let info: BoxInfoResponse = serde_json::from_value(json!({"ok":true,"box":{
-        "id":BOX_ID,"name":"test","state":"idle","desktopUrl":"https://example.test/?token=secret-box",
+    let info: SandboxInfoResponse = serde_json::from_value(json!({"ok":true,"sandbox":{
+        "id":SANDBOX_ID,"name":"test","state":"idle","desktopUrl":"https://example.test/?token=secret-box",
         "error":{"details":"secret-error"}
     }})).unwrap();
     assert!(!format!("{info:?}").contains("secret-"));
@@ -171,7 +172,7 @@ fn nested_debug_hides_secrets_but_explicit_payload_access_remains() {
     response["unrecognized"] = json!("secret-extra");
     let prompt: PromptResponse = serde_json::from_value(response).unwrap();
     assert!(!format!("{prompt:?}").contains("secret-extra"));
-    let bare: BoxEvent =
+    let bare: SandboxEvent =
         serde_json::from_value(json!({"type":"new_event","unknown":{"token":"secret"}})).unwrap();
     assert!(bare.data.is_none());
     assert!(bare.extra.contains_key("unknown"));
@@ -181,7 +182,7 @@ fn nested_debug_hides_secrets_but_explicit_payload_access_remains() {
 async fn prompt_constructor_emits_required_provider() {
     let server = MockServer::start().await;
     Mock::given(method("POST"))
-        .and(path(format!("/boxes/{BOX_ID}/prompt")))
+        .and(path(format!("/sandboxes/{SANDBOX_ID}/prompt")))
         .and(body_json(json!({"provider":"codex","prompt":"do it"})))
         .respond_with(ResponseTemplate::new(200).set_body_json(fixture("prompt")))
         .expect(1)
@@ -189,7 +190,10 @@ async fn prompt_constructor_emits_required_provider() {
         .await;
     assert_eq!(
         client(&server)
-            .prompt(BOX_ID, PromptRequest::new(PromptProvider::Codex, "do it"))
+            .prompt(
+                SANDBOX_ID,
+                PromptRequest::new(PromptProvider::Codex, "do it")
+            )
             .await
             .unwrap()
             .provider,
@@ -211,7 +215,7 @@ async fn snapshot_pagination_preserves_cursor_limit_and_sort_for_both_routes() {
     let server = MockServer::start().await;
     for route in [
         "/snapshots".to_string(),
-        format!("/boxes/{BOX_ID}/snapshots"),
+        format!("/sandboxes/{SANDBOX_ID}/snapshots"),
     ] {
         Mock::given(method("GET"))
             .and(path(route))
@@ -241,7 +245,7 @@ async fn snapshot_pagination_preserves_cursor_limit_and_sort_for_both_routes() {
             ..Default::default()
         };
         let first = if per_box {
-            api.list_box_snapshots(BOX_ID, Some(&q)).await
+            api.list_sandbox_snapshots(SANDBOX_ID, Some(&q)).await
         } else {
             api.list_snapshots(Some(&q)).await
         }
@@ -250,7 +254,7 @@ async fn snapshot_pagination_preserves_cursor_limit_and_sort_for_both_routes() {
         assert!(page.has_more);
         q.cursor = page.next_cursor;
         let second = if per_box {
-            api.list_box_snapshots(BOX_ID, Some(&q)).await
+            api.list_sandbox_snapshots(SANDBOX_ID, Some(&q)).await
         } else {
             api.list_snapshots(Some(&q)).await
         }
@@ -263,20 +267,20 @@ async fn snapshot_pagination_preserves_cursor_limit_and_sort_for_both_routes() {
         .await
         .unwrap()
         .iter()
-        .all(|r| !r.url.query_pairs().any(|(k, _)| k == "boxId")));
+        .all(|r| !r.url.query_pairs().any(|(k, _)| k == "sandboxId")));
 }
 
 #[tokio::test]
 async fn command_union_and_status_preserve_truncation_and_recovery_fields() {
     let server = MockServer::start().await;
     Mock::given(method("POST"))
-        .and(path(format!("/boxes/{BOX_ID}/commands")))
+        .and(path(format!("/sandboxes/{SANDBOX_ID}/commands")))
         .respond_with(ResponseTemplate::new(200).set_body_json(fixture("commandStarted")))
         .expect(1)
         .mount(&server)
         .await;
     Mock::given(method("GET"))
-        .and(path(format!("/boxes/{BOX_ID}/commands/123")))
+        .and(path(format!("/sandboxes/{SANDBOX_ID}/commands/123")))
         .and(query_param("tailBytes", "4096"))
         .respond_with(ResponseTemplate::new(200).set_body_json(fixture("commandStatus")))
         .expect(1)
@@ -285,17 +289,18 @@ async fn command_union_and_status_preserve_truncation_and_recovery_fields() {
     let api = client(&server);
     let mut q = CommandRequest::new("hello");
     q.detached = Some(true);
-    let CommandResult::Started(started) = api.command_raw(BOX_ID, q).await.unwrap() else {
+    let CommandResult::Started(started) = api.command_raw(SANDBOX_ID, q).await.unwrap() else {
         panic!("lost detached union variant")
     };
     assert_eq!(started.process_id, 123);
     assert_eq!(started.log_path.as_deref(), Some("/tmp/stdout"));
     let status = api
         .command_status(
-            BOX_ID,
+            SANDBOX_ID,
             "123",
             Some(&CommandStatusQuery {
                 tail_bytes: Some(4096),
+                ..Default::default()
             }),
         )
         .await
@@ -314,30 +319,30 @@ async fn stop_or_delete_retains_original_response_and_confirmation_is_not_retrie
     let server = MockServer::start().await;
     let api = client(&server);
     Mock::given(method("POST"))
-        .and(path(format!("/boxes/{BOX_ID}/stop")))
+        .and(path(format!("/sandboxes/{SANDBOX_ID}/stop")))
         .respond_with(
             ResponseTemplate::new(200)
-                .set_body_json(json!({"ok":true,"id":BOX_ID,"status":"archiving"})),
+                .set_body_json(json!({"ok":true,"id":SANDBOX_ID,"status":"archiving"})),
         )
         .expect(1)
         .mount(&server)
         .await;
     let StopOrDeleteResponse::Stopped(stopped) =
-        stop_and_remove_with(&api, BOX_ID, false).await.unwrap()
+        stop_and_remove_with(&api, SANDBOX_ID, false).await.unwrap()
     else {
         panic!("wrong branch")
     };
-    assert_eq!(stopped.id, BOX_ID);
+    assert_eq!(stopped.id, SANDBOX_ID);
     assert_eq!(stopped.status, "archiving");
     Mock::given(method("DELETE"))
-        .and(path(format!("/boxes/{BOX_ID}")))
-        .and(header("X-Ascii-Confirm-Delete", BOX_ID))
+        .and(path(format!("/sandboxes/{SANDBOX_ID}")))
+        .and(header("X-Ascii-Confirm-Delete", SANDBOX_ID))
         .respond_with(ResponseTemplate::new(200).set_body_json(fixture("deletion")))
         .expect(1)
         .mount(&server)
         .await;
     let StopOrDeleteResponse::Deleting(deleting) =
-        stop_and_remove_with(&api, BOX_ID, true).await.unwrap()
+        stop_and_remove_with(&api, SANDBOX_ID, true).await.unwrap()
     else {
         panic!("wrong branch")
     };
@@ -399,15 +404,18 @@ async fn finite_deadline_bounds_http_retries_and_sleep() {
             _ => ResponseTemplate::new(200).set_body_json(box_info("running")),
         };
         Mock::given(method("GET"))
-            .and(path(format!("/boxes/{BOX_ID}")))
+            .and(path(format!("/sandboxes/{SANDBOX_ID}")))
             .respond_with(response)
             .expect(1)
             .mount(&server)
             .await;
         let start = Instant::now();
-        let result =
-            wait_until_idle_with(&client(&server), BOX_ID, WaitOptions::from_millis(40, 1000))
-                .await;
+        let result = wait_until_idle_with(
+            &client(&server),
+            SANDBOX_ID,
+            WaitOptions::from_millis(40, 1000),
+        )
+        .await;
         assert!(
             matches!(result, Err(Error::WaitTimeout { .. })),
             "{scenario}: {result:?}"
@@ -425,7 +433,7 @@ async fn zero_timeout_keeps_polling_until_success() {
     let hits = Arc::new(AtomicUsize::new(0));
     let seen = hits.clone();
     Mock::given(method("GET"))
-        .and(path(format!("/boxes/{BOX_ID}")))
+        .and(path(format!("/sandboxes/{SANDBOX_ID}")))
         .respond_with(move |_: &Request| {
             ResponseTemplate::new(200).set_body_json(box_info(
                 if seen.fetch_add(1, Ordering::SeqCst) == 0 {
@@ -439,11 +447,11 @@ async fn zero_timeout_keeps_polling_until_success() {
         .mount(&server)
         .await;
     assert_eq!(
-        wait_until_idle_with(&client(&server), BOX_ID, WaitOptions::from_millis(0, 1))
+        wait_until_idle_with(&client(&server), SANDBOX_ID, WaitOptions::from_millis(0, 1))
             .await
             .unwrap()
             .state,
-        BoxState::Idle
+        SandboxState::Idle
     );
 }
 
@@ -454,20 +462,20 @@ async fn prompt_failed_is_terminal_and_empty_desktop_url_is_not_ready() {
     run["promptRun"]["status"] = json!("failed");
     run["promptRun"]["done"] = json!(true);
     Mock::given(method("GET"))
-        .and(path(format!("/boxes/{BOX_ID}/prompts/pr_test-1")))
+        .and(path(format!("/sandboxes/{SANDBOX_ID}/prompts/pr_test-1")))
         .respond_with(ResponseTemplate::new(200).set_body_json(run))
         .mount(&server)
         .await;
     let api = client(&server);
     assert_eq!(
-        wait_for_prompt(&api, BOX_ID, "pr_test-1", None)
+        wait_for_prompt(&api, SANDBOX_ID, "pr_test-1", None)
             .await
             .unwrap()
             .status,
         "failed"
     );
     Mock::given(method("POST"))
-        .and(path(format!("/boxes/{BOX_ID}/desktop")))
+        .and(path(format!("/sandboxes/{SANDBOX_ID}/desktop")))
         .and(query_param("vnc", "1"))
         .respond_with(
             ResponseTemplate::new(200)
@@ -476,7 +484,13 @@ async fn prompt_failed_is_terminal_and_empty_desktop_url_is_not_ready() {
         .mount(&server)
         .await;
     assert!(matches!(
-        wait_for_desktop(&api, BOX_ID, false, Some(WaitOptions::from_millis(30, 100))).await,
+        wait_for_desktop(
+            &api,
+            SANDBOX_ID,
+            false,
+            Some(WaitOptions::from_millis(30, 100))
+        )
+        .await,
         Err(Error::WaitTimeout { .. })
     ));
 }
@@ -491,8 +505,8 @@ async fn response_cap_applies_to_success_and_error_bodies() {
             .expect(1)
             .mount(&server)
             .await;
-        let api = BoxApi::new(
-            BoxClientConfig::new("test")
+        let api = BoatApi::new(
+            BoatClientConfig::new("test")
                 .unwrap()
                 .with_base_path(server.uri())
                 .unwrap()
@@ -533,7 +547,7 @@ async fn excessive_retry_after_returns_error_without_retrying_early() {
 async fn polling_does_not_restart_transport_after_retry_after_refusal() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
-        .and(path(format!("/boxes/{BOX_ID}")))
+        .and(path(format!("/sandboxes/{SANDBOX_ID}")))
         .respond_with(
             ResponseTemplate::new(429)
                 .insert_header("Retry-After", "120")
@@ -544,7 +558,7 @@ async fn polling_does_not_restart_transport_after_retry_after_refusal() {
         .await;
     let result = tokio::time::timeout(
         Duration::from_millis(300),
-        wait_until_ready_with(&client(&server), BOX_ID, WaitOptions::from_millis(0, 1)),
+        wait_until_ready_with(&client(&server), SANDBOX_ID, WaitOptions::from_millis(0, 1)),
     )
     .await
     .unwrap();

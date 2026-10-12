@@ -1,28 +1,29 @@
-//! Smoke: get + exec against an existing box.
+//! Smoke: get + exec against an existing sandbox.
 //!
 //! ```bash
-//! BOX_API_KEY=… BOX_ID=bx_… cargo run --example exec_smoke
+//! BOAT_API_KEY=… SANDBOX_ID=bx_… cargo run --example exec_smoke
 //! ```
-use box_client::{wait_until_ready, BoxApi, BoxClientConfig, CommandRequest, ResumeRequest};
+use boat_client::{wait_until_ready, BoatApi, BoatClientConfig, CommandRequest, ResumeRequest};
 
 #[tokio::main]
-async fn main() -> box_client::Result<()> {
-    let api = BoxApi::new(BoxClientConfig::from_env()?)?;
-    let box_id = std::env::var("BOX_ID").map_err(|_| {
-        box_client::Error::Config("set BOX_ID to a box id (bx_…); no default".into())
+async fn main() -> boat_client::Result<()> {
+    let api = BoatApi::new(BoatClientConfig::from_env()?)?;
+    let sandbox_id = std::env::var("SANDBOX_ID").map_err(|_| {
+        boat_client::Error::Config("set SANDBOX_ID to a box id (bx_…); no default".into())
     })?;
 
-    let info = api.get(&box_id).await?;
-    println!("state={}", info.box_.state.as_str());
-    if !info.box_.state.is_operable() {
+    let info = api.get(&sandbox_id).await?;
+    println!("state={}", info.sandbox.state.as_str());
+    if !info.sandbox.state.is_operable() {
         println!("resuming…");
-        api.resume(&box_id, Some(ResumeRequest::default())).await?;
-        wait_until_ready(&api, &box_id).await?;
+        api.resume(&sandbox_id, Some(ResumeRequest::default()))
+            .await?;
+        wait_until_ready(&api, &sandbox_id).await?;
     }
 
     let out = api
         .command(
-            &box_id,
+            &sandbox_id,
             CommandRequest::new("uname -a && command -v opencode").with_timeout_seconds(60),
         )
         .await?;

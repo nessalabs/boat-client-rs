@@ -58,8 +58,10 @@ impl fmt::Debug for HandoffError {
 /// id with a different plan is rejected. Do not put credentials in this record.
 #[derive(Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct HandoffPlan {
-    pub source_box_id: String,
-    pub target_box_id: String,
+    #[serde(rename = "source_box_id")]
+    pub source_sandbox_id: String,
+    #[serde(rename = "target_box_id")]
+    pub target_sandbox_id: String,
     pub intent: String,
 }
 impl fmt::Debug for HandoffPlan {
@@ -69,9 +71,13 @@ impl fmt::Debug for HandoffPlan {
 }
 impl HandoffPlan {
     fn validate(&self) -> HandoffResult<()> {
-        if [&self.source_box_id, &self.target_box_id, &self.intent]
-            .iter()
-            .any(|v| v.trim().is_empty())
+        if [
+            &self.source_sandbox_id,
+            &self.target_sandbox_id,
+            &self.intent,
+        ]
+        .iter()
+        .any(|v| v.trim().is_empty())
         {
             return Err(HandoffError::InvalidInput);
         }
@@ -297,7 +303,7 @@ impl<S: ReceiptStore> HandoffJournal<S> {
         };
         match self.store.compare_exchange(&receipt, None).await {
             Ok(()) => {
-                tracing::debug!(target: "box_client::handoff", phase = ?receipt.phase, revision = receipt.revision, "receipt created");
+                tracing::debug!(target: "boat_client::handoff", phase = ?receipt.phase, revision = receipt.revision, "receipt created");
                 Ok(receipt)
             }
             Err(HandoffError::Conflict) => {
@@ -318,7 +324,7 @@ impl<S: ReceiptStore> HandoffJournal<S> {
         if receipt.id != id {
             return Err(HandoffError::Corrupt);
         }
-        tracing::debug!(target: "box_client::handoff", phase = ?receipt.phase, revision = receipt.revision, "receipt loaded");
+        tracing::debug!(target: "boat_client::handoff", phase = ?receipt.phase, revision = receipt.revision, "receipt loaded");
         Ok(receipt)
     }
 
@@ -412,11 +418,11 @@ impl<S: ReceiptStore> HandoffJournal<S> {
             .compare_exchange(&next, Some(receipt.revision))
             .await
         {
-            tracing::debug!(target: "box_client::handoff", phase = ?receipt.phase, revision = receipt.revision,
+            tracing::debug!(target: "boat_client::handoff", phase = ?receipt.phase, revision = receipt.revision,
                 error_kind = handoff_error_kind(&error), "receipt write not confirmed; reload before continuing");
             return Err(error);
         }
-        tracing::debug!(target: "box_client::handoff", previous_phase = ?receipt.phase,
+        tracing::debug!(target: "boat_client::handoff", previous_phase = ?receipt.phase,
             phase = ?next.phase, revision = next.revision, "receipt transition committed");
         Ok(next)
     }

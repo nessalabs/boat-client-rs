@@ -4,11 +4,11 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 use std::time::Duration;
 
-use box_client::{
-    exec_command, read_text, wait_until_ready, wait_until_ready_with, write_text, BoxApi,
-    BoxClientConfig, BoxesQuery, CommandRequest, CreateBoxRequest, CreateOptions, DesktopQuery,
-    Error, FileWriteRequest, HostPortRequest, ResumeRequest, StopRequest, UpdateBoxRequest,
-    WaitOptions,
+use boat_client::{
+    exec_command, read_text, wait_until_ready, wait_until_ready_with, write_text, BoatApi,
+    BoatClientConfig, CommandRequest, CreateOptions, CreateSandboxRequest, DesktopQuery, Error,
+    FileWriteRequest, HostPortRequest, ResumeRequest, SandboxesQuery, StopRequest,
+    UpdateSandboxRequest, WaitOptions,
 };
 use serde_json::json;
 use wiremock::matchers::{body_partial_json, header, method, path, query_param};
@@ -32,9 +32,9 @@ fn box_json(id: &str, state: &str) -> serde_json::Value {
     })
 }
 
-async fn api(server: &MockServer) -> BoxApi {
-    BoxApi::new(
-        BoxClientConfig::new("box_test_key")
+async fn api(server: &MockServer) -> BoatApi {
+    BoatApi::new(
+        BoatClientConfig::new("box_test_key")
             .unwrap()
             .with_base_path(server.uri())
             .unwrap(),
@@ -70,7 +70,7 @@ async fn limits() {
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "ok": true,
             "canStart": true,
-            "activeBoxes": 0, "maxActiveBoxes": 100, "billingStatus":"active", "type":"account.limits"
+            "activeSandboxes": 0, "maxActiveSandboxes": 100, "billingStatus":"active", "type":"account.limits"
         })))
         .mount(&server)
         .await;
@@ -84,38 +84,38 @@ async fn limits() {
     assert!(limits.can_start);
 }
 
-// Box lifecycle.
+// Sandbox lifecycle.
 
 #[tokio::test]
 async fn boxes_list_and_query() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
-        .and(path("/boxes"))
+        .and(path("/sandboxes"))
         .and(query_param("state", "idle"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "ok": true,
             "type": "box.list",
-            "boxes": [box_json("bx_23456789", "idle")],
+            "sandboxes": [box_json("bx_23456789", "idle")],
             "pageInfo": { "nextCursor": null, "hasMore": false, "limit": 50 }
         })))
         .mount(&server)
         .await;
 
-    let q = BoxesQuery {
+    let q = SandboxesQuery {
         state: Some("idle".into()),
         limit: Some(50),
         ..Default::default()
     };
-    let list = api(&server).await.boxes(Some(&q)).await.unwrap();
-    assert_eq!(list.boxes.len(), 1);
-    assert_eq!(list.boxes[0].id, "bx_23456789");
+    let list = api(&server).await.sandboxes(Some(&q)).await.unwrap();
+    assert_eq!(list.sandboxes.len(), 1);
+    assert_eq!(list.sandboxes[0].id, "bx_23456789");
 }
 
 #[tokio::test]
 async fn create_with_idempotency_key() {
     let server = MockServer::start().await;
     Mock::given(method("POST"))
-        .and(path("/boxes"))
+        .and(path("/sandboxes"))
         .and(header("Idempotency-Key", "job-42"))
         .and(body_partial_json(json!({ "ttlSeconds": 1800 })))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
@@ -123,7 +123,7 @@ async fn create_with_idempotency_key() {
             "type": "box.created",
             "status": "provisioning",
             "ttlSeconds": 1800,
-            "box": box_json("bx_23456789", "provisioning")
+            "sandbox": box_json("bx_23456789", "provisioning")
         })))
         .mount(&server)
         .await;
@@ -131,7 +131,7 @@ async fn create_with_idempotency_key() {
     let created = api(&server)
         .await
         .create(
-            Some(CreateBoxRequest::ttl(1800)),
+            Some(CreateSandboxRequest::ttl(1800)),
             &CreateOptions {
                 idempotency_key: Some("job-42".into()),
                 ..Default::default()
@@ -139,23 +139,23 @@ async fn create_with_idempotency_key() {
         )
         .await
         .unwrap();
-    assert_eq!(created.box_.id, "bx_23456789");
+    assert_eq!(created.sandbox.id, "bx_23456789");
 }
 
 #[tokio::test]
 async fn extended_prompt_events_desktop_and_delete_routes() {
     let server = MockServer::start().await;
     Mock::given(method("POST"))
-        .and(path("/boxes/bx_23456789/prompt"))
+        .and(path("/sandboxes/bx_23456789/prompt"))
         .and(body_partial_json(json!({"prompt": "do it", "provider":"codex"})))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "ok": true, "id":"bx_23456789", "promptId": "pr_1", "status": "queued", "provider":"codex",
-            "promptRun":{"id":"pr_1","promptId":"pr_1","boxId":"bx_23456789","status":"queued","done":false}
+            "promptRun":{"id":"pr_1","promptId":"pr_1","sandboxId":"bx_23456789","status":"queued","done":false}
         })))
         .mount(&server)
         .await;
     Mock::given(method("GET"))
-        .and(path("/boxes/bx_23456789/events"))
+        .and(path("/sandboxes/bx_23456789/events"))
         .and(query_param("sort", "asc"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "ok": true, "id":"bx_23456789", "events": [{"id":"ev_1","type":"prompt","timestamp":1,"data":{}}]
@@ -163,7 +163,7 @@ async fn extended_prompt_events_desktop_and_delete_routes() {
         .mount(&server)
         .await;
     Mock::given(method("POST"))
-        .and(path("/boxes/bx_23456789/desktop"))
+        .and(path("/sandboxes/bx_23456789/desktop"))
         .and(query_param("vnc", "1"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "ok": true, "desktopUrl": "https://secret.example", "provisioning": false
@@ -171,7 +171,7 @@ async fn extended_prompt_events_desktop_and_delete_routes() {
         .mount(&server)
         .await;
     Mock::given(method("DELETE"))
-        .and(path("/boxes/bx_23456789"))
+        .and(path("/sandboxes/bx_23456789"))
         .and(header("X-Ascii-Confirm-Delete", "bx_23456789"))
         .respond_with(ResponseTemplate::new(200).set_body_json(fixture("deletion")))
         .mount(&server)
@@ -181,7 +181,7 @@ async fn extended_prompt_events_desktop_and_delete_routes() {
     let prompt = client
         .prompt(
             "bx_23456789",
-            box_client::PromptRequest::new(box_client::PromptProvider::Codex, "do it"),
+            boat_client::PromptRequest::new(boat_client::PromptProvider::Codex, "do it"),
         )
         .await
         .unwrap();
@@ -189,7 +189,7 @@ async fn extended_prompt_events_desktop_and_delete_routes() {
     let events = client
         .events(
             "bx_23456789",
-            Some(&box_client::EventsQuery {
+            Some(&boat_client::EventsQuery {
                 sort: Some("asc".into()),
                 ..Default::default()
             }),
@@ -209,7 +209,7 @@ async fn extended_prompt_events_desktop_and_delete_routes() {
         .await
         .unwrap();
     assert!(desktop.desktop_url.is_some());
-    client.delete_box("bx_23456789").await.unwrap();
+    client.delete_sandbox("bx_23456789").await.unwrap();
 }
 
 #[tokio::test]
@@ -230,7 +230,7 @@ async fn extended_snapshot_and_environment_routes() {
     let client = api(&server).await;
     client.snapshot_tree("snap/unsafe").await.unwrap();
     let envs = client
-        .create_environment(box_client::CreateBoxEnvironmentRequest { name: "ci".into() })
+        .create_environment(boat_client::CreateSandboxEnvironmentRequest { name: "ci".into() })
         .await
         .unwrap();
     assert_eq!(
@@ -243,31 +243,31 @@ async fn extended_snapshot_and_environment_routes() {
 async fn get_update_stop_resume() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
-        .and(path("/boxes/bx_23456789"))
+        .and(path("/sandboxes/bx_23456789"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
-            "ok": true, "type": "box.info", "box": box_json("bx_23456789", "idle")
+            "ok": true, "type": "box.info", "sandbox": box_json("bx_23456789", "idle")
         })))
         .mount(&server)
         .await;
     Mock::given(method("PATCH"))
-        .and(path("/boxes/bx_23456789"))
+        .and(path("/sandboxes/bx_23456789"))
         .and(body_partial_json(json!({ "name": "sdk-demo" })))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "ok": true, "type": "box.info",
-            "box": { "id": "bx_23456789", "name": "sdk-demo", "state": "idle",
+            "sandbox": { "id": "bx_23456789", "name": "sdk-demo", "state": "idle",
                       "desktopAvailable": false, "snapshotAvailable": false }
         })))
         .mount(&server)
         .await;
     Mock::given(method("POST"))
-        .and(path("/boxes/bx_23456789/stop"))
+        .and(path("/sandboxes/bx_23456789/stop"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "ok": true, "type": "box.stopping", "id": "bx_23456789", "status": "archiving"
         })))
         .mount(&server)
         .await;
     Mock::given(method("POST"))
-        .and(path("/boxes/bx_23456789/resume"))
+        .and(path("/sandboxes/bx_23456789/resume"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "ok": true, "type": "box.resuming", "id": "bx_23456789", "status": "provisioning"
         })))
@@ -276,23 +276,30 @@ async fn get_update_stop_resume() {
 
     let client = api(&server).await;
     assert_eq!(
-        client.get("bx_23456789").await.unwrap().box_.state.as_str(),
+        client
+            .get("bx_23456789")
+            .await
+            .unwrap()
+            .sandbox
+            .state
+            .as_str(),
         "idle"
     );
     assert_eq!(
         client
             .update(
                 "bx_23456789",
-                UpdateBoxRequest {
+                UpdateSandboxRequest {
                     name: Some("sdk-demo".into()),
                     ..Default::default()
                 },
             )
             .await
             .unwrap()
-            .box_
-            .name,
-        "sdk-demo"
+            .sandbox
+            .name
+            .as_deref(),
+        Some("sdk-demo")
     );
     assert_eq!(
         client
@@ -319,16 +326,16 @@ async fn wait_until_ready_success_states() {
     for state in ["ready", "idle", "running"] {
         let server = MockServer::start().await;
         Mock::given(method("GET"))
-            .and(path("/boxes/bx_23456789"))
+            .and(path("/sandboxes/bx_23456789"))
             .respond_with(ResponseTemplate::new(200).set_body_json(json!({
-                "ok": true, "type": "box.info", "box": box_json("bx_23456789", state)
+                "ok": true, "type": "box.info", "sandbox": box_json("bx_23456789", state)
             })))
             .mount(&server)
             .await;
-        let box_ = wait_until_ready(&api(&server).await, "bx_23456789")
+        let sandbox = wait_until_ready(&api(&server).await, "bx_23456789")
             .await
             .unwrap();
-        assert_eq!(box_.state.as_str(), state);
+        assert_eq!(sandbox.state.as_str(), state);
     }
 }
 
@@ -337,9 +344,9 @@ async fn wait_until_ready_terminal_states() {
     for state in ["archived", "archiving", "error"] {
         let server = MockServer::start().await;
         Mock::given(method("GET"))
-            .and(path("/boxes/bx_23456789"))
+            .and(path("/sandboxes/bx_23456789"))
             .respond_with(ResponseTemplate::new(200).set_body_json(json!({
-                "ok": true, "type": "box.info", "box": box_json("bx_23456789", state)
+                "ok": true, "type": "box.info", "sandbox": box_json("bx_23456789", state)
             })))
             .mount(&server)
             .await;
@@ -347,8 +354,8 @@ async fn wait_until_ready_terminal_states() {
             .await
             .unwrap_err();
         match err {
-            Error::BoxTerminal { state: s, .. } => assert_eq!(s, state),
-            other => panic!("expected BoxTerminal, got {other:?}"),
+            Error::SandboxTerminal { state: s, .. } => assert_eq!(s, state),
+            other => panic!("expected SandboxTerminal, got {other:?}"),
         }
     }
 }
@@ -359,18 +366,18 @@ async fn wait_until_ready_polls_then_succeeds() {
     let hits = Arc::new(AtomicUsize::new(0));
     let hits2 = hits.clone();
     Mock::given(method("GET"))
-        .and(path("/boxes/bx_23456789"))
+        .and(path("/sandboxes/bx_23456789"))
         .respond_with(move |_req: &Request| {
             let n = hits2.fetch_add(1, Ordering::SeqCst);
             let state = if n == 0 { "provisioning" } else { "ready" };
             ResponseTemplate::new(200).set_body_json(json!({
-                "ok": true, "type": "box.info", "box": box_json("bx_23456789", state)
+                "ok": true, "type": "box.info", "sandbox": box_json("bx_23456789", state)
             }))
         })
         .mount(&server)
         .await;
 
-    let box_ = wait_until_ready_with(
+    let sandbox = wait_until_ready_with(
         &api(&server).await,
         "bx_23456789",
         WaitOptions {
@@ -380,7 +387,7 @@ async fn wait_until_ready_polls_then_succeeds() {
     )
     .await
     .unwrap();
-    assert_eq!(box_.state.as_str(), "ready");
+    assert_eq!(sandbox.state.as_str(), "ready");
     assert!(hits.load(Ordering::SeqCst) >= 2);
 }
 
@@ -388,7 +395,7 @@ async fn wait_until_ready_polls_then_succeeds() {
 async fn exec_command_default_timeout_30() {
     let server = MockServer::start().await;
     Mock::given(method("POST"))
-        .and(path("/boxes/bx_23456789/commands"))
+        .and(path("/sandboxes/bx_23456789/commands"))
         .and(body_partial_json(json!({
             "command": "uname -a",
             "timeoutSeconds": 30
@@ -416,7 +423,7 @@ async fn exec_command_default_timeout_30() {
 async fn exec_command_with_cwd_and_timeout() {
     let server = MockServer::start().await;
     Mock::given(method("POST"))
-        .and(path("/boxes/bx_23456789/commands"))
+        .and(path("/sandboxes/bx_23456789/commands"))
         .and(body_partial_json(json!({
             "command": "pwd",
             "cwd": "project",
@@ -445,7 +452,7 @@ async fn exec_command_with_cwd_and_timeout() {
 async fn read_text_write_text_utf8() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
-        .and(path("/boxes/bx_23456789/files"))
+        .and(path("/sandboxes/bx_23456789/files"))
         .and(query_param("path", "notes/result.txt"))
         .and(query_param("encoding", "utf8"))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
@@ -457,7 +464,7 @@ async fn read_text_write_text_utf8() {
         .mount(&server)
         .await;
     Mock::given(method("PUT"))
-        .and(path("/boxes/bx_23456789/files"))
+        .and(path("/sandboxes/bx_23456789/files"))
         .and(body_partial_json(json!({
             "path": "notes/result.txt",
             "content": "done\n",
@@ -483,7 +490,7 @@ async fn read_text_write_text_utf8() {
 async fn host_port_and_ssh_key() {
     let server = MockServer::start().await;
     Mock::given(method("POST"))
-        .and(path("/boxes/bx_23456789/host"))
+        .and(path("/sandboxes/bx_23456789/host"))
         .and(body_partial_json(json!({ "port": 3000 })))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "ok": true, "type": "port.hosted", "success": true, "port": 3000,
@@ -492,7 +499,7 @@ async fn host_port_and_ssh_key() {
         .mount(&server)
         .await;
     Mock::given(method("POST"))
-        .and(path("/boxes/bx_23456789/sshkey"))
+        .and(path("/sandboxes/bx_23456789/sshkey"))
         .and(body_partial_json(json!({ "key": "ssh-ed25519 AAAA" })))
         .respond_with(ResponseTemplate::new(200).set_body_json(json!({
             "ok": true, "type": "ssh_key.configured", "success": true,
@@ -523,27 +530,27 @@ async fn host_port_and_ssh_key() {
 #[tokio::test]
 async fn invalid_box_id_is_rejected() {
     // Invalid identifiers are rejected before sending a request.
-    let client = BoxApi::new(BoxClientConfig::new("box_test_key").unwrap()).unwrap();
+    let client = BoatApi::new(BoatClientConfig::new("box_test_key").unwrap()).unwrap();
     let err = client
         .command("bad", CommandRequest::new("true"))
         .await
         .unwrap_err();
-    assert!(matches!(err, Error::InvalidBoxId(_)));
+    assert!(matches!(err, Error::InvalidSandboxId(_)));
 }
 
 #[tokio::test]
 async fn api_error_envelope() {
     let server = MockServer::start().await;
     Mock::given(method("GET"))
-        .and(path("/boxes/bx_23456789"))
+        .and(path("/sandboxes/bx_23456789"))
         .respond_with(ResponseTemplate::new(404).set_body_json(json!({
             "ok": false,
             "type": "box.error",
             "status": 404,
             "code": "not_found",
-            "message": "Box not found",
+            "message": "Sandbox not found",
             "requestId": "req_abc",
-            "error": { "code": "not_found", "message": "Box not found", "status": 404 }
+            "error": { "code": "not_found", "message": "Sandbox not found", "status": 404 }
         })))
         .mount(&server)
         .await;
@@ -559,9 +566,9 @@ async fn api_error_envelope() {
             assert_eq!(*status, 404);
             assert_eq!(code, "not_found");
             assert_eq!(request_id, "req_abc");
-            assert_eq!(err.api_message(), Some("Box not found"));
+            assert_eq!(err.api_message(), Some("Sandbox not found"));
             // Display stays log-safe (no server message body).
-            assert!(!err.to_string().contains("Box not found"));
+            assert!(!err.to_string().contains("Sandbox not found"));
         }
         other => panic!("expected Api error, got {other:?}"),
     }
@@ -569,7 +576,7 @@ async fn api_error_envelope() {
 
 #[tokio::test]
 async fn rejects_detached_command() {
-    let client = BoxApi::new(BoxClientConfig::new("box_test_key").unwrap()).unwrap();
+    let client = BoatApi::new(BoatClientConfig::new("box_test_key").unwrap()).unwrap();
     let err = client
         .command(
             "bx_23456789",
@@ -578,6 +585,7 @@ async fn rejects_detached_command() {
                 cwd: None,
                 timeout_seconds: Some(30),
                 detached: Some(true),
+                stream: None,
             },
         )
         .await
@@ -588,11 +596,11 @@ async fn rejects_detached_command() {
 #[tokio::test]
 async fn create_request_ttl_preserves_null_and_omission() {
     assert_eq!(
-        serde_json::to_value(CreateBoxRequest::ttl(1800)).unwrap(),
+        serde_json::to_value(CreateSandboxRequest::ttl(1800)).unwrap(),
         json!({ "ttlSeconds": 1800 })
     );
     assert_eq!(
-        serde_json::to_value(CreateBoxRequest::no_auto_stop()).unwrap(),
+        serde_json::to_value(CreateSandboxRequest::no_auto_stop()).unwrap(),
         json!({ "ttlSeconds": null })
     );
 }
@@ -601,7 +609,7 @@ async fn create_request_ttl_preserves_null_and_omission() {
 async fn write_file_uses_put_and_serializes_body() {
     let server = MockServer::start().await;
     Mock::given(method("PUT"))
-        .and(path("/boxes/bx_23456789/files"))
+        .and(path("/sandboxes/bx_23456789/files"))
         .respond_with(
             ResponseTemplate::new(200).set_body_json(json!({ "ok": true, "success": true })),
         )

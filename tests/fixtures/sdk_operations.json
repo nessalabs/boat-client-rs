@@ -1,5 +1,5 @@
 {
-  "sdkVersion": "0.0.34",
+  "sdkVersion": "1.9.7",
   "cases": [
     {
       "operation": "addEnvironmentRepo",
@@ -8,7 +8,8 @@
         "addEnvironmentRepoRequest": {
           "repositoryId": "repositoryId_with-hyphen",
           "baseBranch": "baseBranch_with-hyphen"
-        }
+        },
+        "org": "org_with-hyphen"
       },
       "request": {
         "path": "/environments/environmentId_with-hyphen/repos",
@@ -17,7 +18,9 @@
           "Content-Type": "application/json",
           "Authorization": "Bearer fixture-only"
         },
-        "query": {},
+        "query": {
+          "org": "org_with-hyphen"
+        },
         "body": {
           "repositoryId": "repositoryId_with-hyphen",
           "baseBranch": "baseBranch_with-hyphen"
@@ -75,9 +78,10 @@
         "type": "type_with-hyphen",
         "id": "id_with-hyphen",
         "name": "name_with-hyphen",
+        "credentialLane": "legacy",
         "keyPrefix": "fake",
         "keyLastFour": "fake",
-        "sandboxId": "sandboxId_with-hyphen",
+        "sandboxId": "bx_23456789",
         "createdAt": "2026-09-07T00:00:00.000Z",
         "lastUsedAt": "2026-09-07T00:00:00.000Z",
         "usage": {
@@ -86,12 +90,24 @@
         },
         "resources": {
           "total": 2,
-          "boxes": 2,
+          "sandboxes": 2,
           "agents": 2
+        },
+        "expiresAt": "2026-09-07T00:00:00.000Z",
+        "expired": true,
+        "expiringSoon": true,
+        "scope": {
+          "expiresAt": "2026-09-07T00:00:00.000Z",
+          "actions": [
+            "actions_with-hyphen"
+          ],
+          "sandboxes": {},
+          "environments": {},
+          "grandfathered": true
         },
         "createdResources": [
           {
-            "kind": "box",
+            "kind": "sandbox",
             "id": "id_with-hyphen",
             "name": "name_with-hyphen",
             "state": "state_with-hyphen",
@@ -104,9 +120,10 @@
         "type": "type_with-hyphen",
         "id": "id_with-hyphen",
         "name": "name_with-hyphen",
+        "credentialLane": "legacy",
         "keyPrefix": "fake",
         "keyLastFour": "fake",
-        "sandboxId": "sandboxId_with-hyphen",
+        "sandboxId": "bx_23456789",
         "createdAt": "2026-09-07T00:00:00.000Z",
         "lastUsedAt": "2026-09-07T00:00:00.000Z",
         "usage": {
@@ -115,12 +132,24 @@
         },
         "resources": {
           "total": 2,
-          "boxes": 2,
+          "sandboxes": 2,
           "agents": 2
+        },
+        "expiresAt": "2026-09-07T00:00:00.000Z",
+        "expired": true,
+        "expiringSoon": true,
+        "scope": {
+          "expiresAt": "2026-09-07T00:00:00.000Z",
+          "actions": [
+            "actions_with-hyphen"
+          ],
+          "sandboxes": {},
+          "environments": {},
+          "grandfathered": true
         },
         "createdResources": [
           {
-            "kind": "box",
+            "kind": "sandbox",
             "id": "id_with-hyphen",
             "name": "name_with-hyphen",
             "state": "state_with-hyphen",
@@ -133,9 +162,10 @@
         "type": "type_with-hyphen",
         "id": "id_with-hyphen",
         "name": "name_with-hyphen",
+        "credentialLane": "legacy",
         "keyPrefix": "fake",
         "keyLastFour": "fake",
-        "sandboxId": "sandboxId_with-hyphen",
+        "sandboxId": "bx_23456789",
         "createdAt": "2026-09-07T00:00:00.000Z",
         "lastUsedAt": "2026-09-07T00:00:00.000Z",
         "usage": {
@@ -144,12 +174,12 @@
         },
         "resources": {
           "total": 2,
-          "boxes": 2,
+          "sandboxes": 2,
           "agents": 2
         },
         "createdResources": [
           {
-            "kind": "box",
+            "kind": "sandbox",
             "id": "id_with-hyphen",
             "name": "name_with-hyphen",
             "state": "state_with-hyphen",
@@ -188,9 +218,10 @@
           {
             "id": "id_with-hyphen",
             "name": "name_with-hyphen",
+            "credentialLane": "legacy",
             "keyPrefix": "fake",
             "keyLastFour": "fake",
-            "sandboxId": "sandboxId_with-hyphen",
+            "sandboxId": "bx_23456789",
             "createdAt": "2026-09-07T00:00:00.000Z",
             "lastUsedAt": "2026-09-07T00:00:00.000Z",
             "usage": {
@@ -199,11 +230,52 @@
             },
             "resources": {
               "total": 2,
-              "boxes": 2,
+              "sandboxes": 2,
               "agents": 2
+            },
+            "expiresAt": "2026-09-07T00:00:00.000Z",
+            "expired": true,
+            "expiringSoon": true,
+            "scope": {
+              "expiresAt": "2026-09-07T00:00:00.000Z",
+              "actions": [
+                "actions_with-hyphen"
+              ],
+              "sandboxes": {},
+              "environments": {},
+              "grandfathered": true
             }
           }
-        ]
+        ],
+        "catalog": {
+          "actions": [
+            "actions_with-hyphen"
+          ],
+          "presets": {
+            "fixture": "fixture-secret"
+          },
+          "defaultTtl": "defaultTtl_with-hyphen",
+          "maxTtl": "maxTtl_with-hyphen",
+          "scopedCreationEnabled": true,
+          "scopeResources": {
+            "sandboxes": [
+              {
+                "id": "id_with-hyphen",
+                "name": "name_with-hyphen",
+                "organizationId": "organizationId_with-hyphen",
+                "organizationName": "organizationName_with-hyphen"
+              }
+            ],
+            "environments": [
+              {
+                "id": "id_with-hyphen",
+                "name": "name_with-hyphen",
+                "organizationId": "organizationId_with-hyphen",
+                "organizationName": "organizationName_with-hyphen"
+              }
+            ]
+          }
+        }
       },
       "expectedResponse": {
         "ok": true,
@@ -212,9 +284,10 @@
           {
             "id": "id_with-hyphen",
             "name": "name_with-hyphen",
+            "credentialLane": "legacy",
             "keyPrefix": "fake",
             "keyLastFour": "fake",
-            "sandboxId": "sandboxId_with-hyphen",
+            "sandboxId": "bx_23456789",
             "createdAt": "2026-09-07T00:00:00.000Z",
             "lastUsedAt": "2026-09-07T00:00:00.000Z",
             "usage": {
@@ -223,11 +296,52 @@
             },
             "resources": {
               "total": 2,
-              "boxes": 2,
+              "sandboxes": 2,
               "agents": 2
+            },
+            "expiresAt": "2026-09-07T00:00:00.000Z",
+            "expired": true,
+            "expiringSoon": true,
+            "scope": {
+              "expiresAt": "2026-09-07T00:00:00.000Z",
+              "actions": [
+                "actions_with-hyphen"
+              ],
+              "sandboxes": {},
+              "environments": {},
+              "grandfathered": true
             }
           }
-        ]
+        ],
+        "catalog": {
+          "actions": [
+            "actions_with-hyphen"
+          ],
+          "presets": {
+            "fixture": "fixture-secret"
+          },
+          "defaultTtl": "defaultTtl_with-hyphen",
+          "maxTtl": "maxTtl_with-hyphen",
+          "scopedCreationEnabled": true,
+          "scopeResources": {
+            "sandboxes": [
+              {
+                "id": "id_with-hyphen",
+                "name": "name_with-hyphen",
+                "organizationId": "organizationId_with-hyphen",
+                "organizationName": "organizationName_with-hyphen"
+              }
+            ],
+            "environments": [
+              {
+                "id": "id_with-hyphen",
+                "name": "name_with-hyphen",
+                "organizationId": "organizationId_with-hyphen",
+                "organizationName": "organizationName_with-hyphen"
+              }
+            ]
+          }
+        }
       },
       "minimalResponse": {
         "ok": true,
@@ -236,6 +350,7 @@
           {
             "id": "id_with-hyphen",
             "name": "name_with-hyphen",
+            "credentialLane": "legacy",
             "keyPrefix": "fake",
             "keyLastFour": "fake",
             "sandboxId": null,
@@ -247,11 +362,22 @@
             },
             "resources": {
               "total": 2,
-              "boxes": 2,
+              "sandboxes": 2,
               "agents": 2
             }
           }
-        ]
+        ],
+        "catalog": {
+          "actions": [
+            "actions_with-hyphen"
+          ],
+          "presets": {
+            "fixture": "fixture-secret"
+          },
+          "defaultTtl": "defaultTtl_with-hyphen",
+          "maxTtl": "maxTtl_with-hyphen",
+          "scopedCreationEnabled": true
+        }
       },
       "minimalParameters": {},
       "minimalRequest": {
@@ -266,11 +392,11 @@
     {
       "operation": "artifact",
       "parameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "path": "/home/user/fixture a?#.txt"
       },
       "request": {
-        "path": "/boxes/bx_23456789/artifacts",
+        "path": "/sandboxes/bx_23456789/artifacts",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer fixture-only"
@@ -284,11 +410,11 @@
       "expectedResponse": null,
       "minimalResponse": null,
       "minimalParameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "path": "/home/user/fixture a?#.txt"
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789/artifacts",
+        "path": "/sandboxes/bx_23456789/artifacts",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer fixture-only"
@@ -299,135 +425,19 @@
       }
     },
     {
-      "operation": "boxes",
-      "parameters": {
-        "limit": 2,
-        "cursor": "cursor/+=",
-        "sort": "asc",
-        "state": "state_with-hyphen"
-      },
-      "request": {
-        "path": "/boxes",
-        "method": "GET",
-        "headers": {
-          "Authorization": "Bearer fixture-only"
-        },
-        "query": {
-          "limit": 2,
-          "cursor": "cursor/+=",
-          "sort": "asc",
-          "state": "state_with-hyphen"
-        }
-      },
-      "responseModel": "BoxListResponse",
-      "response": {
-        "ok": true,
-        "type": "box.list",
-        "boxes": [
-          {
-            "id": "bx_23456789",
-            "name": "name_with-hyphen",
-            "state": "idle",
-            "type": "small",
-            "vcpu": 2,
-            "memoryGB": 2,
-            "billingMultiplier": 2,
-            "url": "https://example.test/path?token=fixture-secret",
-            "ip": "ip_with-hyphen",
-            "createdAt": "2026-09-07T00:00:00.000Z",
-            "updatedAt": "2026-09-07T00:00:00.000Z",
-            "archiveAfter": "2026-09-07T00:00:00.000Z",
-            "desktopAvailable": true,
-            "desktopUrl": "desktopUrl_with-hyphen",
-            "snapshotAvailable": true,
-            "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
-            "subdomain": "subdomain_with-hyphen",
-            "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
-            "lastSnapshotStatus": "queued",
-            "setupStatus": "pending",
-            "setupError": "setupError_with-hyphen",
-            "environment": "environment_with-hyphen",
-            "environmentVersion": 2
-          }
-        ],
-        "pageInfo": {
-          "nextCursor": "nextCursor_with-hyphen",
-          "hasMore": true,
-          "limit": 2
-        }
-      },
-      "expectedResponse": {
-        "ok": true,
-        "type": "box.list",
-        "boxes": [
-          {
-            "id": "bx_23456789",
-            "name": "name_with-hyphen",
-            "state": "idle",
-            "type": "small",
-            "vcpu": 2,
-            "memoryGB": 2,
-            "billingMultiplier": 2,
-            "url": "https://example.test/path?token=fixture-secret",
-            "ip": "ip_with-hyphen",
-            "createdAt": "2026-09-07T00:00:00.000Z",
-            "updatedAt": "2026-09-07T00:00:00.000Z",
-            "archiveAfter": "2026-09-07T00:00:00.000Z",
-            "desktopAvailable": true,
-            "desktopUrl": "desktopUrl_with-hyphen",
-            "snapshotAvailable": true,
-            "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
-            "subdomain": "subdomain_with-hyphen",
-            "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
-            "lastSnapshotStatus": "queued",
-            "setupStatus": "pending",
-            "setupError": "setupError_with-hyphen",
-            "environment": "environment_with-hyphen",
-            "environmentVersion": 2
-          }
-        ],
-        "pageInfo": {
-          "nextCursor": "nextCursor_with-hyphen",
-          "hasMore": true,
-          "limit": 2
-        }
-      },
-      "minimalResponse": {
-        "ok": true,
-        "type": "box.list",
-        "boxes": [
-          {
-            "id": "bx_23456789",
-            "name": "name_with-hyphen",
-            "state": "idle",
-            "desktopAvailable": true,
-            "snapshotAvailable": true
-          }
-        ]
-      },
-      "minimalParameters": {},
-      "minimalRequest": {
-        "path": "/boxes",
-        "method": "GET",
-        "headers": {
-          "Authorization": "Bearer fixture-only"
-        },
-        "query": {}
-      }
-    },
-    {
       "operation": "command",
       "parameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "commandRequest": {
           "command": "command_with-hyphen",
           "cwd": "cwd_with-hyphen",
           "timeoutSeconds": 2,
-          "detached": false
+          "detached": false,
+          "stream": false
         }
       },
       "request": {
-        "path": "/boxes/bx_23456789/commands",
+        "path": "/sandboxes/bx_23456789/commands",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -438,7 +448,8 @@
           "command": "command_with-hyphen",
           "cwd": "cwd_with-hyphen",
           "timeoutSeconds": 2,
-          "detached": false
+          "detached": false,
+          "stream": false
         }
       },
       "responseModel": "Command200Response",
@@ -446,8 +457,10 @@
         "ok": true,
         "type": "command.finished",
         "success": true,
+        "commandId": "commandId_with-hyphen",
         "exitCode": 2,
         "signal": "signal_with-hyphen",
+        "oomKilled": true,
         "stdout": "stdout_with-hyphen",
         "stderr": "stderr_with-hyphen",
         "stdoutTruncated": true,
@@ -461,8 +474,10 @@
         "ok": true,
         "type": "command.finished",
         "success": true,
+        "commandId": "commandId_with-hyphen",
         "exitCode": 2,
         "signal": "signal_with-hyphen",
+        "oomKilled": true,
         "stdout": "stdout_with-hyphen",
         "stderr": "stderr_with-hyphen",
         "stdoutTruncated": true,
@@ -482,13 +497,13 @@
         "timedOut": true
       },
       "minimalParameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "commandRequest": {
           "command": "command_with-hyphen"
         }
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789/commands",
+        "path": "/sandboxes/bx_23456789/commands",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -503,18 +518,22 @@
     {
       "operation": "commandStatus",
       "parameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "processId": 2,
-        "tailBytes": 2
+        "tailBytes": 2,
+        "stdoutOffset": 2,
+        "stderrOffset": 2
       },
       "request": {
-        "path": "/boxes/bx_23456789/commands/2",
+        "path": "/sandboxes/bx_23456789/commands/2",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer fixture-only"
         },
         "query": {
-          "tailBytes": 2
+          "tailBytes": 2,
+          "stdoutOffset": 2,
+          "stderrOffset": 2
         }
       },
       "responseModel": "CommandStatusResponse",
@@ -529,6 +548,7 @@
         "running": true,
         "exitCode": 2,
         "signal": "signal_with-hyphen",
+        "oomKilled": true,
         "command": "command_with-hyphen",
         "cwd": "cwd_with-hyphen",
         "startedAt": "2026-09-07T00:00:00.000Z",
@@ -538,7 +558,12 @@
         "stdoutTruncated": true,
         "stderrTruncated": true,
         "logPath": "logPath_with-hyphen",
-        "errLogPath": "errLogPath_with-hyphen"
+        "errLogPath": "errLogPath_with-hyphen",
+        "stdoutOffset": 2,
+        "stderrOffset": 2,
+        "stdoutNextOffset": 2,
+        "stderrNextOffset": 2,
+        "more": true
       },
       "expectedResponse": {
         "ok": true,
@@ -551,6 +576,7 @@
         "running": true,
         "exitCode": 2,
         "signal": "signal_with-hyphen",
+        "oomKilled": true,
         "command": "command_with-hyphen",
         "cwd": "cwd_with-hyphen",
         "startedAt": "2026-09-07T00:00:00.000Z",
@@ -560,7 +586,12 @@
         "stdoutTruncated": true,
         "stderrTruncated": true,
         "logPath": "logPath_with-hyphen",
-        "errLogPath": "errLogPath_with-hyphen"
+        "errLogPath": "errLogPath_with-hyphen",
+        "stdoutOffset": 2,
+        "stderrOffset": 2,
+        "stdoutNextOffset": 2,
+        "stderrNextOffset": 2,
+        "more": true
       },
       "minimalResponse": {
         "ok": true,
@@ -574,11 +605,11 @@
         "stderr": "stderr_with-hyphen"
       },
       "minimalParameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "processId": 2
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789/commands/2",
+        "path": "/sandboxes/bx_23456789/commands/2",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer fixture-only"
@@ -591,8 +622,8 @@
       "parameters": {
         "idempotencyKey": "idempotencyKey_with-hyphen",
         "org": "org_with-hyphen",
-        "xBoxOrg": "xBoxOrg_with-hyphen",
-        "createBoxRequest": {
+        "xBoatOrg": "xBoatOrg_with-hyphen",
+        "createSandboxRequest": {
           "type": "small",
           "ttlSeconds": 2,
           "env": {
@@ -600,6 +631,9 @@
           },
           "environment": "environment_with-hyphen",
           "noEnv": true,
+          "snapshots": true,
+          "monitoring": true,
+          "failFast": true,
           "setupScript": "setupScript_with-hyphen",
           "org": "org_with-hyphen",
           "teamId": "teamId_with-hyphen",
@@ -607,12 +641,12 @@
         }
       },
       "request": {
-        "path": "/boxes",
+        "path": "/sandboxes",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
           "Idempotency-Key": "idempotencyKey_with-hyphen",
-          "X-Box-Org": "xBoxOrg_with-hyphen",
+          "X-Boat-Org": "xBoatOrg_with-hyphen",
           "Authorization": "Bearer fixture-only"
         },
         "query": {
@@ -626,81 +660,142 @@
           },
           "environment": "environment_with-hyphen",
           "noEnv": true,
+          "snapshots": true,
+          "monitoring": true,
+          "failFast": true,
           "setupScript": "setupScript_with-hyphen",
           "org": "org_with-hyphen",
           "teamId": "teamId_with-hyphen",
           "from": "from_with-hyphen"
         }
       },
-      "responseModel": "CreateBoxResponse",
+      "responseModel": "CreateSandboxResponse",
       "response": {
         "ok": true,
-        "type": "box.created",
+        "type": "sandbox.created",
         "status": "provisioning",
         "ttlSeconds": 2,
-        "box": {
+        "sandbox": {
           "id": "bx_23456789",
           "name": "name_with-hyphen",
           "state": "idle",
+          "error": "error_with-hyphen",
+          "health": "ok",
+          "healthReason": "healthReason_with-hyphen",
+          "degradedSince": "2026-09-07T00:00:00.000Z",
+          "hydrated": true,
+          "hydratedAt": "2026-09-07T00:00:00.000Z",
           "type": "small",
           "vcpu": 2,
           "memoryGB": 2,
           "billingMultiplier": 2,
+          "machineProvider": "hetzner",
           "url": "https://example.test/path?token=fixture-secret",
           "ip": "ip_with-hyphen",
+          "sshEndpoint": "sshEndpoint_with-hyphen",
           "createdAt": "2026-09-07T00:00:00.000Z",
           "updatedAt": "2026-09-07T00:00:00.000Z",
           "archiveAfter": "2026-09-07T00:00:00.000Z",
           "desktopAvailable": true,
           "desktopUrl": "desktopUrl_with-hyphen",
+          "snapshots": true,
+          "monitoring": true,
           "snapshotAvailable": true,
           "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
+          "snapshotVerifiedAt": "2026-09-07T00:00:00.000Z",
+          "team": {
+            "id": "id_with-hyphen",
+            "name": "name_with-hyphen"
+          },
+          "createdBy": "createdBy_with-hyphen",
+          "createdById": "createdById_with-hyphen",
+          "access": "owner",
+          "holdsCreatorLogins": true,
+          "wipePendingUntilRestart": true,
           "subdomain": "subdomain_with-hyphen",
           "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
           "lastSnapshotStatus": "queued",
           "setupStatus": "pending",
           "setupError": "setupError_with-hyphen",
           "environment": "environment_with-hyphen",
-          "environmentVersion": 2
-        }
+          "environmentVersion": 2,
+          "stop": {
+            "id": "id_with-hyphen",
+            "status": "pending",
+            "requestedAt": "2026-09-07T00:00:00.000Z",
+            "lastAttemptAt": "2026-09-07T00:00:00.000Z",
+            "error": "error_with-hyphen",
+            "endedAt": "2026-09-07T00:00:00.000Z"
+          }
+        },
+        "giftLimitNotice": "giftLimitNotice_with-hyphen"
       },
       "expectedResponse": {
         "ok": true,
-        "type": "box.created",
+        "type": "sandbox.created",
         "status": "provisioning",
         "ttlSeconds": 2,
-        "box": {
+        "sandbox": {
           "id": "bx_23456789",
           "name": "name_with-hyphen",
           "state": "idle",
+          "error": "error_with-hyphen",
+          "health": "ok",
+          "healthReason": "healthReason_with-hyphen",
+          "degradedSince": "2026-09-07T00:00:00.000Z",
+          "hydrated": true,
+          "hydratedAt": "2026-09-07T00:00:00.000Z",
           "type": "small",
           "vcpu": 2,
           "memoryGB": 2,
           "billingMultiplier": 2,
+          "machineProvider": "hetzner",
           "url": "https://example.test/path?token=fixture-secret",
           "ip": "ip_with-hyphen",
+          "sshEndpoint": "sshEndpoint_with-hyphen",
           "createdAt": "2026-09-07T00:00:00.000Z",
           "updatedAt": "2026-09-07T00:00:00.000Z",
           "archiveAfter": "2026-09-07T00:00:00.000Z",
           "desktopAvailable": true,
           "desktopUrl": "desktopUrl_with-hyphen",
+          "snapshots": true,
+          "monitoring": true,
           "snapshotAvailable": true,
           "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
+          "snapshotVerifiedAt": "2026-09-07T00:00:00.000Z",
+          "team": {
+            "id": "id_with-hyphen",
+            "name": "name_with-hyphen"
+          },
+          "createdBy": "createdBy_with-hyphen",
+          "createdById": "createdById_with-hyphen",
+          "access": "owner",
+          "holdsCreatorLogins": true,
+          "wipePendingUntilRestart": true,
           "subdomain": "subdomain_with-hyphen",
           "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
           "lastSnapshotStatus": "queued",
           "setupStatus": "pending",
           "setupError": "setupError_with-hyphen",
           "environment": "environment_with-hyphen",
-          "environmentVersion": 2
-        }
+          "environmentVersion": 2,
+          "stop": {
+            "id": "id_with-hyphen",
+            "status": "pending",
+            "requestedAt": "2026-09-07T00:00:00.000Z",
+            "lastAttemptAt": "2026-09-07T00:00:00.000Z",
+            "error": "error_with-hyphen",
+            "endedAt": "2026-09-07T00:00:00.000Z"
+          }
+        },
+        "giftLimitNotice": "giftLimitNotice_with-hyphen"
       },
       "minimalResponse": {
         "ok": true,
-        "type": "box.created",
+        "type": "sandbox.created",
         "status": "provisioning",
         "ttlSeconds": null,
-        "box": {
+        "sandbox": {
           "id": "bx_23456789",
           "name": "name_with-hyphen",
           "state": "idle",
@@ -710,7 +805,7 @@
       },
       "minimalParameters": {},
       "minimalRequest": {
-        "path": "/boxes",
+        "path": "/sandboxes",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -722,9 +817,10 @@
     {
       "operation": "createEnvironment",
       "parameters": {
-        "createBoxEnvironmentRequest": {
+        "createSandboxEnvironmentRequest": {
           "name": "name_with-hyphen"
-        }
+        },
+        "org": "org_with-hyphen"
       },
       "request": {
         "path": "/environments",
@@ -733,24 +829,32 @@
           "Content-Type": "application/json",
           "Authorization": "Bearer fixture-only"
         },
-        "query": {},
+        "query": {
+          "org": "org_with-hyphen"
+        },
         "body": {
           "name": "name_with-hyphen"
         }
       },
-      "responseModel": "BoxEnvironmentListResponse",
+      "responseModel": "SandboxEnvironmentListResponse",
       "response": {
+        "ok": true,
+        "type": "environments.list",
         "environments": [
           {
             "id": "id_with-hyphen",
             "name": "name_with-hyphen",
             "isDefault": true,
             "latestVersionId": "latestVersionId_with-hyphen",
+            "latestVersionNumber": 2,
+            "safetyAnsweredAt": "2026-09-07T00:00:00.000Z",
             "safeForThirdParties": true,
             "passGithub": true,
             "passSecrets": true,
-            "passBoxCredentials": true,
+            "passSandboxCredentials": true,
             "passAgentsCredentials": true,
+            "credentialProfileId": "credentialProfileId_with-hyphen",
+            "proxyAiCredentials": true,
             "envContents": "envContents_with-hyphen",
             "secretFiles": [
               {
@@ -764,9 +868,12 @@
                 "databaseId": "databaseId_with-hyphen",
                 "name": "name_with-hyphen",
                 "fullName": "fullName_with-hyphen",
+                "description": "description_with-hyphen",
+                "url": "https://example.test/path?token=fixture-secret",
                 "private": true,
                 "permissions": "permissions_with-hyphen",
                 "pushedAt": "2026-09-07T00:00:00.000Z",
+                "lastUserCommitAt": "2026-09-07T00:00:00.000Z",
                 "baseBranch": "baseBranch_with-hyphen",
                 "setupRoutineId": "setupRoutineId_with-hyphen",
                 "setupScript": "setupScript_with-hyphen",
@@ -777,7 +884,7 @@
               {
                 "id": "id_with-hyphen",
                 "versionNumber": 2,
-                "boxCount": 2,
+                "sandboxCount": 2,
                 "createdAt": "2026-09-07T00:00:00.000Z"
               }
             ]
@@ -785,17 +892,23 @@
         ]
       },
       "expectedResponse": {
+        "ok": true,
+        "type": "environments.list",
         "environments": [
           {
             "id": "id_with-hyphen",
             "name": "name_with-hyphen",
             "isDefault": true,
             "latestVersionId": "latestVersionId_with-hyphen",
+            "latestVersionNumber": 2,
+            "safetyAnsweredAt": "2026-09-07T00:00:00.000Z",
             "safeForThirdParties": true,
             "passGithub": true,
             "passSecrets": true,
-            "passBoxCredentials": true,
+            "passSandboxCredentials": true,
             "passAgentsCredentials": true,
+            "credentialProfileId": "credentialProfileId_with-hyphen",
+            "proxyAiCredentials": true,
             "envContents": "envContents_with-hyphen",
             "secretFiles": [
               {
@@ -809,9 +922,12 @@
                 "databaseId": "databaseId_with-hyphen",
                 "name": "name_with-hyphen",
                 "fullName": "fullName_with-hyphen",
+                "description": "description_with-hyphen",
+                "url": "https://example.test/path?token=fixture-secret",
                 "private": true,
                 "permissions": "permissions_with-hyphen",
                 "pushedAt": "2026-09-07T00:00:00.000Z",
+                "lastUserCommitAt": "2026-09-07T00:00:00.000Z",
                 "baseBranch": "baseBranch_with-hyphen",
                 "setupRoutineId": "setupRoutineId_with-hyphen",
                 "setupScript": "setupScript_with-hyphen",
@@ -822,7 +938,7 @@
               {
                 "id": "id_with-hyphen",
                 "versionNumber": 2,
-                "boxCount": 2,
+                "sandboxCount": 2,
                 "createdAt": "2026-09-07T00:00:00.000Z"
               }
             ]
@@ -839,7 +955,7 @@
             "safeForThirdParties": true,
             "passGithub": true,
             "passSecrets": true,
-            "passBoxCredentials": true,
+            "passSandboxCredentials": true,
             "passAgentsCredentials": true,
             "envContents": "envContents_with-hyphen",
             "secretFiles": [
@@ -852,7 +968,7 @@
               {
                 "id": "id_with-hyphen",
                 "versionNumber": 2,
-                "boxCount": 2,
+                "sandboxCount": 2,
                 "createdAt": "2026-09-07T00:00:00.000Z"
               }
             ]
@@ -860,7 +976,7 @@
         ]
       },
       "minimalParameters": {
-        "createBoxEnvironmentRequest": {
+        "createSandboxEnvironmentRequest": {
           "name": "name_with-hyphen"
         }
       },
@@ -975,81 +1091,10 @@
       }
     },
     {
-      "operation": "deleteBox",
-      "parameters": {
-        "xAsciiConfirmDelete": "bx_23456789",
-        "boxId": "bx_23456789"
-      },
-      "request": {
-        "path": "/boxes/bx_23456789",
-        "method": "DELETE",
-        "headers": {
-          "X-Ascii-Confirm-Delete": "bx_23456789",
-          "Authorization": "Bearer fixture-only"
-        },
-        "query": {}
-      },
-      "responseModel": "DeletionOperationResponse",
-      "response": {
-        "ok": true,
-        "type": "deletion.operation",
-        "operation": {
-          "id": "id_with-hyphen",
-          "kind": "box",
-          "targetId": "targetId_with-hyphen",
-          "reason": "explicit",
-          "status": "pending",
-          "attemptCount": 2,
-          "requestedAt": "2026-09-07T00:00:00.000Z",
-          "completedAt": "2026-09-07T00:00:00.000Z"
-        }
-      },
-      "expectedResponse": {
-        "ok": true,
-        "type": "deletion.operation",
-        "operation": {
-          "id": "id_with-hyphen",
-          "kind": "box",
-          "targetId": "targetId_with-hyphen",
-          "reason": "explicit",
-          "status": "pending",
-          "attemptCount": 2,
-          "requestedAt": "2026-09-07T00:00:00.000Z",
-          "completedAt": "2026-09-07T00:00:00.000Z"
-        }
-      },
-      "minimalResponse": {
-        "ok": true,
-        "type": "deletion.operation",
-        "operation": {
-          "id": "id_with-hyphen",
-          "kind": "box",
-          "targetId": "targetId_with-hyphen",
-          "reason": "explicit",
-          "status": "pending",
-          "attemptCount": 2,
-          "requestedAt": "2026-09-07T00:00:00.000Z",
-          "completedAt": null
-        }
-      },
-      "minimalParameters": {
-        "xAsciiConfirmDelete": "bx_23456789",
-        "boxId": "bx_23456789"
-      },
-      "minimalRequest": {
-        "path": "/boxes/bx_23456789",
-        "method": "DELETE",
-        "headers": {
-          "X-Ascii-Confirm-Delete": "bx_23456789",
-          "Authorization": "Bearer fixture-only"
-        },
-        "query": {}
-      }
-    },
-    {
       "operation": "deleteEnvironment",
       "parameters": {
-        "environmentId": "environmentId_with-hyphen"
+        "environmentId": "environmentId_with-hyphen",
+        "org": "org_with-hyphen"
       },
       "request": {
         "path": "/environments/environmentId_with-hyphen",
@@ -1057,9 +1102,11 @@
         "headers": {
           "Authorization": "Bearer fixture-only"
         },
-        "query": {}
+        "query": {
+          "org": "org_with-hyphen"
+        }
       },
-      "responseModel": "BoxEnvironmentResponse",
+      "responseModel": "SandboxEnvironmentResponse",
       "response": {
         "success": true,
         "environment": {
@@ -1067,11 +1114,15 @@
           "name": "name_with-hyphen",
           "isDefault": true,
           "latestVersionId": "latestVersionId_with-hyphen",
+          "latestVersionNumber": 2,
+          "safetyAnsweredAt": "2026-09-07T00:00:00.000Z",
           "safeForThirdParties": true,
           "passGithub": true,
           "passSecrets": true,
-          "passBoxCredentials": true,
+          "passSandboxCredentials": true,
           "passAgentsCredentials": true,
+          "credentialProfileId": "credentialProfileId_with-hyphen",
+          "proxyAiCredentials": true,
           "envContents": "envContents_with-hyphen",
           "secretFiles": [
             {
@@ -1085,9 +1136,12 @@
               "databaseId": "databaseId_with-hyphen",
               "name": "name_with-hyphen",
               "fullName": "fullName_with-hyphen",
+              "description": "description_with-hyphen",
+              "url": "https://example.test/path?token=fixture-secret",
               "private": true,
               "permissions": "permissions_with-hyphen",
               "pushedAt": "2026-09-07T00:00:00.000Z",
+              "lastUserCommitAt": "2026-09-07T00:00:00.000Z",
               "baseBranch": "baseBranch_with-hyphen",
               "setupRoutineId": "setupRoutineId_with-hyphen",
               "setupScript": "setupScript_with-hyphen",
@@ -1098,7 +1152,7 @@
             {
               "id": "id_with-hyphen",
               "versionNumber": 2,
-              "boxCount": 2,
+              "sandboxCount": 2,
               "createdAt": "2026-09-07T00:00:00.000Z"
             }
           ]
@@ -1111,11 +1165,15 @@
           "name": "name_with-hyphen",
           "isDefault": true,
           "latestVersionId": "latestVersionId_with-hyphen",
+          "latestVersionNumber": 2,
+          "safetyAnsweredAt": "2026-09-07T00:00:00.000Z",
           "safeForThirdParties": true,
           "passGithub": true,
           "passSecrets": true,
-          "passBoxCredentials": true,
+          "passSandboxCredentials": true,
           "passAgentsCredentials": true,
+          "credentialProfileId": "credentialProfileId_with-hyphen",
+          "proxyAiCredentials": true,
           "envContents": "envContents_with-hyphen",
           "secretFiles": [
             {
@@ -1129,9 +1187,12 @@
               "databaseId": "databaseId_with-hyphen",
               "name": "name_with-hyphen",
               "fullName": "fullName_with-hyphen",
+              "description": "description_with-hyphen",
+              "url": "https://example.test/path?token=fixture-secret",
               "private": true,
               "permissions": "permissions_with-hyphen",
               "pushedAt": "2026-09-07T00:00:00.000Z",
+              "lastUserCommitAt": "2026-09-07T00:00:00.000Z",
               "baseBranch": "baseBranch_with-hyphen",
               "setupRoutineId": "setupRoutineId_with-hyphen",
               "setupScript": "setupScript_with-hyphen",
@@ -1142,7 +1203,7 @@
             {
               "id": "id_with-hyphen",
               "versionNumber": 2,
-              "boxCount": 2,
+              "sandboxCount": 2,
               "createdAt": "2026-09-07T00:00:00.000Z"
             }
           ]
@@ -1167,7 +1228,8 @@
       "operation": "deleteEnvironmentRepo",
       "parameters": {
         "environmentId": "environmentId_with-hyphen",
-        "repositoryId": "repositoryId_with-hyphen"
+        "repositoryId": "repositoryId_with-hyphen",
+        "org": "org_with-hyphen"
       },
       "request": {
         "path": "/environments/environmentId_with-hyphen/repos/repositoryId_with-hyphen",
@@ -1175,7 +1237,9 @@
         "headers": {
           "Authorization": "Bearer fixture-only"
         },
-        "query": {}
+        "query": {
+          "org": "org_with-hyphen"
+        }
       },
       "responseModel": "EnvironmentItemChangeResponse",
       "response": {
@@ -1208,7 +1272,8 @@
       "operation": "deleteEnvironmentSecretFile",
       "parameters": {
         "path": "/home/user/fixture a?#.txt",
-        "environmentId": "environmentId_with-hyphen"
+        "environmentId": "environmentId_with-hyphen",
+        "org": "org_with-hyphen"
       },
       "request": {
         "path": "/environments/environmentId_with-hyphen/secret-files",
@@ -1217,7 +1282,8 @@
           "Authorization": "Bearer fixture-only"
         },
         "query": {
-          "path": "/home/user/fixture a?#.txt"
+          "path": "/home/user/fixture a?#.txt",
+          "org": "org_with-hyphen"
         }
       },
       "responseModel": "EnvironmentItemChangeResponse",
@@ -1253,7 +1319,8 @@
       "operation": "deleteEnvironmentVar",
       "parameters": {
         "environmentId": "environmentId_with-hyphen",
-        "key": "KEY_WITH-HYPHEN"
+        "key": "KEY_WITH-HYPHEN",
+        "org": "org_with-hyphen"
       },
       "request": {
         "path": "/environments/environmentId_with-hyphen/vars/KEY_WITH-HYPHEN",
@@ -1261,7 +1328,9 @@
         "headers": {
           "Authorization": "Bearer fixture-only"
         },
-        "query": {}
+        "query": {
+          "org": "org_with-hyphen"
+        }
       },
       "responseModel": "EnvironmentItemChangeResponse",
       "response": {
@@ -1335,6 +1404,82 @@
       }
     },
     {
+      "operation": "deleteSandbox",
+      "parameters": {
+        "xAsciiConfirmDelete": "bx_23456789",
+        "sandboxId": "bx_23456789"
+      },
+      "request": {
+        "path": "/sandboxes/bx_23456789",
+        "method": "DELETE",
+        "headers": {
+          "X-Ascii-Confirm-Delete": "bx_23456789",
+          "Authorization": "Bearer fixture-only"
+        },
+        "query": {}
+      },
+      "responseModel": "DeletionOperationResponse",
+      "response": {
+        "ok": true,
+        "type": "deletion.operation",
+        "operation": {
+          "id": "id_with-hyphen",
+          "kind": "sandbox",
+          "targetId": "targetId_with-hyphen",
+          "reason": "explicit",
+          "status": "pending",
+          "stage": "removing",
+          "expectedBy": "2026-09-07T00:00:00.000Z",
+          "attemptCount": 2,
+          "requestedAt": "2026-09-07T00:00:00.000Z",
+          "completedAt": "2026-09-07T00:00:00.000Z"
+        }
+      },
+      "expectedResponse": {
+        "ok": true,
+        "type": "deletion.operation",
+        "operation": {
+          "id": "id_with-hyphen",
+          "kind": "sandbox",
+          "targetId": "targetId_with-hyphen",
+          "reason": "explicit",
+          "status": "pending",
+          "stage": "removing",
+          "expectedBy": "2026-09-07T00:00:00.000Z",
+          "attemptCount": 2,
+          "requestedAt": "2026-09-07T00:00:00.000Z",
+          "completedAt": "2026-09-07T00:00:00.000Z"
+        }
+      },
+      "minimalResponse": {
+        "ok": true,
+        "type": "deletion.operation",
+        "operation": {
+          "id": "id_with-hyphen",
+          "kind": "sandbox",
+          "targetId": "targetId_with-hyphen",
+          "reason": "explicit",
+          "status": "pending",
+          "attemptCount": 2,
+          "requestedAt": "2026-09-07T00:00:00.000Z",
+          "completedAt": null
+        }
+      },
+      "minimalParameters": {
+        "xAsciiConfirmDelete": "bx_23456789",
+        "sandboxId": "bx_23456789"
+      },
+      "minimalRequest": {
+        "path": "/sandboxes/bx_23456789",
+        "method": "DELETE",
+        "headers": {
+          "X-Ascii-Confirm-Delete": "bx_23456789",
+          "Authorization": "Bearer fixture-only"
+        },
+        "query": {}
+      }
+    },
+    {
       "operation": "deleteSnapshot",
       "parameters": {
         "snapshotId": "snapshotId_with-hyphen",
@@ -1355,10 +1500,12 @@
         "type": "deletion.operation",
         "operation": {
           "id": "id_with-hyphen",
-          "kind": "box",
+          "kind": "sandbox",
           "targetId": "targetId_with-hyphen",
           "reason": "explicit",
           "status": "pending",
+          "stage": "removing",
+          "expectedBy": "2026-09-07T00:00:00.000Z",
           "attemptCount": 2,
           "requestedAt": "2026-09-07T00:00:00.000Z",
           "completedAt": "2026-09-07T00:00:00.000Z"
@@ -1369,10 +1516,12 @@
         "type": "deletion.operation",
         "operation": {
           "id": "id_with-hyphen",
-          "kind": "box",
+          "kind": "sandbox",
           "targetId": "targetId_with-hyphen",
           "reason": "explicit",
           "status": "pending",
+          "stage": "removing",
+          "expectedBy": "2026-09-07T00:00:00.000Z",
           "attemptCount": 2,
           "requestedAt": "2026-09-07T00:00:00.000Z",
           "completedAt": "2026-09-07T00:00:00.000Z"
@@ -1383,7 +1532,7 @@
         "type": "deletion.operation",
         "operation": {
           "id": "id_with-hyphen",
-          "kind": "box",
+          "kind": "sandbox",
           "targetId": "targetId_with-hyphen",
           "reason": "explicit",
           "status": "pending",
@@ -1450,7 +1599,7 @@
     {
       "operation": "desktop",
       "parameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "vnc": 1,
         "theme": "light",
         "desktopRequest": {
@@ -1458,7 +1607,7 @@
         }
       },
       "request": {
-        "path": "/boxes/bx_23456789/desktop",
+        "path": "/sandboxes/bx_23456789/desktop",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -1498,10 +1647,10 @@
         "type": "type_with-hyphen"
       },
       "minimalParameters": {
-        "boxId": "bx_23456789"
+        "sandboxId": "bx_23456789"
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789/desktop",
+        "path": "/sandboxes/bx_23456789/desktop",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -1512,28 +1661,38 @@
     },
     {
       "operation": "environments",
-      "parameters": {},
+      "parameters": {
+        "org": "org_with-hyphen"
+      },
       "request": {
         "path": "/environments",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer fixture-only"
         },
-        "query": {}
+        "query": {
+          "org": "org_with-hyphen"
+        }
       },
-      "responseModel": "BoxEnvironmentListResponse",
+      "responseModel": "SandboxEnvironmentListResponse",
       "response": {
+        "ok": true,
+        "type": "environments.list",
         "environments": [
           {
             "id": "id_with-hyphen",
             "name": "name_with-hyphen",
             "isDefault": true,
             "latestVersionId": "latestVersionId_with-hyphen",
+            "latestVersionNumber": 2,
+            "safetyAnsweredAt": "2026-09-07T00:00:00.000Z",
             "safeForThirdParties": true,
             "passGithub": true,
             "passSecrets": true,
-            "passBoxCredentials": true,
+            "passSandboxCredentials": true,
             "passAgentsCredentials": true,
+            "credentialProfileId": "credentialProfileId_with-hyphen",
+            "proxyAiCredentials": true,
             "envContents": "envContents_with-hyphen",
             "secretFiles": [
               {
@@ -1547,9 +1706,12 @@
                 "databaseId": "databaseId_with-hyphen",
                 "name": "name_with-hyphen",
                 "fullName": "fullName_with-hyphen",
+                "description": "description_with-hyphen",
+                "url": "https://example.test/path?token=fixture-secret",
                 "private": true,
                 "permissions": "permissions_with-hyphen",
                 "pushedAt": "2026-09-07T00:00:00.000Z",
+                "lastUserCommitAt": "2026-09-07T00:00:00.000Z",
                 "baseBranch": "baseBranch_with-hyphen",
                 "setupRoutineId": "setupRoutineId_with-hyphen",
                 "setupScript": "setupScript_with-hyphen",
@@ -1560,7 +1722,7 @@
               {
                 "id": "id_with-hyphen",
                 "versionNumber": 2,
-                "boxCount": 2,
+                "sandboxCount": 2,
                 "createdAt": "2026-09-07T00:00:00.000Z"
               }
             ]
@@ -1568,17 +1730,23 @@
         ]
       },
       "expectedResponse": {
+        "ok": true,
+        "type": "environments.list",
         "environments": [
           {
             "id": "id_with-hyphen",
             "name": "name_with-hyphen",
             "isDefault": true,
             "latestVersionId": "latestVersionId_with-hyphen",
+            "latestVersionNumber": 2,
+            "safetyAnsweredAt": "2026-09-07T00:00:00.000Z",
             "safeForThirdParties": true,
             "passGithub": true,
             "passSecrets": true,
-            "passBoxCredentials": true,
+            "passSandboxCredentials": true,
             "passAgentsCredentials": true,
+            "credentialProfileId": "credentialProfileId_with-hyphen",
+            "proxyAiCredentials": true,
             "envContents": "envContents_with-hyphen",
             "secretFiles": [
               {
@@ -1592,9 +1760,12 @@
                 "databaseId": "databaseId_with-hyphen",
                 "name": "name_with-hyphen",
                 "fullName": "fullName_with-hyphen",
+                "description": "description_with-hyphen",
+                "url": "https://example.test/path?token=fixture-secret",
                 "private": true,
                 "permissions": "permissions_with-hyphen",
                 "pushedAt": "2026-09-07T00:00:00.000Z",
+                "lastUserCommitAt": "2026-09-07T00:00:00.000Z",
                 "baseBranch": "baseBranch_with-hyphen",
                 "setupRoutineId": "setupRoutineId_with-hyphen",
                 "setupScript": "setupScript_with-hyphen",
@@ -1605,7 +1776,7 @@
               {
                 "id": "id_with-hyphen",
                 "versionNumber": 2,
-                "boxCount": 2,
+                "sandboxCount": 2,
                 "createdAt": "2026-09-07T00:00:00.000Z"
               }
             ]
@@ -1622,7 +1793,7 @@
             "safeForThirdParties": true,
             "passGithub": true,
             "passSecrets": true,
-            "passBoxCredentials": true,
+            "passSandboxCredentials": true,
             "passAgentsCredentials": true,
             "envContents": "envContents_with-hyphen",
             "secretFiles": [
@@ -1635,7 +1806,7 @@
               {
                 "id": "id_with-hyphen",
                 "versionNumber": 2,
-                "boxCount": 2,
+                "sandboxCount": 2,
                 "createdAt": "2026-09-07T00:00:00.000Z"
               }
             ]
@@ -1655,14 +1826,15 @@
     {
       "operation": "events",
       "parameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "limit": 2,
         "cursor": "cursor/+=",
         "sort": "asc",
-        "type": "type_with-hyphen"
+        "type": "type_with-hyphen",
+        "conversation": "conversation_with-hyphen"
       },
       "request": {
-        "path": "/boxes/bx_23456789/events",
+        "path": "/sandboxes/bx_23456789/events",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer fixture-only"
@@ -1671,7 +1843,8 @@
           "limit": 2,
           "cursor": "cursor/+=",
           "sort": "asc",
-          "type": "type_with-hyphen"
+          "type": "type_with-hyphen",
+          "conversation": "conversation_with-hyphen"
         }
       },
       "responseModel": "EventsResponse",
@@ -1685,6 +1858,7 @@
             "type": "response",
             "timestamp": 1000,
             "taskId": "prompt_with-hyphen",
+            "conversationId": "conversationId_with-hyphen",
             "data": {
               "fixture": "fixture-secret"
             }
@@ -1706,6 +1880,7 @@
             "type": "response",
             "timestamp": 1000,
             "taskId": "prompt_with-hyphen",
+            "conversationId": "conversationId_with-hyphen",
             "data": {
               "fixture": "fixture-secret"
             }
@@ -1728,10 +1903,10 @@
         ]
       },
       "minimalParameters": {
-        "boxId": "bx_23456789"
+        "sandboxId": "bx_23456789"
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789/events",
+        "path": "/sandboxes/bx_23456789/events",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer fixture-only"
@@ -1742,9 +1917,11 @@
     {
       "operation": "fork",
       "parameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "idempotencyKey": "idempotencyKey_with-hyphen",
         "forkRequest": {
+          "failFast": true,
+          "monitoring": true,
           "env": {
             "fixture": "fixture-secret"
           },
@@ -1755,7 +1932,7 @@
         }
       },
       "request": {
-        "path": "/boxes/bx_23456789/fork",
+        "path": "/sandboxes/bx_23456789/fork",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -1764,6 +1941,8 @@
         },
         "query": {},
         "body": {
+          "failFast": true,
+          "monitoring": true,
           "env": {
             "fixture": "fixture-secret"
           },
@@ -1773,68 +1952,128 @@
           "ttlSeconds": 2
         }
       },
-      "responseModel": "BoxActionResponse",
+      "responseModel": "SandboxActionResponse",
       "response": {
         "ok": true,
         "type": "type_with-hyphen",
         "id": "id_with-hyphen",
         "status": "status_with-hyphen",
-        "box": {
+        "sandbox": {
           "id": "bx_23456789",
           "name": "name_with-hyphen",
           "state": "idle",
+          "error": "error_with-hyphen",
+          "health": "ok",
+          "healthReason": "healthReason_with-hyphen",
+          "degradedSince": "2026-09-07T00:00:00.000Z",
+          "hydrated": true,
+          "hydratedAt": "2026-09-07T00:00:00.000Z",
           "type": "small",
           "vcpu": 2,
           "memoryGB": 2,
           "billingMultiplier": 2,
+          "machineProvider": "hetzner",
           "url": "https://example.test/path?token=fixture-secret",
           "ip": "ip_with-hyphen",
+          "sshEndpoint": "sshEndpoint_with-hyphen",
           "createdAt": "2026-09-07T00:00:00.000Z",
           "updatedAt": "2026-09-07T00:00:00.000Z",
           "archiveAfter": "2026-09-07T00:00:00.000Z",
           "desktopAvailable": true,
           "desktopUrl": "desktopUrl_with-hyphen",
+          "snapshots": true,
+          "monitoring": true,
           "snapshotAvailable": true,
           "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
+          "snapshotVerifiedAt": "2026-09-07T00:00:00.000Z",
+          "team": {
+            "id": "id_with-hyphen",
+            "name": "name_with-hyphen"
+          },
+          "createdBy": "createdBy_with-hyphen",
+          "createdById": "createdById_with-hyphen",
+          "access": "owner",
+          "holdsCreatorLogins": true,
+          "wipePendingUntilRestart": true,
           "subdomain": "subdomain_with-hyphen",
           "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
           "lastSnapshotStatus": "queued",
           "setupStatus": "pending",
           "setupError": "setupError_with-hyphen",
           "environment": "environment_with-hyphen",
-          "environmentVersion": 2
-        }
+          "environmentVersion": 2,
+          "stop": {
+            "id": "id_with-hyphen",
+            "status": "pending",
+            "requestedAt": "2026-09-07T00:00:00.000Z",
+            "lastAttemptAt": "2026-09-07T00:00:00.000Z",
+            "error": "error_with-hyphen",
+            "endedAt": "2026-09-07T00:00:00.000Z"
+          }
+        },
+        "giftLimitNotice": "giftLimitNotice_with-hyphen",
+        "conversationId": "conversationId_with-hyphen"
       },
       "expectedResponse": {
         "ok": true,
         "type": "type_with-hyphen",
         "id": "id_with-hyphen",
         "status": "status_with-hyphen",
-        "box": {
+        "sandbox": {
           "id": "bx_23456789",
           "name": "name_with-hyphen",
           "state": "idle",
+          "error": "error_with-hyphen",
+          "health": "ok",
+          "healthReason": "healthReason_with-hyphen",
+          "degradedSince": "2026-09-07T00:00:00.000Z",
+          "hydrated": true,
+          "hydratedAt": "2026-09-07T00:00:00.000Z",
           "type": "small",
           "vcpu": 2,
           "memoryGB": 2,
           "billingMultiplier": 2,
+          "machineProvider": "hetzner",
           "url": "https://example.test/path?token=fixture-secret",
           "ip": "ip_with-hyphen",
+          "sshEndpoint": "sshEndpoint_with-hyphen",
           "createdAt": "2026-09-07T00:00:00.000Z",
           "updatedAt": "2026-09-07T00:00:00.000Z",
           "archiveAfter": "2026-09-07T00:00:00.000Z",
           "desktopAvailable": true,
           "desktopUrl": "desktopUrl_with-hyphen",
+          "snapshots": true,
+          "monitoring": true,
           "snapshotAvailable": true,
           "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
+          "snapshotVerifiedAt": "2026-09-07T00:00:00.000Z",
+          "team": {
+            "id": "id_with-hyphen",
+            "name": "name_with-hyphen"
+          },
+          "createdBy": "createdBy_with-hyphen",
+          "createdById": "createdById_with-hyphen",
+          "access": "owner",
+          "holdsCreatorLogins": true,
+          "wipePendingUntilRestart": true,
           "subdomain": "subdomain_with-hyphen",
           "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
           "lastSnapshotStatus": "queued",
           "setupStatus": "pending",
           "setupError": "setupError_with-hyphen",
           "environment": "environment_with-hyphen",
-          "environmentVersion": 2
-        }
+          "environmentVersion": 2,
+          "stop": {
+            "id": "id_with-hyphen",
+            "status": "pending",
+            "requestedAt": "2026-09-07T00:00:00.000Z",
+            "lastAttemptAt": "2026-09-07T00:00:00.000Z",
+            "error": "error_with-hyphen",
+            "endedAt": "2026-09-07T00:00:00.000Z"
+          }
+        },
+        "giftLimitNotice": "giftLimitNotice_with-hyphen",
+        "conversationId": "conversationId_with-hyphen"
       },
       "minimalResponse": {
         "ok": true,
@@ -1843,10 +2082,10 @@
         "status": "status_with-hyphen"
       },
       "minimalParameters": {
-        "boxId": "bx_23456789"
+        "sandboxId": "bx_23456789"
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789/fork",
+        "path": "/sandboxes/bx_23456789/fork",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -1858,79 +2097,137 @@
     {
       "operation": "get",
       "parameters": {
-        "boxId": "bx_23456789"
+        "sandboxId": "bx_23456789"
       },
       "request": {
-        "path": "/boxes/bx_23456789",
+        "path": "/sandboxes/bx_23456789",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer fixture-only"
         },
         "query": {}
       },
-      "responseModel": "BoxInfoResponse",
+      "responseModel": "SandboxInfoResponse",
       "response": {
         "ok": true,
         "type": "type_with-hyphen",
-        "box": {
+        "sandbox": {
           "id": "bx_23456789",
           "name": "name_with-hyphen",
           "state": "idle",
+          "error": "error_with-hyphen",
+          "health": "ok",
+          "healthReason": "healthReason_with-hyphen",
+          "degradedSince": "2026-09-07T00:00:00.000Z",
+          "hydrated": true,
+          "hydratedAt": "2026-09-07T00:00:00.000Z",
           "type": "small",
           "vcpu": 2,
           "memoryGB": 2,
           "billingMultiplier": 2,
+          "machineProvider": "hetzner",
           "url": "https://example.test/path?token=fixture-secret",
           "ip": "ip_with-hyphen",
+          "sshEndpoint": "sshEndpoint_with-hyphen",
           "createdAt": "2026-09-07T00:00:00.000Z",
           "updatedAt": "2026-09-07T00:00:00.000Z",
           "archiveAfter": "2026-09-07T00:00:00.000Z",
           "desktopAvailable": true,
           "desktopUrl": "desktopUrl_with-hyphen",
+          "snapshots": true,
+          "monitoring": true,
           "snapshotAvailable": true,
           "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
+          "snapshotVerifiedAt": "2026-09-07T00:00:00.000Z",
+          "team": {
+            "id": "id_with-hyphen",
+            "name": "name_with-hyphen"
+          },
+          "createdBy": "createdBy_with-hyphen",
+          "createdById": "createdById_with-hyphen",
+          "access": "owner",
+          "holdsCreatorLogins": true,
+          "wipePendingUntilRestart": true,
           "subdomain": "subdomain_with-hyphen",
           "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
           "lastSnapshotStatus": "queued",
           "setupStatus": "pending",
           "setupError": "setupError_with-hyphen",
           "environment": "environment_with-hyphen",
-          "environmentVersion": 2
-        }
+          "environmentVersion": 2,
+          "stop": {
+            "id": "id_with-hyphen",
+            "status": "pending",
+            "requestedAt": "2026-09-07T00:00:00.000Z",
+            "lastAttemptAt": "2026-09-07T00:00:00.000Z",
+            "error": "error_with-hyphen",
+            "endedAt": "2026-09-07T00:00:00.000Z"
+          }
+        },
+        "giftLimitNotice": "giftLimitNotice_with-hyphen"
       },
       "expectedResponse": {
         "ok": true,
         "type": "type_with-hyphen",
-        "box": {
+        "sandbox": {
           "id": "bx_23456789",
           "name": "name_with-hyphen",
           "state": "idle",
+          "error": "error_with-hyphen",
+          "health": "ok",
+          "healthReason": "healthReason_with-hyphen",
+          "degradedSince": "2026-09-07T00:00:00.000Z",
+          "hydrated": true,
+          "hydratedAt": "2026-09-07T00:00:00.000Z",
           "type": "small",
           "vcpu": 2,
           "memoryGB": 2,
           "billingMultiplier": 2,
+          "machineProvider": "hetzner",
           "url": "https://example.test/path?token=fixture-secret",
           "ip": "ip_with-hyphen",
+          "sshEndpoint": "sshEndpoint_with-hyphen",
           "createdAt": "2026-09-07T00:00:00.000Z",
           "updatedAt": "2026-09-07T00:00:00.000Z",
           "archiveAfter": "2026-09-07T00:00:00.000Z",
           "desktopAvailable": true,
           "desktopUrl": "desktopUrl_with-hyphen",
+          "snapshots": true,
+          "monitoring": true,
           "snapshotAvailable": true,
           "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
+          "snapshotVerifiedAt": "2026-09-07T00:00:00.000Z",
+          "team": {
+            "id": "id_with-hyphen",
+            "name": "name_with-hyphen"
+          },
+          "createdBy": "createdBy_with-hyphen",
+          "createdById": "createdById_with-hyphen",
+          "access": "owner",
+          "holdsCreatorLogins": true,
+          "wipePendingUntilRestart": true,
           "subdomain": "subdomain_with-hyphen",
           "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
           "lastSnapshotStatus": "queued",
           "setupStatus": "pending",
           "setupError": "setupError_with-hyphen",
           "environment": "environment_with-hyphen",
-          "environmentVersion": 2
-        }
+          "environmentVersion": 2,
+          "stop": {
+            "id": "id_with-hyphen",
+            "status": "pending",
+            "requestedAt": "2026-09-07T00:00:00.000Z",
+            "lastAttemptAt": "2026-09-07T00:00:00.000Z",
+            "error": "error_with-hyphen",
+            "endedAt": "2026-09-07T00:00:00.000Z"
+          }
+        },
+        "giftLimitNotice": "giftLimitNotice_with-hyphen"
       },
       "minimalResponse": {
         "ok": true,
         "type": "type_with-hyphen",
-        "box": {
+        "sandbox": {
           "id": "bx_23456789",
           "name": "name_with-hyphen",
           "state": "idle",
@@ -1939,10 +2236,10 @@
         }
       },
       "minimalParameters": {
-        "boxId": "bx_23456789"
+        "sandboxId": "bx_23456789"
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789",
+        "path": "/sandboxes/bx_23456789",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer fixture-only"
@@ -1967,16 +2264,24 @@
         "type": "data_retention.info",
         "enabled": true,
         "enabledAt": "2026-09-07T00:00:00.000Z",
-        "queuedBoxes": 2,
-        "acceptedDeletionOperationsIrreversible": true
+        "queuedSandboxes": 2,
+        "acceptedDeletionOperationsIrreversible": true,
+        "snapshotsOff": true,
+        "snapshotsOffAt": "2026-09-07T00:00:00.000Z",
+        "monitoringOff": true,
+        "monitoringOffAt": "2026-09-07T00:00:00.000Z"
       },
       "expectedResponse": {
         "ok": true,
         "type": "data_retention.info",
         "enabled": true,
         "enabledAt": "2026-09-07T00:00:00.000Z",
-        "queuedBoxes": 2,
-        "acceptedDeletionOperationsIrreversible": true
+        "queuedSandboxes": 2,
+        "acceptedDeletionOperationsIrreversible": true,
+        "snapshotsOff": true,
+        "snapshotsOffAt": "2026-09-07T00:00:00.000Z",
+        "monitoringOff": true,
+        "monitoringOffAt": "2026-09-07T00:00:00.000Z"
       },
       "minimalResponse": {
         "ok": true,
@@ -2013,10 +2318,12 @@
         "type": "deletion.operation",
         "operation": {
           "id": "id_with-hyphen",
-          "kind": "box",
+          "kind": "sandbox",
           "targetId": "targetId_with-hyphen",
           "reason": "explicit",
           "status": "pending",
+          "stage": "removing",
+          "expectedBy": "2026-09-07T00:00:00.000Z",
           "attemptCount": 2,
           "requestedAt": "2026-09-07T00:00:00.000Z",
           "completedAt": "2026-09-07T00:00:00.000Z"
@@ -2027,10 +2334,12 @@
         "type": "deletion.operation",
         "operation": {
           "id": "id_with-hyphen",
-          "kind": "box",
+          "kind": "sandbox",
           "targetId": "targetId_with-hyphen",
           "reason": "explicit",
           "status": "pending",
+          "stage": "removing",
+          "expectedBy": "2026-09-07T00:00:00.000Z",
           "attemptCount": 2,
           "requestedAt": "2026-09-07T00:00:00.000Z",
           "completedAt": "2026-09-07T00:00:00.000Z"
@@ -2041,7 +2350,7 @@
         "type": "deletion.operation",
         "operation": {
           "id": "id_with-hyphen",
-          "kind": "box",
+          "kind": "sandbox",
           "targetId": "targetId_with-hyphen",
           "reason": "explicit",
           "status": "pending",
@@ -2063,12 +2372,12 @@
       }
     },
     {
-      "operation": "getLatestBoxSnapshot",
+      "operation": "getLatestSandboxSnapshot",
       "parameters": {
-        "boxId": "bx_23456789"
+        "sandboxId": "bx_23456789"
       },
       "request": {
-        "path": "/boxes/bx_23456789/snapshots/latest",
+        "path": "/sandboxes/bx_23456789/snapshots/latest",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer fixture-only"
@@ -2081,7 +2390,7 @@
         "type": "snapshot.latest",
         "snapshot": {
           "id": "id_with-hyphen",
-          "boxId": "bx_23456789",
+          "sandboxId": "bx_23456789",
           "status": "completed",
           "kind": "base",
           "generation": 2,
@@ -2091,7 +2400,8 @@
           "sizeBytes": 2,
           "fileCount": 2,
           "contentSizeBytes": 2,
-          "contentFileCount": 2
+          "contentFileCount": 2,
+          "origin": "captured"
         }
       },
       "expectedResponse": {
@@ -2099,7 +2409,7 @@
         "type": "snapshot.latest",
         "snapshot": {
           "id": "id_with-hyphen",
-          "boxId": "bx_23456789",
+          "sandboxId": "bx_23456789",
           "status": "completed",
           "kind": "base",
           "generation": 2,
@@ -2109,7 +2419,8 @@
           "sizeBytes": 2,
           "fileCount": 2,
           "contentSizeBytes": 2,
-          "contentFileCount": 2
+          "contentFileCount": 2,
+          "origin": "captured"
         }
       },
       "minimalResponse": {
@@ -2118,10 +2429,10 @@
         "snapshot": null
       },
       "minimalParameters": {
-        "boxId": "bx_23456789"
+        "sandboxId": "bx_23456789"
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789/snapshots/latest",
+        "path": "/sandboxes/bx_23456789/snapshots/latest",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer fixture-only"
@@ -2150,7 +2461,7 @@
           "name": "name_with-hyphen",
           "status": "saving",
           "error": "error_with-hyphen",
-          "sourceBoxId": "bx_23456789",
+          "sourceSandboxId": "bx_23456789",
           "snapshotId": "snapshotId_with-hyphen",
           "type": "type_with-hyphen",
           "sizeBytes": 2,
@@ -2164,7 +2475,7 @@
           "name": "name_with-hyphen",
           "status": "saving",
           "error": "error_with-hyphen",
-          "sourceBoxId": "bx_23456789",
+          "sourceSandboxId": "bx_23456789",
           "snapshotId": "snapshotId_with-hyphen",
           "type": "type_with-hyphen",
           "sizeBytes": 2,
@@ -2177,7 +2488,7 @@
         "snapshot": {
           "name": "name_with-hyphen",
           "status": "saving",
-          "sourceBoxId": "bx_23456789",
+          "sourceSandboxId": "bx_23456789",
           "createdAt": "2026-09-07T00:00:00.000Z"
         }
       },
@@ -2211,7 +2522,7 @@
         "ok": true,
         "type": "snapshot.download",
         "snapshotId": "snapshotId_with-hyphen",
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "kind": "base",
         "generation": 2,
         "expiresInSeconds": 2,
@@ -2236,7 +2547,7 @@
         "ok": true,
         "type": "snapshot.download",
         "snapshotId": "snapshotId_with-hyphen",
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "kind": "base",
         "generation": 2,
         "expiresInSeconds": 2,
@@ -2261,7 +2572,7 @@
         "ok": true,
         "type": "snapshot.download",
         "snapshotId": "snapshotId_with-hyphen",
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "kind": "base",
         "generation": 2,
         "expiresInSeconds": 2,
@@ -2272,8 +2583,8 @@
             "generation": 2,
             "chunkIndex": 2,
             "r2Key": "r2Key_with-hyphen",
-            "sizeBytes": 2,
-            "sha256": "sha256_with-hyphen",
+            "sizeBytes": null,
+            "sha256": null,
             "signedUrl": "https://example.test/path?token=fixture-secret"
           }
         ]
@@ -2340,7 +2651,7 @@
         "ok": true,
         "type": "snapshot.tree",
         "snapshotId": "snapshotId_with-hyphen",
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "generation": 2,
         "treeAvailable": true,
         "truncated": true,
@@ -2359,7 +2670,7 @@
         "ok": true,
         "type": "snapshot.tree",
         "snapshotId": "snapshotId_with-hyphen",
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "generation": 2,
         "treeAvailable": true,
         "truncated": true,
@@ -2378,7 +2689,7 @@
         "ok": true,
         "type": "snapshot.tree",
         "snapshotId": "snapshotId_with-hyphen",
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "generation": 2,
         "treeAvailable": true,
         "truncated": true,
@@ -2474,15 +2785,16 @@
     {
       "operation": "hostPort",
       "parameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "hostPortRequest": {
           "port": 8080,
           "public": true,
+          "localhost": true,
           "title": "title_with-hyphen"
         }
       },
       "request": {
-        "path": "/boxes/bx_23456789/host",
+        "path": "/sandboxes/bx_23456789/host",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -2492,6 +2804,7 @@
         "body": {
           "port": 8080,
           "public": true,
+          "localhost": true,
           "title": "title_with-hyphen"
         }
       },
@@ -2503,7 +2816,8 @@
         "port": 8080,
         "url": "https://example.test/path?token=fixture-secret",
         "isProtected": true,
-        "access": "private"
+        "access": "private",
+        "localhost": true
       },
       "expectedResponse": {
         "ok": true,
@@ -2512,20 +2826,21 @@
         "port": 8080,
         "url": "https://example.test/path?token=fixture-secret",
         "isProtected": true,
-        "access": "private"
+        "access": "private",
+        "localhost": true
       },
       "minimalResponse": {
         "ok": true,
         "type": "type_with-hyphen"
       },
       "minimalParameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "hostPortRequest": {
           "port": 8080
         }
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789/host",
+        "path": "/sandboxes/bx_23456789/host",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -2540,78 +2855,141 @@
     {
       "operation": "interrupt",
       "parameters": {
-        "boxId": "bx_23456789"
+        "sandboxId": "bx_23456789",
+        "conversation": "conversation_with-hyphen"
       },
       "request": {
-        "path": "/boxes/bx_23456789/interrupt",
+        "path": "/sandboxes/bx_23456789/interrupt",
         "method": "POST",
         "headers": {
           "Authorization": "Bearer fixture-only"
         },
-        "query": {}
+        "query": {
+          "conversation": "conversation_with-hyphen"
+        }
       },
-      "responseModel": "BoxActionResponse",
+      "responseModel": "SandboxActionResponse",
       "response": {
         "ok": true,
         "type": "type_with-hyphen",
         "id": "id_with-hyphen",
         "status": "status_with-hyphen",
-        "box": {
+        "sandbox": {
           "id": "bx_23456789",
           "name": "name_with-hyphen",
           "state": "idle",
+          "error": "error_with-hyphen",
+          "health": "ok",
+          "healthReason": "healthReason_with-hyphen",
+          "degradedSince": "2026-09-07T00:00:00.000Z",
+          "hydrated": true,
+          "hydratedAt": "2026-09-07T00:00:00.000Z",
           "type": "small",
           "vcpu": 2,
           "memoryGB": 2,
           "billingMultiplier": 2,
+          "machineProvider": "hetzner",
           "url": "https://example.test/path?token=fixture-secret",
           "ip": "ip_with-hyphen",
+          "sshEndpoint": "sshEndpoint_with-hyphen",
           "createdAt": "2026-09-07T00:00:00.000Z",
           "updatedAt": "2026-09-07T00:00:00.000Z",
           "archiveAfter": "2026-09-07T00:00:00.000Z",
           "desktopAvailable": true,
           "desktopUrl": "desktopUrl_with-hyphen",
+          "snapshots": true,
+          "monitoring": true,
           "snapshotAvailable": true,
           "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
+          "snapshotVerifiedAt": "2026-09-07T00:00:00.000Z",
+          "team": {
+            "id": "id_with-hyphen",
+            "name": "name_with-hyphen"
+          },
+          "createdBy": "createdBy_with-hyphen",
+          "createdById": "createdById_with-hyphen",
+          "access": "owner",
+          "holdsCreatorLogins": true,
+          "wipePendingUntilRestart": true,
           "subdomain": "subdomain_with-hyphen",
           "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
           "lastSnapshotStatus": "queued",
           "setupStatus": "pending",
           "setupError": "setupError_with-hyphen",
           "environment": "environment_with-hyphen",
-          "environmentVersion": 2
-        }
+          "environmentVersion": 2,
+          "stop": {
+            "id": "id_with-hyphen",
+            "status": "pending",
+            "requestedAt": "2026-09-07T00:00:00.000Z",
+            "lastAttemptAt": "2026-09-07T00:00:00.000Z",
+            "error": "error_with-hyphen",
+            "endedAt": "2026-09-07T00:00:00.000Z"
+          }
+        },
+        "giftLimitNotice": "giftLimitNotice_with-hyphen",
+        "conversationId": "conversationId_with-hyphen"
       },
       "expectedResponse": {
         "ok": true,
         "type": "type_with-hyphen",
         "id": "id_with-hyphen",
         "status": "status_with-hyphen",
-        "box": {
+        "sandbox": {
           "id": "bx_23456789",
           "name": "name_with-hyphen",
           "state": "idle",
+          "error": "error_with-hyphen",
+          "health": "ok",
+          "healthReason": "healthReason_with-hyphen",
+          "degradedSince": "2026-09-07T00:00:00.000Z",
+          "hydrated": true,
+          "hydratedAt": "2026-09-07T00:00:00.000Z",
           "type": "small",
           "vcpu": 2,
           "memoryGB": 2,
           "billingMultiplier": 2,
+          "machineProvider": "hetzner",
           "url": "https://example.test/path?token=fixture-secret",
           "ip": "ip_with-hyphen",
+          "sshEndpoint": "sshEndpoint_with-hyphen",
           "createdAt": "2026-09-07T00:00:00.000Z",
           "updatedAt": "2026-09-07T00:00:00.000Z",
           "archiveAfter": "2026-09-07T00:00:00.000Z",
           "desktopAvailable": true,
           "desktopUrl": "desktopUrl_with-hyphen",
+          "snapshots": true,
+          "monitoring": true,
           "snapshotAvailable": true,
           "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
+          "snapshotVerifiedAt": "2026-09-07T00:00:00.000Z",
+          "team": {
+            "id": "id_with-hyphen",
+            "name": "name_with-hyphen"
+          },
+          "createdBy": "createdBy_with-hyphen",
+          "createdById": "createdById_with-hyphen",
+          "access": "owner",
+          "holdsCreatorLogins": true,
+          "wipePendingUntilRestart": true,
           "subdomain": "subdomain_with-hyphen",
           "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
           "lastSnapshotStatus": "queued",
           "setupStatus": "pending",
           "setupError": "setupError_with-hyphen",
           "environment": "environment_with-hyphen",
-          "environmentVersion": 2
-        }
+          "environmentVersion": 2,
+          "stop": {
+            "id": "id_with-hyphen",
+            "status": "pending",
+            "requestedAt": "2026-09-07T00:00:00.000Z",
+            "lastAttemptAt": "2026-09-07T00:00:00.000Z",
+            "error": "error_with-hyphen",
+            "endedAt": "2026-09-07T00:00:00.000Z"
+          }
+        },
+        "giftLimitNotice": "giftLimitNotice_with-hyphen",
+        "conversationId": "conversationId_with-hyphen"
       },
       "minimalResponse": {
         "ok": true,
@@ -2620,10 +2998,10 @@
         "status": "status_with-hyphen"
       },
       "minimalParameters": {
-        "boxId": "bx_23456789"
+        "sandboxId": "bx_23456789"
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789/interrupt",
+        "path": "/sandboxes/bx_23456789/interrupt",
         "method": "POST",
         "headers": {
           "Authorization": "Bearer fixture-only"
@@ -2635,14 +3013,14 @@
       "operation": "limits",
       "parameters": {
         "org": "org_with-hyphen",
-        "xBoxOrg": "xBoxOrg_with-hyphen",
+        "xBoatOrg": "xBoatOrg_with-hyphen",
         "teamId": "teamId_with-hyphen"
       },
       "request": {
         "path": "/limits",
         "method": "GET",
         "headers": {
-          "X-Box-Org": "xBoxOrg_with-hyphen",
+          "X-Boat-Org": "xBoatOrg_with-hyphen",
           "Authorization": "Bearer fixture-only"
         },
         "query": {
@@ -2657,18 +3035,21 @@
         "accessTier": "accessTier_with-hyphen",
         "blockedReason": "blockedReason_with-hyphen",
         "currentLimits": {
-          "activeBoxes": 2,
+          "activeSandboxes": 2,
           "creationRatePerMinute": 2,
+          "creationRequestsPerHour": 2,
           "creationRequestsPerDay": 2
         },
         "standardLimits": {
-          "activeBoxes": 2,
+          "activeSandboxes": 2,
           "creationRatePerMinute": 2,
+          "creationRequestsPerHour": 2,
           "creationRequestsPerDay": 2
         },
         "trialLimits": {
-          "activeBoxes": 2,
+          "activeSandboxes": 2,
           "creationRatePerMinute": 2,
+          "creationRequestsPerHour": 2,
           "creationRequestsPerDay": 2
         },
         "upgradeEffects": {
@@ -2678,11 +3059,11 @@
         "checkoutRequired": true,
         "startBlockedReason": "startBlockedReason_with-hyphen",
         "contactMessage": "contactMessage_with-hyphen",
-        "activeBoxes": 2,
+        "activeSandboxes": 2,
         "activeStates": [
           "activeStates_with-hyphen"
         ],
-        "maxActiveBoxes": 2,
+        "maxActiveSandboxes": 2,
         "maxCreationRequestsPerMinute": 2,
         "maxCreationRequestsPerDay": 2,
         "startLimits": {
@@ -2722,6 +3103,36 @@
         "creditUsedSeconds": 2,
         "liveUsageSeconds": 2,
         "creditSecondsPerDollar": 2,
+        "sandboxPlanKey": "sandboxPlanKey_with-hyphen",
+        "sandboxPlanDollars": 2,
+        "sandboxPlanTiers": [
+          {
+            "key": "KEY_WITH-HYPHEN",
+            "dollars": 2,
+            "displayPrice": "displayPrice_with-hyphen",
+            "maxActiveSandboxes": 2,
+            "startsPerMinute": 2,
+            "startsPerHour": 2,
+            "startsPerDay": 2,
+            "includedSeconds": 2,
+            "purchasable": true
+          }
+        ],
+        "accountPlan": "accountPlan_with-hyphen",
+        "plan": "plan_with-hyphen",
+        "planName": "planName_with-hyphen",
+        "serviceAccount": true,
+        "unlimited": true,
+        "hasSeatPlan": true,
+        "last24hUsageSeconds": 2,
+        "trialComputeCapSeconds": 2,
+        "trialLine": "trialLine_with-hyphen",
+        "giftLimit": {
+          "maxActiveSandboxes": 2,
+          "maxTtlSeconds": 2,
+          "line": "line_with-hyphen",
+          "message": "message_with-hyphen"
+        },
         "billingStatus": "billingStatus_with-hyphen",
         "subscriptionStatus": "subscriptionStatus_with-hyphen",
         "subscriptionCancelAtPeriodEnd": true,
@@ -2738,18 +3149,21 @@
         "accessTier": "accessTier_with-hyphen",
         "blockedReason": "blockedReason_with-hyphen",
         "currentLimits": {
-          "activeBoxes": 2,
+          "activeSandboxes": 2,
           "creationRatePerMinute": 2,
+          "creationRequestsPerHour": 2,
           "creationRequestsPerDay": 2
         },
         "standardLimits": {
-          "activeBoxes": 2,
+          "activeSandboxes": 2,
           "creationRatePerMinute": 2,
+          "creationRequestsPerHour": 2,
           "creationRequestsPerDay": 2
         },
         "trialLimits": {
-          "activeBoxes": 2,
+          "activeSandboxes": 2,
           "creationRatePerMinute": 2,
+          "creationRequestsPerHour": 2,
           "creationRequestsPerDay": 2
         },
         "upgradeEffects": {
@@ -2759,11 +3173,11 @@
         "checkoutRequired": true,
         "startBlockedReason": "startBlockedReason_with-hyphen",
         "contactMessage": "contactMessage_with-hyphen",
-        "activeBoxes": 2,
+        "activeSandboxes": 2,
         "activeStates": [
           "activeStates_with-hyphen"
         ],
-        "maxActiveBoxes": 2,
+        "maxActiveSandboxes": 2,
         "maxCreationRequestsPerMinute": 2,
         "maxCreationRequestsPerDay": 2,
         "startLimits": {
@@ -2803,6 +3217,36 @@
         "creditUsedSeconds": 2,
         "liveUsageSeconds": 2,
         "creditSecondsPerDollar": 2,
+        "sandboxPlanKey": "sandboxPlanKey_with-hyphen",
+        "sandboxPlanDollars": 2,
+        "sandboxPlanTiers": [
+          {
+            "key": "KEY_WITH-HYPHEN",
+            "dollars": 2,
+            "displayPrice": "displayPrice_with-hyphen",
+            "maxActiveSandboxes": 2,
+            "startsPerMinute": 2,
+            "startsPerHour": 2,
+            "startsPerDay": 2,
+            "includedSeconds": 2,
+            "purchasable": true
+          }
+        ],
+        "accountPlan": "accountPlan_with-hyphen",
+        "plan": "plan_with-hyphen",
+        "planName": "planName_with-hyphen",
+        "serviceAccount": true,
+        "unlimited": true,
+        "hasSeatPlan": true,
+        "last24hUsageSeconds": 2,
+        "trialComputeCapSeconds": 2,
+        "trialLine": "trialLine_with-hyphen",
+        "giftLimit": {
+          "maxActiveSandboxes": 2,
+          "maxTtlSeconds": 2,
+          "line": "line_with-hyphen",
+          "message": "message_with-hyphen"
+        },
         "billingStatus": "billingStatus_with-hyphen",
         "subscriptionStatus": "subscriptionStatus_with-hyphen",
         "subscriptionCancelAtPeriodEnd": true,
@@ -2817,111 +3261,13 @@
         "ok": true,
         "type": "type_with-hyphen",
         "canStart": true,
-        "activeBoxes": 2,
-        "maxActiveBoxes": 2,
+        "activeSandboxes": 2,
+        "maxActiveSandboxes": 2,
         "billingStatus": "billingStatus_with-hyphen"
       },
       "minimalParameters": {},
       "minimalRequest": {
         "path": "/limits",
-        "method": "GET",
-        "headers": {
-          "Authorization": "Bearer fixture-only"
-        },
-        "query": {}
-      }
-    },
-    {
-      "operation": "listBoxSnapshots",
-      "parameters": {
-        "boxId": "bx_23456789",
-        "limit": 2,
-        "cursor": "cursor/+=",
-        "sort": "asc"
-      },
-      "request": {
-        "path": "/boxes/bx_23456789/snapshots",
-        "method": "GET",
-        "headers": {
-          "Authorization": "Bearer fixture-only"
-        },
-        "query": {
-          "limit": 2,
-          "cursor": "cursor/+=",
-          "sort": "asc"
-        }
-      },
-      "responseModel": "SnapshotListResponse",
-      "response": {
-        "ok": true,
-        "type": "snapshot.list",
-        "snapshots": [
-          {
-            "id": "id_with-hyphen",
-            "boxId": "bx_23456789",
-            "status": "completed",
-            "kind": "base",
-            "generation": 2,
-            "chainId": "chainId_with-hyphen",
-            "createdAt": "2026-09-07T00:00:00.000Z",
-            "completedAt": "2026-09-07T00:00:00.000Z",
-            "sizeBytes": 2,
-            "fileCount": 2,
-            "contentSizeBytes": 2,
-            "contentFileCount": 2
-          }
-        ],
-        "pageInfo": {
-          "nextCursor": "nextCursor_with-hyphen",
-          "hasMore": true,
-          "limit": 2
-        }
-      },
-      "expectedResponse": {
-        "ok": true,
-        "type": "snapshot.list",
-        "snapshots": [
-          {
-            "id": "id_with-hyphen",
-            "boxId": "bx_23456789",
-            "status": "completed",
-            "kind": "base",
-            "generation": 2,
-            "chainId": "chainId_with-hyphen",
-            "createdAt": "2026-09-07T00:00:00.000Z",
-            "completedAt": "2026-09-07T00:00:00.000Z",
-            "sizeBytes": 2,
-            "fileCount": 2,
-            "contentSizeBytes": 2,
-            "contentFileCount": 2
-          }
-        ],
-        "pageInfo": {
-          "nextCursor": "nextCursor_with-hyphen",
-          "hasMore": true,
-          "limit": 2
-        }
-      },
-      "minimalResponse": {
-        "ok": true,
-        "type": "snapshot.list",
-        "snapshots": [
-          {
-            "id": "id_with-hyphen",
-            "boxId": "bx_23456789",
-            "status": "completed",
-            "generation": 2,
-            "createdAt": "2026-09-07T00:00:00.000Z",
-            "sizeBytes": 2,
-            "fileCount": 2
-          }
-        ]
-      },
-      "minimalParameters": {
-        "boxId": "bx_23456789"
-      },
-      "minimalRequest": {
-        "path": "/boxes/bx_23456789/snapshots",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer fixture-only"
@@ -2949,13 +3295,23 @@
             "name": "name_with-hyphen",
             "status": "saving",
             "error": "error_with-hyphen",
-            "sourceBoxId": "bx_23456789",
+            "sourceSandboxId": "bx_23456789",
             "snapshotId": "snapshotId_with-hyphen",
             "type": "type_with-hyphen",
             "sizeBytes": 2,
             "createdAt": "2026-09-07T00:00:00.000Z"
           }
-        ]
+        ],
+        "allowance": {
+          "org": "org_with-hyphen",
+          "orgName": "orgName_with-hyphen",
+          "free": 2,
+          "used": 2,
+          "extra": 2,
+          "extraMonthlyDollars": 2,
+          "extraDailyDollars": 2,
+          "pricePerExtraMonthlyDollars": 2
+        }
       },
       "expectedResponse": {
         "ok": true,
@@ -2965,13 +3321,23 @@
             "name": "name_with-hyphen",
             "status": "saving",
             "error": "error_with-hyphen",
-            "sourceBoxId": "bx_23456789",
+            "sourceSandboxId": "bx_23456789",
             "snapshotId": "snapshotId_with-hyphen",
             "type": "type_with-hyphen",
             "sizeBytes": 2,
             "createdAt": "2026-09-07T00:00:00.000Z"
           }
-        ]
+        ],
+        "allowance": {
+          "org": "org_with-hyphen",
+          "orgName": "orgName_with-hyphen",
+          "free": 2,
+          "used": 2,
+          "extra": 2,
+          "extraMonthlyDollars": 2,
+          "extraDailyDollars": 2,
+          "pricePerExtraMonthlyDollars": 2
+        }
       },
       "minimalResponse": {
         "ok": true,
@@ -2980,7 +3346,7 @@
           {
             "name": "name_with-hyphen",
             "status": "saving",
-            "sourceBoxId": "bx_23456789",
+            "sourceSandboxId": "bx_23456789",
             "createdAt": "2026-09-07T00:00:00.000Z"
           }
         ]
@@ -2988,6 +3354,106 @@
       "minimalParameters": {},
       "minimalRequest": {
         "path": "/named-snapshots",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer fixture-only"
+        },
+        "query": {}
+      }
+    },
+    {
+      "operation": "listSandboxSnapshots",
+      "parameters": {
+        "sandboxId": "bx_23456789",
+        "limit": 2,
+        "cursor": "cursor/+=",
+        "sort": "asc"
+      },
+      "request": {
+        "path": "/sandboxes/bx_23456789/snapshots",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer fixture-only"
+        },
+        "query": {
+          "limit": 2,
+          "cursor": "cursor/+=",
+          "sort": "asc"
+        }
+      },
+      "responseModel": "SnapshotListResponse",
+      "response": {
+        "ok": true,
+        "type": "snapshot.list",
+        "snapshots": [
+          {
+            "id": "id_with-hyphen",
+            "sandboxId": "bx_23456789",
+            "status": "completed",
+            "kind": "base",
+            "generation": 2,
+            "chainId": "chainId_with-hyphen",
+            "createdAt": "2026-09-07T00:00:00.000Z",
+            "completedAt": "2026-09-07T00:00:00.000Z",
+            "sizeBytes": 2,
+            "fileCount": 2,
+            "contentSizeBytes": 2,
+            "contentFileCount": 2,
+            "origin": "captured"
+          }
+        ],
+        "pageInfo": {
+          "nextCursor": "nextCursor_with-hyphen",
+          "hasMore": true,
+          "limit": 2
+        }
+      },
+      "expectedResponse": {
+        "ok": true,
+        "type": "snapshot.list",
+        "snapshots": [
+          {
+            "id": "id_with-hyphen",
+            "sandboxId": "bx_23456789",
+            "status": "completed",
+            "kind": "base",
+            "generation": 2,
+            "chainId": "chainId_with-hyphen",
+            "createdAt": "2026-09-07T00:00:00.000Z",
+            "completedAt": "2026-09-07T00:00:00.000Z",
+            "sizeBytes": 2,
+            "fileCount": 2,
+            "contentSizeBytes": 2,
+            "contentFileCount": 2,
+            "origin": "captured"
+          }
+        ],
+        "pageInfo": {
+          "nextCursor": "nextCursor_with-hyphen",
+          "hasMore": true,
+          "limit": 2
+        }
+      },
+      "minimalResponse": {
+        "ok": true,
+        "type": "snapshot.list",
+        "snapshots": [
+          {
+            "id": "id_with-hyphen",
+            "sandboxId": "bx_23456789",
+            "status": "completed",
+            "generation": null,
+            "createdAt": "2026-09-07T00:00:00.000Z",
+            "sizeBytes": null,
+            "fileCount": null
+          }
+        ]
+      },
+      "minimalParameters": {
+        "sandboxId": "bx_23456789"
+      },
+      "minimalRequest": {
+        "path": "/sandboxes/bx_23456789/snapshots",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer fixture-only"
@@ -3021,7 +3487,7 @@
         "snapshots": [
           {
             "id": "id_with-hyphen",
-            "boxId": "bx_23456789",
+            "sandboxId": "bx_23456789",
             "status": "completed",
             "kind": "base",
             "generation": 2,
@@ -3031,7 +3497,8 @@
             "sizeBytes": 2,
             "fileCount": 2,
             "contentSizeBytes": 2,
-            "contentFileCount": 2
+            "contentFileCount": 2,
+            "origin": "captured"
           }
         ],
         "pageInfo": {
@@ -3046,7 +3513,7 @@
         "snapshots": [
           {
             "id": "id_with-hyphen",
-            "boxId": "bx_23456789",
+            "sandboxId": "bx_23456789",
             "status": "completed",
             "kind": "base",
             "generation": 2,
@@ -3056,7 +3523,8 @@
             "sizeBytes": 2,
             "fileCount": 2,
             "contentSizeBytes": 2,
-            "contentFileCount": 2
+            "contentFileCount": 2,
+            "origin": "captured"
           }
         ],
         "pageInfo": {
@@ -3071,12 +3539,12 @@
         "snapshots": [
           {
             "id": "id_with-hyphen",
-            "boxId": "bx_23456789",
+            "sandboxId": "bx_23456789",
             "status": "completed",
-            "generation": 2,
+            "generation": null,
             "createdAt": "2026-09-07T00:00:00.000Z",
-            "sizeBytes": 2,
-            "fileCount": 2
+            "sizeBytes": null,
+            "fileCount": null
           }
         ]
       },
@@ -3176,8 +3644,25 @@
         "ok": true,
         "type": "user.info",
         "user": {
+          "id": "id_with-hyphen",
           "login": "login_with-hyphen",
           "email": "email_with-hyphen",
+          "displayName": "displayName_with-hyphen",
+          "connectionMethod": "github",
+          "connectionMethods": [
+            "connectionMethods_with-hyphen"
+          ],
+          "accountPlan": "accountPlan_with-hyphen",
+          "serviceAccount": true,
+          "accountStatus": "active",
+          "suspended": true,
+          "suspendedAt": "2026-09-07T00:00:00.000Z",
+          "suspendedReason": "suspendedReason_with-hyphen",
+          "closed": true,
+          "closedAt": "2026-09-07T00:00:00.000Z",
+          "purgeAt": "2026-09-07T00:00:00.000Z",
+          "purgedAt": "2026-09-07T00:00:00.000Z",
+          "closureContactEmail": "closureContactEmail_with-hyphen",
           "zeroDataRetention": true,
           "zeroDataRetentionEnabledAt": "2026-09-07T00:00:00.000Z"
         }
@@ -3186,8 +3671,25 @@
         "ok": true,
         "type": "user.info",
         "user": {
+          "id": "id_with-hyphen",
           "login": "login_with-hyphen",
           "email": "email_with-hyphen",
+          "displayName": "displayName_with-hyphen",
+          "connectionMethod": "github",
+          "connectionMethods": [
+            "connectionMethods_with-hyphen"
+          ],
+          "accountPlan": "accountPlan_with-hyphen",
+          "serviceAccount": true,
+          "accountStatus": "active",
+          "suspended": true,
+          "suspendedAt": "2026-09-07T00:00:00.000Z",
+          "suspendedReason": "suspendedReason_with-hyphen",
+          "closed": true,
+          "closedAt": "2026-09-07T00:00:00.000Z",
+          "purgeAt": "2026-09-07T00:00:00.000Z",
+          "purgedAt": "2026-09-07T00:00:00.000Z",
+          "closureContactEmail": "closureContactEmail_with-hyphen",
           "zeroDataRetention": true,
           "zeroDataRetentionEnabledAt": "2026-09-07T00:00:00.000Z"
         }
@@ -3210,16 +3712,19 @@
     {
       "operation": "prompt",
       "parameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "promptRequest": {
           "provider": "codex",
           "model": "model_with-hyphen",
           "reasoningEffort": "reasoningEffort_with-hyphen",
+          "fast": true,
+          "new": true,
+          "conversationId": "conversationId_with-hyphen",
           "prompt": "prompt_with-hyphen"
         }
       },
       "request": {
-        "path": "/boxes/bx_23456789/prompt",
+        "path": "/sandboxes/bx_23456789/prompt",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -3230,6 +3735,9 @@
           "provider": "codex",
           "model": "model_with-hyphen",
           "reasoningEffort": "reasoningEffort_with-hyphen",
+          "fast": true,
+          "new": true,
+          "conversationId": "conversationId_with-hyphen",
           "prompt": "prompt_with-hyphen"
         }
       },
@@ -3239,40 +3747,48 @@
         "type": "prompt.queued",
         "id": "id_with-hyphen",
         "promptId": "promptId_with-hyphen",
+        "conversationId": "conversationId_with-hyphen",
         "promptRun": {
           "id": "id_with-hyphen",
           "promptId": "promptId_with-hyphen",
-          "boxId": "bx_23456789",
+          "sandboxId": "bx_23456789",
           "status": "sending",
           "done": true,
           "createdAt": "2026-09-07T00:00:00.000Z",
           "model": "model_with-hyphen",
-          "reasoningEffort": "reasoningEffort_with-hyphen"
+          "reasoningEffort": "reasoningEffort_with-hyphen",
+          "fast": true,
+          "conversationId": "conversationId_with-hyphen"
         },
         "status": "queued",
         "provider": "provider_with-hyphen",
         "model": "model_with-hyphen",
-        "reasoningEffort": "reasoningEffort_with-hyphen"
+        "reasoningEffort": "reasoningEffort_with-hyphen",
+        "fast": true
       },
       "expectedResponse": {
         "ok": true,
         "type": "prompt.queued",
         "id": "id_with-hyphen",
         "promptId": "promptId_with-hyphen",
+        "conversationId": "conversationId_with-hyphen",
         "promptRun": {
           "id": "id_with-hyphen",
           "promptId": "promptId_with-hyphen",
-          "boxId": "bx_23456789",
+          "sandboxId": "bx_23456789",
           "status": "sending",
           "done": true,
           "createdAt": "2026-09-07T00:00:00.000Z",
           "model": "model_with-hyphen",
-          "reasoningEffort": "reasoningEffort_with-hyphen"
+          "reasoningEffort": "reasoningEffort_with-hyphen",
+          "fast": true,
+          "conversationId": "conversationId_with-hyphen"
         },
         "status": "queued",
         "provider": "provider_with-hyphen",
         "model": "model_with-hyphen",
-        "reasoningEffort": "reasoningEffort_with-hyphen"
+        "reasoningEffort": "reasoningEffort_with-hyphen",
+        "fast": true
       },
       "minimalResponse": {
         "ok": true,
@@ -3282,7 +3798,7 @@
         "promptRun": {
           "id": "id_with-hyphen",
           "promptId": "promptId_with-hyphen",
-          "boxId": "bx_23456789",
+          "sandboxId": "bx_23456789",
           "status": "sending",
           "done": true
         },
@@ -3290,14 +3806,14 @@
         "provider": "provider_with-hyphen"
       },
       "minimalParameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "promptRequest": {
           "provider": "codex",
           "prompt": "prompt_with-hyphen"
         }
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789/prompt",
+        "path": "/sandboxes/bx_23456789/prompt",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -3313,11 +3829,11 @@
     {
       "operation": "promptRunStatus",
       "parameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "promptId": "promptId_with-hyphen"
       },
       "request": {
-        "path": "/boxes/bx_23456789/prompts/promptId_with-hyphen",
+        "path": "/sandboxes/bx_23456789/prompts/promptId_with-hyphen",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer fixture-only"
@@ -3332,12 +3848,14 @@
         "promptRun": {
           "id": "id_with-hyphen",
           "promptId": "promptId_with-hyphen",
-          "boxId": "bx_23456789",
+          "sandboxId": "bx_23456789",
           "status": "sending",
           "done": true,
           "createdAt": "2026-09-07T00:00:00.000Z",
           "model": "model_with-hyphen",
-          "reasoningEffort": "reasoningEffort_with-hyphen"
+          "reasoningEffort": "reasoningEffort_with-hyphen",
+          "fast": true,
+          "conversationId": "conversationId_with-hyphen"
         }
       },
       "expectedResponse": {
@@ -3347,12 +3865,14 @@
         "promptRun": {
           "id": "id_with-hyphen",
           "promptId": "promptId_with-hyphen",
-          "boxId": "bx_23456789",
+          "sandboxId": "bx_23456789",
           "status": "sending",
           "done": true,
           "createdAt": "2026-09-07T00:00:00.000Z",
           "model": "model_with-hyphen",
-          "reasoningEffort": "reasoningEffort_with-hyphen"
+          "reasoningEffort": "reasoningEffort_with-hyphen",
+          "fast": true,
+          "conversationId": "conversationId_with-hyphen"
         }
       },
       "minimalResponse": {
@@ -3362,17 +3882,17 @@
         "promptRun": {
           "id": "id_with-hyphen",
           "promptId": "promptId_with-hyphen",
-          "boxId": "bx_23456789",
+          "sandboxId": "bx_23456789",
           "status": "sending",
           "done": true
         }
       },
       "minimalParameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "promptId": "promptId_with-hyphen"
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789/prompts/promptId_with-hyphen",
+        "path": "/sandboxes/bx_23456789/prompts/promptId_with-hyphen",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer fixture-only"
@@ -3383,12 +3903,12 @@
     {
       "operation": "readFile",
       "parameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "path": "/home/user/fixture a?#.txt",
         "encoding": "utf8"
       },
       "request": {
-        "path": "/boxes/bx_23456789/files",
+        "path": "/sandboxes/bx_23456789/files",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer fixture-only"
@@ -3427,11 +3947,11 @@
         "content": "content_with-hyphen"
       },
       "minimalParameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "path": "/home/user/fixture a?#.txt"
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789/files",
+        "path": "/sandboxes/bx_23456789/files",
         "method": "GET",
         "headers": {
           "Authorization": "Bearer fixture-only"
@@ -3481,23 +4001,30 @@
                 "databaseId": "databaseId_with-hyphen",
                 "name": "name_with-hyphen",
                 "fullName": "fullName_with-hyphen",
+                "description": "description_with-hyphen",
+                "url": "https://example.test/path?token=fixture-secret",
                 "private": true,
                 "permissions": "permissions_with-hyphen",
-                "pushedAt": "2026-09-07T00:00:00.000Z"
+                "pushedAt": "2026-09-07T00:00:00.000Z",
+                "lastUserCommitAt": "2026-09-07T00:00:00.000Z"
               }
             ]
           }
         ],
         "environmentId": "environmentId_with-hyphen",
+        "subenvironmentId": "subenvironmentId_with-hyphen",
         "selectedRepositories": [
           {
             "id": 2,
             "databaseId": "databaseId_with-hyphen",
             "name": "name_with-hyphen",
             "fullName": "fullName_with-hyphen",
+            "description": "description_with-hyphen",
+            "url": "https://example.test/path?token=fixture-secret",
             "private": true,
             "permissions": "permissions_with-hyphen",
             "pushedAt": "2026-09-07T00:00:00.000Z",
+            "lastUserCommitAt": "2026-09-07T00:00:00.000Z",
             "baseBranch": "baseBranch_with-hyphen",
             "setupRoutineId": "setupRoutineId_with-hyphen",
             "setupScript": "setupScript_with-hyphen",
@@ -3524,24 +4051,31 @@
                 "databaseId": "databaseId_with-hyphen",
                 "name": "name_with-hyphen",
                 "fullName": "fullName_with-hyphen",
+                "description": "description_with-hyphen",
+                "url": "https://example.test/path?token=fixture-secret",
                 "private": true,
                 "permissions": "permissions_with-hyphen",
                 "pushedAt": "2026-09-07T00:00:00.000Z",
+                "lastUserCommitAt": "2026-09-07T00:00:00.000Z",
                 "_private": true
               }
             ]
           }
         ],
         "environmentId": "environmentId_with-hyphen",
+        "subenvironmentId": "subenvironmentId_with-hyphen",
         "selectedRepositories": [
           {
             "id": 2,
             "databaseId": "databaseId_with-hyphen",
             "name": "name_with-hyphen",
             "fullName": "fullName_with-hyphen",
+            "description": "description_with-hyphen",
+            "url": "https://example.test/path?token=fixture-secret",
             "private": true,
             "permissions": "permissions_with-hyphen",
             "pushedAt": "2026-09-07T00:00:00.000Z",
+            "lastUserCommitAt": "2026-09-07T00:00:00.000Z",
             "baseBranch": "baseBranch_with-hyphen",
             "setupRoutineId": "setupRoutineId_with-hyphen",
             "setupScript": "setupScript_with-hyphen",
@@ -3578,8 +4112,9 @@
     {
       "operation": "resume",
       "parameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "resumeRequest": {
+          "failFast": true,
           "type": "small",
           "env": {
             "fixture": "fixture-secret"
@@ -3590,7 +4125,7 @@
         }
       },
       "request": {
-        "path": "/boxes/bx_23456789/resume",
+        "path": "/sandboxes/bx_23456789/resume",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -3598,6 +4133,7 @@
         },
         "query": {},
         "body": {
+          "failFast": true,
           "type": "small",
           "env": {
             "fixture": "fixture-secret"
@@ -3607,68 +4143,128 @@
           "ttlSeconds": 2
         }
       },
-      "responseModel": "BoxActionResponse",
+      "responseModel": "SandboxActionResponse",
       "response": {
         "ok": true,
         "type": "type_with-hyphen",
         "id": "id_with-hyphen",
         "status": "status_with-hyphen",
-        "box": {
+        "sandbox": {
           "id": "bx_23456789",
           "name": "name_with-hyphen",
           "state": "idle",
+          "error": "error_with-hyphen",
+          "health": "ok",
+          "healthReason": "healthReason_with-hyphen",
+          "degradedSince": "2026-09-07T00:00:00.000Z",
+          "hydrated": true,
+          "hydratedAt": "2026-09-07T00:00:00.000Z",
           "type": "small",
           "vcpu": 2,
           "memoryGB": 2,
           "billingMultiplier": 2,
+          "machineProvider": "hetzner",
           "url": "https://example.test/path?token=fixture-secret",
           "ip": "ip_with-hyphen",
+          "sshEndpoint": "sshEndpoint_with-hyphen",
           "createdAt": "2026-09-07T00:00:00.000Z",
           "updatedAt": "2026-09-07T00:00:00.000Z",
           "archiveAfter": "2026-09-07T00:00:00.000Z",
           "desktopAvailable": true,
           "desktopUrl": "desktopUrl_with-hyphen",
+          "snapshots": true,
+          "monitoring": true,
           "snapshotAvailable": true,
           "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
+          "snapshotVerifiedAt": "2026-09-07T00:00:00.000Z",
+          "team": {
+            "id": "id_with-hyphen",
+            "name": "name_with-hyphen"
+          },
+          "createdBy": "createdBy_with-hyphen",
+          "createdById": "createdById_with-hyphen",
+          "access": "owner",
+          "holdsCreatorLogins": true,
+          "wipePendingUntilRestart": true,
           "subdomain": "subdomain_with-hyphen",
           "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
           "lastSnapshotStatus": "queued",
           "setupStatus": "pending",
           "setupError": "setupError_with-hyphen",
           "environment": "environment_with-hyphen",
-          "environmentVersion": 2
-        }
+          "environmentVersion": 2,
+          "stop": {
+            "id": "id_with-hyphen",
+            "status": "pending",
+            "requestedAt": "2026-09-07T00:00:00.000Z",
+            "lastAttemptAt": "2026-09-07T00:00:00.000Z",
+            "error": "error_with-hyphen",
+            "endedAt": "2026-09-07T00:00:00.000Z"
+          }
+        },
+        "giftLimitNotice": "giftLimitNotice_with-hyphen",
+        "conversationId": "conversationId_with-hyphen"
       },
       "expectedResponse": {
         "ok": true,
         "type": "type_with-hyphen",
         "id": "id_with-hyphen",
         "status": "status_with-hyphen",
-        "box": {
+        "sandbox": {
           "id": "bx_23456789",
           "name": "name_with-hyphen",
           "state": "idle",
+          "error": "error_with-hyphen",
+          "health": "ok",
+          "healthReason": "healthReason_with-hyphen",
+          "degradedSince": "2026-09-07T00:00:00.000Z",
+          "hydrated": true,
+          "hydratedAt": "2026-09-07T00:00:00.000Z",
           "type": "small",
           "vcpu": 2,
           "memoryGB": 2,
           "billingMultiplier": 2,
+          "machineProvider": "hetzner",
           "url": "https://example.test/path?token=fixture-secret",
           "ip": "ip_with-hyphen",
+          "sshEndpoint": "sshEndpoint_with-hyphen",
           "createdAt": "2026-09-07T00:00:00.000Z",
           "updatedAt": "2026-09-07T00:00:00.000Z",
           "archiveAfter": "2026-09-07T00:00:00.000Z",
           "desktopAvailable": true,
           "desktopUrl": "desktopUrl_with-hyphen",
+          "snapshots": true,
+          "monitoring": true,
           "snapshotAvailable": true,
           "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
+          "snapshotVerifiedAt": "2026-09-07T00:00:00.000Z",
+          "team": {
+            "id": "id_with-hyphen",
+            "name": "name_with-hyphen"
+          },
+          "createdBy": "createdBy_with-hyphen",
+          "createdById": "createdById_with-hyphen",
+          "access": "owner",
+          "holdsCreatorLogins": true,
+          "wipePendingUntilRestart": true,
           "subdomain": "subdomain_with-hyphen",
           "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
           "lastSnapshotStatus": "queued",
           "setupStatus": "pending",
           "setupError": "setupError_with-hyphen",
           "environment": "environment_with-hyphen",
-          "environmentVersion": 2
-        }
+          "environmentVersion": 2,
+          "stop": {
+            "id": "id_with-hyphen",
+            "status": "pending",
+            "requestedAt": "2026-09-07T00:00:00.000Z",
+            "lastAttemptAt": "2026-09-07T00:00:00.000Z",
+            "error": "error_with-hyphen",
+            "endedAt": "2026-09-07T00:00:00.000Z"
+          }
+        },
+        "giftLimitNotice": "giftLimitNotice_with-hyphen",
+        "conversationId": "conversationId_with-hyphen"
       },
       "minimalResponse": {
         "ok": true,
@@ -3677,10 +4273,10 @@
         "status": "status_with-hyphen"
       },
       "minimalParameters": {
-        "boxId": "bx_23456789"
+        "sandboxId": "bx_23456789"
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789/resume",
+        "path": "/sandboxes/bx_23456789/resume",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -3761,10 +4357,187 @@
       }
     },
     {
+      "operation": "sandboxes",
+      "parameters": {
+        "org": "org_with-hyphen",
+        "xBoatOrg": "xBoatOrg_with-hyphen",
+        "limit": 2,
+        "cursor": "cursor/+=",
+        "sort": "asc",
+        "state": "state_with-hyphen"
+      },
+      "request": {
+        "path": "/sandboxes",
+        "method": "GET",
+        "headers": {
+          "X-Boat-Org": "xBoatOrg_with-hyphen",
+          "Authorization": "Bearer fixture-only"
+        },
+        "query": {
+          "org": "org_with-hyphen",
+          "limit": 2,
+          "cursor": "cursor/+=",
+          "sort": "asc",
+          "state": "state_with-hyphen"
+        }
+      },
+      "responseModel": "SandboxListResponse",
+      "response": {
+        "ok": true,
+        "type": "sandbox.list",
+        "sandboxes": [
+          {
+            "id": "bx_23456789",
+            "name": "name_with-hyphen",
+            "state": "idle",
+            "error": "error_with-hyphen",
+            "health": "ok",
+            "healthReason": "healthReason_with-hyphen",
+            "degradedSince": "2026-09-07T00:00:00.000Z",
+            "hydrated": true,
+            "hydratedAt": "2026-09-07T00:00:00.000Z",
+            "type": "small",
+            "vcpu": 2,
+            "memoryGB": 2,
+            "billingMultiplier": 2,
+            "machineProvider": "hetzner",
+            "url": "https://example.test/path?token=fixture-secret",
+            "ip": "ip_with-hyphen",
+            "sshEndpoint": "sshEndpoint_with-hyphen",
+            "createdAt": "2026-09-07T00:00:00.000Z",
+            "updatedAt": "2026-09-07T00:00:00.000Z",
+            "archiveAfter": "2026-09-07T00:00:00.000Z",
+            "desktopAvailable": true,
+            "desktopUrl": "desktopUrl_with-hyphen",
+            "snapshots": true,
+            "monitoring": true,
+            "snapshotAvailable": true,
+            "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
+            "snapshotVerifiedAt": "2026-09-07T00:00:00.000Z",
+            "team": {
+              "id": "id_with-hyphen",
+              "name": "name_with-hyphen"
+            },
+            "createdBy": "createdBy_with-hyphen",
+            "createdById": "createdById_with-hyphen",
+            "access": "owner",
+            "holdsCreatorLogins": true,
+            "wipePendingUntilRestart": true,
+            "subdomain": "subdomain_with-hyphen",
+            "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
+            "lastSnapshotStatus": "queued",
+            "setupStatus": "pending",
+            "setupError": "setupError_with-hyphen",
+            "environment": "environment_with-hyphen",
+            "environmentVersion": 2,
+            "stop": {
+              "id": "id_with-hyphen",
+              "status": "pending",
+              "requestedAt": "2026-09-07T00:00:00.000Z",
+              "lastAttemptAt": "2026-09-07T00:00:00.000Z",
+              "error": "error_with-hyphen",
+              "endedAt": "2026-09-07T00:00:00.000Z"
+            }
+          }
+        ],
+        "pageInfo": {
+          "nextCursor": "nextCursor_with-hyphen",
+          "hasMore": true,
+          "limit": 2
+        }
+      },
+      "expectedResponse": {
+        "ok": true,
+        "type": "sandbox.list",
+        "sandboxes": [
+          {
+            "id": "bx_23456789",
+            "name": "name_with-hyphen",
+            "state": "idle",
+            "error": "error_with-hyphen",
+            "health": "ok",
+            "healthReason": "healthReason_with-hyphen",
+            "degradedSince": "2026-09-07T00:00:00.000Z",
+            "hydrated": true,
+            "hydratedAt": "2026-09-07T00:00:00.000Z",
+            "type": "small",
+            "vcpu": 2,
+            "memoryGB": 2,
+            "billingMultiplier": 2,
+            "machineProvider": "hetzner",
+            "url": "https://example.test/path?token=fixture-secret",
+            "ip": "ip_with-hyphen",
+            "sshEndpoint": "sshEndpoint_with-hyphen",
+            "createdAt": "2026-09-07T00:00:00.000Z",
+            "updatedAt": "2026-09-07T00:00:00.000Z",
+            "archiveAfter": "2026-09-07T00:00:00.000Z",
+            "desktopAvailable": true,
+            "desktopUrl": "desktopUrl_with-hyphen",
+            "snapshots": true,
+            "monitoring": true,
+            "snapshotAvailable": true,
+            "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
+            "snapshotVerifiedAt": "2026-09-07T00:00:00.000Z",
+            "team": {
+              "id": "id_with-hyphen",
+              "name": "name_with-hyphen"
+            },
+            "createdBy": "createdBy_with-hyphen",
+            "createdById": "createdById_with-hyphen",
+            "access": "owner",
+            "holdsCreatorLogins": true,
+            "wipePendingUntilRestart": true,
+            "subdomain": "subdomain_with-hyphen",
+            "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
+            "lastSnapshotStatus": "queued",
+            "setupStatus": "pending",
+            "setupError": "setupError_with-hyphen",
+            "environment": "environment_with-hyphen",
+            "environmentVersion": 2,
+            "stop": {
+              "id": "id_with-hyphen",
+              "status": "pending",
+              "requestedAt": "2026-09-07T00:00:00.000Z",
+              "lastAttemptAt": "2026-09-07T00:00:00.000Z",
+              "error": "error_with-hyphen",
+              "endedAt": "2026-09-07T00:00:00.000Z"
+            }
+          }
+        ],
+        "pageInfo": {
+          "nextCursor": "nextCursor_with-hyphen",
+          "hasMore": true,
+          "limit": 2
+        }
+      },
+      "minimalResponse": {
+        "ok": true,
+        "type": "sandbox.list",
+        "sandboxes": [
+          {
+            "id": "bx_23456789",
+            "name": "name_with-hyphen",
+            "state": "idle",
+            "desktopAvailable": true,
+            "snapshotAvailable": true
+          }
+        ]
+      },
+      "minimalParameters": {},
+      "minimalRequest": {
+        "path": "/sandboxes",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer fixture-only"
+        },
+        "query": {}
+      }
+    },
+    {
       "operation": "saveNamedSnapshot",
       "parameters": {
         "namedSnapshotSaveRequest": {
-          "boxId": "bx_23456789",
+          "sandboxId": "bx_23456789",
           "name": "name_with-hyphen"
         }
       },
@@ -3777,7 +4550,7 @@
         },
         "query": {},
         "body": {
-          "boxId": "bx_23456789",
+          "sandboxId": "bx_23456789",
           "name": "name_with-hyphen"
         }
       },
@@ -3790,7 +4563,7 @@
           "name": "name_with-hyphen",
           "status": "saving",
           "error": "error_with-hyphen",
-          "sourceBoxId": "bx_23456789",
+          "sourceSandboxId": "bx_23456789",
           "snapshotId": "snapshotId_with-hyphen",
           "type": "type_with-hyphen",
           "sizeBytes": 2,
@@ -3805,7 +4578,7 @@
           "name": "name_with-hyphen",
           "status": "saving",
           "error": "error_with-hyphen",
-          "sourceBoxId": "bx_23456789",
+          "sourceSandboxId": "bx_23456789",
           "snapshotId": "snapshotId_with-hyphen",
           "type": "type_with-hyphen",
           "sizeBytes": 2,
@@ -3819,13 +4592,13 @@
         "snapshot": {
           "name": "name_with-hyphen",
           "status": "saving",
-          "sourceBoxId": "bx_23456789",
+          "sourceSandboxId": "bx_23456789",
           "createdAt": "2026-09-07T00:00:00.000Z"
         }
       },
       "minimalParameters": {
         "namedSnapshotSaveRequest": {
-          "boxId": "bx_23456789",
+          "sandboxId": "bx_23456789",
           "name": "name_with-hyphen"
         }
       },
@@ -3838,7 +4611,7 @@
         },
         "query": {},
         "body": {
-          "boxId": "bx_23456789",
+          "sandboxId": "bx_23456789",
           "name": "name_with-hyphen"
         }
       }
@@ -3860,6 +4633,7 @@
         "type": "type_with-hyphen",
         "success": true,
         "environmentId": "environmentId_with-hyphen",
+        "subenvironmentId": "subenvironmentId_with-hyphen",
         "envContents": "envContents_with-hyphen",
         "secretFiles": [
           {
@@ -3876,6 +4650,7 @@
         "type": "type_with-hyphen",
         "success": true,
         "environmentId": "environmentId_with-hyphen",
+        "subenvironmentId": "subenvironmentId_with-hyphen",
         "envContents": "envContents_with-hyphen",
         "secretFiles": [
           {
@@ -3936,15 +4711,19 @@
         "type": "type_with-hyphen",
         "success": true,
         "environmentId": "environmentId_with-hyphen",
+        "subenvironmentId": "subenvironmentId_with-hyphen",
         "selectedRepositories": [
           {
             "id": 2,
             "databaseId": "databaseId_with-hyphen",
             "name": "name_with-hyphen",
             "fullName": "fullName_with-hyphen",
+            "description": "description_with-hyphen",
+            "url": "https://example.test/path?token=fixture-secret",
             "private": true,
             "permissions": "permissions_with-hyphen",
             "pushedAt": "2026-09-07T00:00:00.000Z",
+            "lastUserCommitAt": "2026-09-07T00:00:00.000Z",
             "baseBranch": "baseBranch_with-hyphen",
             "setupRoutineId": "setupRoutineId_with-hyphen",
             "setupScript": "setupScript_with-hyphen",
@@ -3957,15 +4736,19 @@
         "type": "type_with-hyphen",
         "success": true,
         "environmentId": "environmentId_with-hyphen",
+        "subenvironmentId": "subenvironmentId_with-hyphen",
         "selectedRepositories": [
           {
             "id": 2,
             "databaseId": "databaseId_with-hyphen",
             "name": "name_with-hyphen",
             "fullName": "fullName_with-hyphen",
+            "description": "description_with-hyphen",
+            "url": "https://example.test/path?token=fixture-secret",
             "private": true,
             "permissions": "permissions_with-hyphen",
             "pushedAt": "2026-09-07T00:00:00.000Z",
+            "lastUserCommitAt": "2026-09-07T00:00:00.000Z",
             "baseBranch": "baseBranch_with-hyphen",
             "setupRoutineId": "setupRoutineId_with-hyphen",
             "setupScript": "setupScript_with-hyphen",
@@ -4007,7 +4790,8 @@
         "setEnvironmentSecretFileRequest": {
           "path": "/home/user/fixture a?#.txt",
           "contents": "contents_with-hyphen"
-        }
+        },
+        "org": "org_with-hyphen"
       },
       "request": {
         "path": "/environments/environmentId_with-hyphen/secret-files",
@@ -4016,7 +4800,9 @@
           "Content-Type": "application/json",
           "Authorization": "Bearer fixture-only"
         },
-        "query": {},
+        "query": {
+          "org": "org_with-hyphen"
+        },
         "body": {
           "path": "/home/user/fixture a?#.txt",
           "contents": "contents_with-hyphen"
@@ -4064,7 +4850,8 @@
         "key": "KEY_WITH-HYPHEN",
         "setEnvironmentVarRequest": {
           "value": "value_with-hyphen"
-        }
+        },
+        "org": "org_with-hyphen"
       },
       "request": {
         "path": "/environments/environmentId_with-hyphen/vars/KEY_WITH-HYPHEN",
@@ -4073,7 +4860,9 @@
           "Content-Type": "application/json",
           "Authorization": "Bearer fixture-only"
         },
-        "query": {},
+        "query": {
+          "org": "org_with-hyphen"
+        },
         "body": {
           "value": "value_with-hyphen"
         }
@@ -4115,13 +4904,13 @@
     {
       "operation": "sshKey",
       "parameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "sshKeyRequest": {
           "key": "KEY_WITH-HYPHEN"
         }
       },
       "request": {
-        "path": "/boxes/bx_23456789/sshkey",
+        "path": "/sandboxes/bx_23456789/sshkey",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -4138,27 +4927,31 @@
         "type": "type_with-hyphen",
         "success": true,
         "machineIp": "machineIp_with-hyphen",
-        "sshUser": "sshUser_with-hyphen"
+        "sshUser": "sshUser_with-hyphen",
+        "sshEndpoint": "sshEndpoint_with-hyphen",
+        "hostKey": "hostKey_with-hyphen"
       },
       "expectedResponse": {
         "ok": true,
         "type": "type_with-hyphen",
         "success": true,
         "machineIp": "machineIp_with-hyphen",
-        "sshUser": "sshUser_with-hyphen"
+        "sshUser": "sshUser_with-hyphen",
+        "sshEndpoint": "sshEndpoint_with-hyphen",
+        "hostKey": "hostKey_with-hyphen"
       },
       "minimalResponse": {
         "ok": true,
         "type": "type_with-hyphen"
       },
       "minimalParameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "sshKeyRequest": {
           "key": "KEY_WITH-HYPHEN"
         }
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789/sshkey",
+        "path": "/sandboxes/bx_23456789/sshkey",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -4173,13 +4966,13 @@
     {
       "operation": "stop",
       "parameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "stopRequest": {
           "force": true
         }
       },
       "request": {
-        "path": "/boxes/bx_23456789/stop",
+        "path": "/sandboxes/bx_23456789/stop",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -4190,68 +4983,128 @@
           "force": true
         }
       },
-      "responseModel": "BoxActionResponse",
+      "responseModel": "SandboxActionResponse",
       "response": {
         "ok": true,
         "type": "type_with-hyphen",
         "id": "id_with-hyphen",
         "status": "status_with-hyphen",
-        "box": {
+        "sandbox": {
           "id": "bx_23456789",
           "name": "name_with-hyphen",
           "state": "idle",
+          "error": "error_with-hyphen",
+          "health": "ok",
+          "healthReason": "healthReason_with-hyphen",
+          "degradedSince": "2026-09-07T00:00:00.000Z",
+          "hydrated": true,
+          "hydratedAt": "2026-09-07T00:00:00.000Z",
           "type": "small",
           "vcpu": 2,
           "memoryGB": 2,
           "billingMultiplier": 2,
+          "machineProvider": "hetzner",
           "url": "https://example.test/path?token=fixture-secret",
           "ip": "ip_with-hyphen",
+          "sshEndpoint": "sshEndpoint_with-hyphen",
           "createdAt": "2026-09-07T00:00:00.000Z",
           "updatedAt": "2026-09-07T00:00:00.000Z",
           "archiveAfter": "2026-09-07T00:00:00.000Z",
           "desktopAvailable": true,
           "desktopUrl": "desktopUrl_with-hyphen",
+          "snapshots": true,
+          "monitoring": true,
           "snapshotAvailable": true,
           "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
+          "snapshotVerifiedAt": "2026-09-07T00:00:00.000Z",
+          "team": {
+            "id": "id_with-hyphen",
+            "name": "name_with-hyphen"
+          },
+          "createdBy": "createdBy_with-hyphen",
+          "createdById": "createdById_with-hyphen",
+          "access": "owner",
+          "holdsCreatorLogins": true,
+          "wipePendingUntilRestart": true,
           "subdomain": "subdomain_with-hyphen",
           "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
           "lastSnapshotStatus": "queued",
           "setupStatus": "pending",
           "setupError": "setupError_with-hyphen",
           "environment": "environment_with-hyphen",
-          "environmentVersion": 2
-        }
+          "environmentVersion": 2,
+          "stop": {
+            "id": "id_with-hyphen",
+            "status": "pending",
+            "requestedAt": "2026-09-07T00:00:00.000Z",
+            "lastAttemptAt": "2026-09-07T00:00:00.000Z",
+            "error": "error_with-hyphen",
+            "endedAt": "2026-09-07T00:00:00.000Z"
+          }
+        },
+        "giftLimitNotice": "giftLimitNotice_with-hyphen",
+        "conversationId": "conversationId_with-hyphen"
       },
       "expectedResponse": {
         "ok": true,
         "type": "type_with-hyphen",
         "id": "id_with-hyphen",
         "status": "status_with-hyphen",
-        "box": {
+        "sandbox": {
           "id": "bx_23456789",
           "name": "name_with-hyphen",
           "state": "idle",
+          "error": "error_with-hyphen",
+          "health": "ok",
+          "healthReason": "healthReason_with-hyphen",
+          "degradedSince": "2026-09-07T00:00:00.000Z",
+          "hydrated": true,
+          "hydratedAt": "2026-09-07T00:00:00.000Z",
           "type": "small",
           "vcpu": 2,
           "memoryGB": 2,
           "billingMultiplier": 2,
+          "machineProvider": "hetzner",
           "url": "https://example.test/path?token=fixture-secret",
           "ip": "ip_with-hyphen",
+          "sshEndpoint": "sshEndpoint_with-hyphen",
           "createdAt": "2026-09-07T00:00:00.000Z",
           "updatedAt": "2026-09-07T00:00:00.000Z",
           "archiveAfter": "2026-09-07T00:00:00.000Z",
           "desktopAvailable": true,
           "desktopUrl": "desktopUrl_with-hyphen",
+          "snapshots": true,
+          "monitoring": true,
           "snapshotAvailable": true,
           "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
+          "snapshotVerifiedAt": "2026-09-07T00:00:00.000Z",
+          "team": {
+            "id": "id_with-hyphen",
+            "name": "name_with-hyphen"
+          },
+          "createdBy": "createdBy_with-hyphen",
+          "createdById": "createdById_with-hyphen",
+          "access": "owner",
+          "holdsCreatorLogins": true,
+          "wipePendingUntilRestart": true,
           "subdomain": "subdomain_with-hyphen",
           "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
           "lastSnapshotStatus": "queued",
           "setupStatus": "pending",
           "setupError": "setupError_with-hyphen",
           "environment": "environment_with-hyphen",
-          "environmentVersion": 2
-        }
+          "environmentVersion": 2,
+          "stop": {
+            "id": "id_with-hyphen",
+            "status": "pending",
+            "requestedAt": "2026-09-07T00:00:00.000Z",
+            "lastAttemptAt": "2026-09-07T00:00:00.000Z",
+            "error": "error_with-hyphen",
+            "endedAt": "2026-09-07T00:00:00.000Z"
+          }
+        },
+        "giftLimitNotice": "giftLimitNotice_with-hyphen",
+        "conversationId": "conversationId_with-hyphen"
       },
       "minimalResponse": {
         "ok": true,
@@ -4260,10 +5113,10 @@
         "status": "status_with-hyphen"
       },
       "minimalParameters": {
-        "boxId": "bx_23456789"
+        "sandboxId": "bx_23456789"
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789/stop",
+        "path": "/sandboxes/bx_23456789/stop",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
@@ -4275,15 +5128,15 @@
     {
       "operation": "update",
       "parameters": {
-        "boxId": "bx_23456789",
-        "updateBoxRequest": {
+        "sandboxId": "bx_23456789",
+        "updateSandboxRequest": {
           "name": "name_with-hyphen",
           "ttlSeconds": 2,
           "subdomain": "subdomain_with-hyphen"
         }
       },
       "request": {
-        "path": "/boxes/bx_23456789",
+        "path": "/sandboxes/bx_23456789",
         "method": "PATCH",
         "headers": {
           "Content-Type": "application/json",
@@ -4296,69 +5149,127 @@
           "subdomain": "subdomain_with-hyphen"
         }
       },
-      "responseModel": "BoxInfoResponse",
+      "responseModel": "SandboxInfoResponse",
       "response": {
         "ok": true,
         "type": "type_with-hyphen",
-        "box": {
+        "sandbox": {
           "id": "bx_23456789",
           "name": "name_with-hyphen",
           "state": "idle",
+          "error": "error_with-hyphen",
+          "health": "ok",
+          "healthReason": "healthReason_with-hyphen",
+          "degradedSince": "2026-09-07T00:00:00.000Z",
+          "hydrated": true,
+          "hydratedAt": "2026-09-07T00:00:00.000Z",
           "type": "small",
           "vcpu": 2,
           "memoryGB": 2,
           "billingMultiplier": 2,
+          "machineProvider": "hetzner",
           "url": "https://example.test/path?token=fixture-secret",
           "ip": "ip_with-hyphen",
+          "sshEndpoint": "sshEndpoint_with-hyphen",
           "createdAt": "2026-09-07T00:00:00.000Z",
           "updatedAt": "2026-09-07T00:00:00.000Z",
           "archiveAfter": "2026-09-07T00:00:00.000Z",
           "desktopAvailable": true,
           "desktopUrl": "desktopUrl_with-hyphen",
+          "snapshots": true,
+          "monitoring": true,
           "snapshotAvailable": true,
           "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
+          "snapshotVerifiedAt": "2026-09-07T00:00:00.000Z",
+          "team": {
+            "id": "id_with-hyphen",
+            "name": "name_with-hyphen"
+          },
+          "createdBy": "createdBy_with-hyphen",
+          "createdById": "createdById_with-hyphen",
+          "access": "owner",
+          "holdsCreatorLogins": true,
+          "wipePendingUntilRestart": true,
           "subdomain": "subdomain_with-hyphen",
           "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
           "lastSnapshotStatus": "queued",
           "setupStatus": "pending",
           "setupError": "setupError_with-hyphen",
           "environment": "environment_with-hyphen",
-          "environmentVersion": 2
-        }
+          "environmentVersion": 2,
+          "stop": {
+            "id": "id_with-hyphen",
+            "status": "pending",
+            "requestedAt": "2026-09-07T00:00:00.000Z",
+            "lastAttemptAt": "2026-09-07T00:00:00.000Z",
+            "error": "error_with-hyphen",
+            "endedAt": "2026-09-07T00:00:00.000Z"
+          }
+        },
+        "giftLimitNotice": "giftLimitNotice_with-hyphen"
       },
       "expectedResponse": {
         "ok": true,
         "type": "type_with-hyphen",
-        "box": {
+        "sandbox": {
           "id": "bx_23456789",
           "name": "name_with-hyphen",
           "state": "idle",
+          "error": "error_with-hyphen",
+          "health": "ok",
+          "healthReason": "healthReason_with-hyphen",
+          "degradedSince": "2026-09-07T00:00:00.000Z",
+          "hydrated": true,
+          "hydratedAt": "2026-09-07T00:00:00.000Z",
           "type": "small",
           "vcpu": 2,
           "memoryGB": 2,
           "billingMultiplier": 2,
+          "machineProvider": "hetzner",
           "url": "https://example.test/path?token=fixture-secret",
           "ip": "ip_with-hyphen",
+          "sshEndpoint": "sshEndpoint_with-hyphen",
           "createdAt": "2026-09-07T00:00:00.000Z",
           "updatedAt": "2026-09-07T00:00:00.000Z",
           "archiveAfter": "2026-09-07T00:00:00.000Z",
           "desktopAvailable": true,
           "desktopUrl": "desktopUrl_with-hyphen",
+          "snapshots": true,
+          "monitoring": true,
           "snapshotAvailable": true,
           "snapshotCompletedAt": "2026-09-07T00:00:00.000Z",
+          "snapshotVerifiedAt": "2026-09-07T00:00:00.000Z",
+          "team": {
+            "id": "id_with-hyphen",
+            "name": "name_with-hyphen"
+          },
+          "createdBy": "createdBy_with-hyphen",
+          "createdById": "createdById_with-hyphen",
+          "access": "owner",
+          "holdsCreatorLogins": true,
+          "wipePendingUntilRestart": true,
           "subdomain": "subdomain_with-hyphen",
           "lastSnapshotAttemptAt": "2026-09-07T00:00:00.000Z",
           "lastSnapshotStatus": "queued",
           "setupStatus": "pending",
           "setupError": "setupError_with-hyphen",
           "environment": "environment_with-hyphen",
-          "environmentVersion": 2
-        }
+          "environmentVersion": 2,
+          "stop": {
+            "id": "id_with-hyphen",
+            "status": "pending",
+            "requestedAt": "2026-09-07T00:00:00.000Z",
+            "lastAttemptAt": "2026-09-07T00:00:00.000Z",
+            "error": "error_with-hyphen",
+            "endedAt": "2026-09-07T00:00:00.000Z"
+          }
+        },
+        "giftLimitNotice": "giftLimitNotice_with-hyphen"
       },
       "minimalResponse": {
         "ok": true,
         "type": "type_with-hyphen",
-        "box": {
+        "sandbox": {
           "id": "bx_23456789",
           "name": "name_with-hyphen",
           "state": "idle",
@@ -4367,11 +5278,11 @@
         }
       },
       "minimalParameters": {
-        "boxId": "bx_23456789",
-        "updateBoxRequest": {}
+        "sandboxId": "bx_23456789",
+        "updateSandboxRequest": {}
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789",
+        "path": "/sandboxes/bx_23456789",
         "method": "PATCH",
         "headers": {
           "Content-Type": "application/json",
@@ -4386,7 +5297,9 @@
       "parameters": {
         "dataRetentionUpdateRequest": {
           "enabled": true,
-          "confirmation": "delete archived box data"
+          "snapshotsOff": true,
+          "monitoringOff": true,
+          "confirmation": "delete archived sandbox data"
         }
       },
       "request": {
@@ -4399,7 +5312,9 @@
         "query": {},
         "body": {
           "enabled": true,
-          "confirmation": "delete archived box data"
+          "snapshotsOff": true,
+          "monitoringOff": true,
+          "confirmation": "delete archived sandbox data"
         }
       },
       "responseModel": "DataRetentionPolicyResponse",
@@ -4408,16 +5323,24 @@
         "type": "data_retention.info",
         "enabled": true,
         "enabledAt": "2026-09-07T00:00:00.000Z",
-        "queuedBoxes": 2,
-        "acceptedDeletionOperationsIrreversible": true
+        "queuedSandboxes": 2,
+        "acceptedDeletionOperationsIrreversible": true,
+        "snapshotsOff": true,
+        "snapshotsOffAt": "2026-09-07T00:00:00.000Z",
+        "monitoringOff": true,
+        "monitoringOffAt": "2026-09-07T00:00:00.000Z"
       },
       "expectedResponse": {
         "ok": true,
         "type": "data_retention.info",
         "enabled": true,
         "enabledAt": "2026-09-07T00:00:00.000Z",
-        "queuedBoxes": 2,
-        "acceptedDeletionOperationsIrreversible": true
+        "queuedSandboxes": 2,
+        "acceptedDeletionOperationsIrreversible": true,
+        "snapshotsOff": true,
+        "snapshotsOffAt": "2026-09-07T00:00:00.000Z",
+        "monitoringOff": true,
+        "monitoringOffAt": "2026-09-07T00:00:00.000Z"
       },
       "minimalResponse": {
         "ok": true,
@@ -4426,9 +5349,7 @@
         "enabledAt": null
       },
       "minimalParameters": {
-        "dataRetentionUpdateRequest": {
-          "enabled": true
-        }
+        "dataRetentionUpdateRequest": {}
       },
       "minimalRequest": {
         "path": "/account/data-retention",
@@ -4438,23 +5359,23 @@
           "Authorization": "Bearer fixture-only"
         },
         "query": {},
-        "body": {
-          "enabled": true
-        }
+        "body": {}
       }
     },
     {
       "operation": "updateEnvironment",
       "parameters": {
         "environmentId": "environmentId_with-hyphen",
-        "updateBoxEnvironmentRequest": {
+        "updateSandboxEnvironmentRequest": {
           "name": "name_with-hyphen",
           "isDefault": true,
           "safeForThirdParties": true,
           "passGithub": true,
           "passSecrets": true,
-          "passBoxCredentials": true,
+          "passSandboxCredentials": true,
           "passAgentsCredentials": true,
+          "credentialProfileId": "credentialProfileId_with-hyphen",
+          "proxyAiCredentials": true,
           "envContents": "envContents_with-hyphen",
           "secretFiles": [
             {
@@ -4470,7 +5391,8 @@
               "setupBlocking": true
             }
           ]
-        }
+        },
+        "org": "org_with-hyphen"
       },
       "request": {
         "path": "/environments/environmentId_with-hyphen",
@@ -4479,15 +5401,19 @@
           "Content-Type": "application/json",
           "Authorization": "Bearer fixture-only"
         },
-        "query": {},
+        "query": {
+          "org": "org_with-hyphen"
+        },
         "body": {
           "name": "name_with-hyphen",
           "isDefault": true,
           "safeForThirdParties": true,
           "passGithub": true,
           "passSecrets": true,
-          "passBoxCredentials": true,
+          "passSandboxCredentials": true,
           "passAgentsCredentials": true,
+          "credentialProfileId": "credentialProfileId_with-hyphen",
+          "proxyAiCredentials": true,
           "envContents": "envContents_with-hyphen",
           "secretFiles": [
             {
@@ -4505,7 +5431,7 @@
           ]
         }
       },
-      "responseModel": "BoxEnvironmentResponse",
+      "responseModel": "SandboxEnvironmentResponse",
       "response": {
         "success": true,
         "environment": {
@@ -4513,11 +5439,15 @@
           "name": "name_with-hyphen",
           "isDefault": true,
           "latestVersionId": "latestVersionId_with-hyphen",
+          "latestVersionNumber": 2,
+          "safetyAnsweredAt": "2026-09-07T00:00:00.000Z",
           "safeForThirdParties": true,
           "passGithub": true,
           "passSecrets": true,
-          "passBoxCredentials": true,
+          "passSandboxCredentials": true,
           "passAgentsCredentials": true,
+          "credentialProfileId": "credentialProfileId_with-hyphen",
+          "proxyAiCredentials": true,
           "envContents": "envContents_with-hyphen",
           "secretFiles": [
             {
@@ -4531,9 +5461,12 @@
               "databaseId": "databaseId_with-hyphen",
               "name": "name_with-hyphen",
               "fullName": "fullName_with-hyphen",
+              "description": "description_with-hyphen",
+              "url": "https://example.test/path?token=fixture-secret",
               "private": true,
               "permissions": "permissions_with-hyphen",
               "pushedAt": "2026-09-07T00:00:00.000Z",
+              "lastUserCommitAt": "2026-09-07T00:00:00.000Z",
               "baseBranch": "baseBranch_with-hyphen",
               "setupRoutineId": "setupRoutineId_with-hyphen",
               "setupScript": "setupScript_with-hyphen",
@@ -4544,7 +5477,7 @@
             {
               "id": "id_with-hyphen",
               "versionNumber": 2,
-              "boxCount": 2,
+              "sandboxCount": 2,
               "createdAt": "2026-09-07T00:00:00.000Z"
             }
           ]
@@ -4557,11 +5490,15 @@
           "name": "name_with-hyphen",
           "isDefault": true,
           "latestVersionId": "latestVersionId_with-hyphen",
+          "latestVersionNumber": 2,
+          "safetyAnsweredAt": "2026-09-07T00:00:00.000Z",
           "safeForThirdParties": true,
           "passGithub": true,
           "passSecrets": true,
-          "passBoxCredentials": true,
+          "passSandboxCredentials": true,
           "passAgentsCredentials": true,
+          "credentialProfileId": "credentialProfileId_with-hyphen",
+          "proxyAiCredentials": true,
           "envContents": "envContents_with-hyphen",
           "secretFiles": [
             {
@@ -4575,9 +5512,12 @@
               "databaseId": "databaseId_with-hyphen",
               "name": "name_with-hyphen",
               "fullName": "fullName_with-hyphen",
+              "description": "description_with-hyphen",
+              "url": "https://example.test/path?token=fixture-secret",
               "private": true,
               "permissions": "permissions_with-hyphen",
               "pushedAt": "2026-09-07T00:00:00.000Z",
+              "lastUserCommitAt": "2026-09-07T00:00:00.000Z",
               "baseBranch": "baseBranch_with-hyphen",
               "setupRoutineId": "setupRoutineId_with-hyphen",
               "setupScript": "setupScript_with-hyphen",
@@ -4588,7 +5528,7 @@
             {
               "id": "id_with-hyphen",
               "versionNumber": 2,
-              "boxCount": 2,
+              "sandboxCount": 2,
               "createdAt": "2026-09-07T00:00:00.000Z"
             }
           ]
@@ -4599,7 +5539,7 @@
       },
       "minimalParameters": {
         "environmentId": "environmentId_with-hyphen",
-        "updateBoxEnvironmentRequest": {}
+        "updateSandboxEnvironmentRequest": {}
       },
       "minimalRequest": {
         "path": "/environments/environmentId_with-hyphen",
@@ -4649,6 +5589,7 @@
         "type": "type_with-hyphen",
         "success": true,
         "environmentId": "environmentId_with-hyphen",
+        "subenvironmentId": "subenvironmentId_with-hyphen",
         "envContents": "envContents_with-hyphen",
         "secretFiles": [
           {
@@ -4665,6 +5606,7 @@
         "type": "type_with-hyphen",
         "success": true,
         "environmentId": "environmentId_with-hyphen",
+        "subenvironmentId": "subenvironmentId_with-hyphen",
         "envContents": "envContents_with-hyphen",
         "secretFiles": [
           {
@@ -4792,7 +5734,8 @@
       "operation": "upgradeEnvironment",
       "parameters": {
         "environmentId": "environmentId_with-hyphen",
-        "upgradeBoxEnvironmentRequest": {
+        "org": "org_with-hyphen",
+        "upgradeSandboxEnvironmentRequest": {
           "agentIds": [
             "agentIds_with-hyphen"
           ]
@@ -4805,23 +5748,31 @@
           "Content-Type": "application/json",
           "Authorization": "Bearer fixture-only"
         },
-        "query": {},
+        "query": {
+          "org": "org_with-hyphen"
+        },
         "body": {
           "agentIds": [
             "agentIds_with-hyphen"
           ]
         }
       },
-      "responseModel": "UpgradeBoxEnvironmentResponse",
+      "responseModel": "UpgradeSandboxEnvironmentResponse",
       "response": {
         "success": true,
         "upgraded": 2,
-        "failed": 2
+        "upgradedLive": 2,
+        "upgradedStopped": 2,
+        "failed": 2,
+        "latestVersionId": "latestVersionId_with-hyphen"
       },
       "expectedResponse": {
         "success": true,
         "upgraded": 2,
-        "failed": 2
+        "upgradedLive": 2,
+        "upgradedStopped": 2,
+        "failed": 2,
+        "latestVersionId": "latestVersionId_with-hyphen"
       },
       "minimalResponse": {
         "success": true,
@@ -4844,7 +5795,7 @@
     {
       "operation": "writeFile",
       "parameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "fileWriteRequest": {
           "path": "/home/user/fixture a?#.txt",
           "content": "content_with-hyphen",
@@ -4852,7 +5803,7 @@
         }
       },
       "request": {
-        "path": "/boxes/bx_23456789/files",
+        "path": "/sandboxes/bx_23456789/files",
         "method": "PUT",
         "headers": {
           "Content-Type": "application/json",
@@ -4891,14 +5842,14 @@
         "size": 2
       },
       "minimalParameters": {
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "fileWriteRequest": {
           "path": "/home/user/fixture a?#.txt",
           "content": "content_with-hyphen"
         }
       },
       "minimalRequest": {
-        "path": "/boxes/bx_23456789/files",
+        "path": "/sandboxes/bx_23456789/files",
         "method": "PUT",
         "headers": {
           "Content-Type": "application/json",

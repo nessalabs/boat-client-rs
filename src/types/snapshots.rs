@@ -4,15 +4,15 @@ use super::*;
 #[serde(rename_all = "camelCase")]
 pub struct SnapshotSummary {
     pub id: String,
-    pub box_id: String,
+    pub sandbox_id: String,
     pub status: String,
     pub kind: Option<String>,
-    pub generation: u64,
+    pub generation: Option<u64>,
     pub chain_id: Option<String>,
     pub created_at: String,
     pub completed_at: Option<String>,
-    pub size_bytes: u64,
-    pub file_count: u64,
+    pub size_bytes: Option<u64>,
+    pub file_count: Option<u64>,
     pub content_size_bytes: Option<u64>,
     pub content_file_count: Option<u64>,
     #[serde(flatten)]
@@ -22,7 +22,7 @@ impl fmt::Debug for SnapshotSummary {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("SnapshotSummary")
             .field("id", &self.id)
-            .field("box_id", &self.box_id)
+            .field("sandbox_id", &self.sandbox_id)
             .field("status", &self.status)
             .field("kind", &self.kind)
             .field("generation", &self.generation)
@@ -110,7 +110,7 @@ pub struct SnapshotTreeResponse {
     #[serde(rename = "type")]
     pub type_: Option<String>,
     pub snapshot_id: String,
-    pub box_id: String,
+    pub sandbox_id: String,
     pub generation: u64,
     pub tree_available: bool,
     pub truncated: bool,
@@ -127,7 +127,7 @@ impl fmt::Debug for SnapshotTreeResponse {
             .field("ok", &self.ok)
             .field("type", &self.type_)
             .field("snapshot_id", &self.snapshot_id)
-            .field("box_id", &self.box_id)
+            .field("sandbox_id", &self.sandbox_id)
             .field("generation", &self.generation)
             .field("tree_available", &self.tree_available)
             .field("truncated", &self.truncated)
@@ -147,8 +147,8 @@ pub struct SnapshotChunk {
     pub generation: u64,
     pub chunk_index: u64,
     pub r2_key: String,
-    pub size_bytes: u64,
-    pub sha256: String,
+    pub size_bytes: Option<u64>,
+    pub sha256: Option<String>,
     pub signed_url: String,
     #[serde(flatten)]
     pub extra: HashMap<String, serde_json::Value>,
@@ -161,7 +161,7 @@ impl fmt::Debug for SnapshotChunk {
             .field("chunk_index", &self.chunk_index)
             .field("r2_key_len", &self.r2_key.len())
             .field("size_bytes", &self.size_bytes)
-            .field("sha256_len", &self.sha256.len())
+            .field("sha256_len", &self.sha256.as_ref().map(String::len))
             .field("signed_url_len", &self.signed_url.len())
             .field("extra_count", &self.extra.len())
             .finish()
@@ -193,7 +193,7 @@ pub struct SnapshotDownloadResponse {
     #[serde(rename = "type")]
     pub type_: Option<String>,
     pub snapshot_id: String,
-    pub box_id: String,
+    pub sandbox_id: String,
     pub kind: String,
     pub generation: u64,
     pub expires_in_seconds: u64,
@@ -209,7 +209,7 @@ impl fmt::Debug for SnapshotDownloadResponse {
             .field("ok", &self.ok)
             .field("type", &self.type_)
             .field("snapshot_id", &self.snapshot_id)
-            .field("box_id", &self.box_id)
+            .field("sandbox_id", &self.sandbox_id)
             .field("kind", &self.kind)
             .field("generation", &self.generation)
             .field("expires_in_seconds", &self.expires_in_seconds)
@@ -273,7 +273,7 @@ impl fmt::Debug for DeletionOperationResponse {
     }
 }
 
-/// Shared options for global and per-box snapshot history.
+/// Shared options for global and per-sandbox snapshot history.
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct SnapshotsQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -286,6 +286,6 @@ pub struct SnapshotsQuery {
 /// The real response for each branch of `stop_and_remove_with`.
 #[derive(Debug, Clone)]
 pub enum StopOrDeleteResponse {
-    Stopped(std::boxed::Box<BoxActionResponse>),
+    Stopped(std::boxed::Box<SandboxActionResponse>),
     Deleting(std::boxed::Box<DeletionOperationResponse>),
 }

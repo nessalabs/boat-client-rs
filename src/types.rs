@@ -11,28 +11,42 @@ pub struct MeResponse {
     pub ok: bool,
     #[serde(rename = "type")]
     pub type_: String,
-    pub user: BoxUser,
+    pub user: SandboxUser,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct BoxUser {
+pub struct SandboxUser {
     pub id: Option<String>,
     pub login: Option<String>,
     pub email: Option<String>,
     pub name: Option<String>,
     pub zero_data_retention: Option<bool>,
     pub zero_data_retention_enabled_at: Option<String>,
+    pub display_name: Option<String>,
+    pub account_plan: Option<String>,
+    pub account_status: Option<String>,
+    pub closed: Option<bool>,
+    pub closed_at: Option<String>,
+    pub closure_contact_email: Option<String>,
+    pub connection_method: Option<String>,
+    pub connection_methods: Option<Vec<String>>,
+    pub purge_at: Option<String>,
+    pub purged_at: Option<String>,
+    pub service_account: Option<bool>,
+    pub suspended: Option<bool>,
+    pub suspended_at: Option<String>,
+    pub suspended_reason: Option<String>,
 }
 
 mod limits;
 pub use limits::*;
 
-// --- Box model ---
+// --- Sandbox model ---
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
 #[serde(rename_all = "camelCase")]
-pub enum BoxState {
+pub enum SandboxState {
     Init,
     Provisioning,
     Provisioned,
@@ -43,11 +57,12 @@ pub enum BoxState {
     Archiving,
     Archived,
     Error,
+    Cancelled,
     #[serde(other)]
     Unknown,
 }
 
-impl BoxState {
+impl SandboxState {
     pub fn as_str(&self) -> &'static str {
         match self {
             Self::Init => "init",
@@ -60,27 +75,31 @@ impl BoxState {
             Self::Archiving => "archiving",
             Self::Archived => "archived",
             Self::Error => "error",
+            Self::Cancelled => "cancelled",
             Self::Unknown => "unknown",
         }
     }
 
-    /// Whether the Box is ready to accept work.
+    /// Whether the Sandbox is ready to accept work.
     pub fn is_operable(&self) -> bool {
         matches!(self, Self::Ready | Self::Idle | Self::Running)
     }
 
-    /// Whether a readiness wait must stop because the Box is unavailable.
+    /// Whether a readiness wait must stop because the Sandbox is unavailable.
     pub fn is_terminal_failure(&self) -> bool {
-        matches!(self, Self::Archived | Self::Archiving | Self::Error)
+        matches!(
+            self,
+            Self::Archived | Self::Archiving | Self::Error | Self::Cancelled
+        )
     }
 }
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct Box {
+pub struct Sandbox {
     pub id: String,
-    pub name: String,
-    pub state: BoxState,
+    pub name: Option<String>,
+    pub state: SandboxState,
     #[serde(rename = "type")]
     pub type_: Option<String>,
     pub vcpu: Option<u32>,
@@ -107,11 +126,43 @@ pub struct Box {
     pub setup_error: Option<String>,
     pub error: Option<serde_json::Value>,
     pub ssh_endpoint: Option<String>,
+    /// Boat v1 `health` field.
+    pub health: Option<String>,
+    /// Boat v1 `healthReason` field.
+    pub health_reason: Option<String>,
+    /// Boat v1 `degradedSince` field.
+    pub degraded_since: Option<String>,
+    /// Boat v1 `hydrated` field.
+    pub hydrated: Option<bool>,
+    /// Boat v1 `hydratedAt` field.
+    pub hydrated_at: Option<String>,
+    /// Boat v1 `machineProvider` field.
+    pub machine_provider: Option<String>,
+    /// Boat v1 `snapshots` field.
+    pub snapshots: Option<bool>,
+    /// Boat v1 `monitoring` field.
+    pub monitoring: Option<bool>,
+    /// Boat v1 `snapshotVerifiedAt` field.
+    pub snapshot_verified_at: Option<String>,
+    /// Boat v1 `team` field.
+    pub team: Option<serde_json::Value>,
+    /// Boat v1 `createdBy` field.
+    pub created_by: Option<String>,
+    /// Boat v1 `createdById` field.
+    pub created_by_id: Option<String>,
+    /// Boat v1 `access` field.
+    pub access: Option<String>,
+    /// Boat v1 `holdsCreatorLogins` field.
+    pub holds_creator_logins: Option<bool>,
+    /// Boat v1 `wipePendingUntilRestart` field.
+    pub wipe_pending_until_restart: Option<bool>,
+    /// Boat v1 `stop` field.
+    pub stop: Option<serde_json::Value>,
 }
 
-impl fmt::Debug for Box {
+impl fmt::Debug for Sandbox {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("Box")
+        f.debug_struct("Sandbox")
             .field("id", &self.id)
             .field("state", &self.state)
             .field("vcpu", &self.vcpu)
@@ -132,53 +183,61 @@ pub struct PageInfo {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct BoxListResponse {
+pub struct SandboxListResponse {
     pub ok: bool,
     #[serde(rename = "type")]
     pub type_: Option<String>,
-    pub boxes: Vec<Box>,
+    pub sandboxes: Vec<Sandbox>,
     pub page_info: Option<PageInfo>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct BoxInfoResponse {
+pub struct SandboxInfoResponse {
     pub ok: bool,
     #[serde(rename = "type")]
     pub type_: Option<String>,
-    #[serde(rename = "box")]
-    pub box_: Box,
+    #[serde(rename = "sandbox")]
+    pub sandbox: Sandbox,
+    /// Boat v1 `giftLimitNotice` field.
+    pub gift_limit_notice: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CreateBoxResponse {
+pub struct CreateSandboxResponse {
     pub ok: bool,
     #[serde(rename = "type")]
     pub type_: Option<String>,
     pub status: Option<String>,
     pub ttl_seconds: Option<u32>,
-    #[serde(rename = "box")]
-    pub box_: Box,
+    #[serde(rename = "sandbox")]
+    pub sandbox: Sandbox,
+    /// Boat v1 `giftLimitNotice` field.
+    pub gift_limit_notice: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct BoxActionResponse {
+pub struct SandboxActionResponse {
     pub ok: bool,
     #[serde(rename = "type")]
     pub type_: Option<String>,
     pub id: String,
     pub status: String,
-    #[serde(rename = "box")]
-    pub box_: Option<Box>,
+    #[serde(rename = "sandbox")]
+    pub sandbox: Option<Sandbox>,
+    /// Boat v1 `giftLimitNotice` field.
+    pub gift_limit_notice: Option<String>,
+    /// Boat v1 `conversationId` field.
+    pub conversation_id: Option<String>,
 }
 
 // --- Requests ---
 
 #[derive(Clone, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CreateBoxRequest {
+pub struct CreateSandboxRequest {
     #[serde(rename = "type", skip_serializing_if = "Option::is_none")]
     pub type_: Option<String>,
     /// `None` = omit (server default). `Some(None)` = JSON null (no auto-stop).
@@ -204,11 +263,17 @@ pub struct CreateBoxRequest {
     pub team_id: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub from: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub snapshots: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub monitoring: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fail_fast: Option<bool>,
 }
 
-impl fmt::Debug for CreateBoxRequest {
+impl fmt::Debug for CreateSandboxRequest {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("CreateBoxRequest")
+        f.debug_struct("CreateSandboxRequest")
             .field("type_", &self.type_)
             .field("ttl_seconds", &self.ttl_seconds)
             .field("env", &self.env.as_ref().map(redact_env_map))
@@ -224,7 +289,7 @@ impl fmt::Debug for CreateBoxRequest {
     }
 }
 
-impl CreateBoxRequest {
+impl CreateSandboxRequest {
     pub fn ttl(seconds: u32) -> Self {
         Self {
             ttl_seconds: Some(Some(seconds)),
@@ -242,7 +307,7 @@ impl CreateBoxRequest {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct UpdateBoxRequest {
+pub struct UpdateSandboxRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     #[serde(
@@ -280,6 +345,9 @@ pub struct ResumeRequest {
         skip_serializing_if = "Option::is_none"
     )]
     pub ttl_seconds: Option<Option<u32>>,
+    /// Boat v1 `failFast` field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fail_fast: Option<bool>,
 }
 
 impl fmt::Debug for ResumeRequest {
@@ -296,7 +364,12 @@ impl fmt::Debug for ResumeRequest {
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct BoxesQuery {
+pub struct SandboxesQuery {
+    /// Per-request wallet header, separate from the organization query.
+    #[serde(skip_serializing)]
+    pub x_boat_org: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub org: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -317,6 +390,9 @@ pub struct CommandRequest {
     pub timeout_seconds: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub detached: Option<bool>,
+    /// Boat v1 `stream` field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stream: Option<bool>,
 }
 
 impl fmt::Debug for CommandRequest {
@@ -335,6 +411,7 @@ impl CommandRequest {
         Self {
             command: command.into(),
             cwd: None,
+            stream: None,
             timeout_seconds: None,
             detached: None,
         }
@@ -368,6 +445,10 @@ pub struct CommandResponse {
     pub cwd: Option<String>,
     pub started_at: Option<String>,
     pub finished_at: Option<String>,
+    /// Boat v1 `commandId` field.
+    pub command_id: Option<String>,
+    /// Boat v1 `oomKilled` field.
+    pub oom_killed: Option<bool>,
 }
 
 impl fmt::Debug for CommandResponse {
@@ -467,6 +548,9 @@ pub struct HostPortRequest {
     pub public: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+    /// Boat v1 `localhost` field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub localhost: Option<bool>,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -481,6 +565,8 @@ pub struct HostPortResponse {
     pub url: Option<String>,
     pub is_protected: Option<bool>,
     pub access: Option<String>,
+    /// Boat v1 `localhost` field.
+    pub localhost: Option<bool>,
 }
 
 impl std::fmt::Debug for HostPortResponse {
@@ -513,6 +599,10 @@ pub struct SshKeyResponse {
     pub success: Option<bool>,
     pub machine_ip: Option<String>,
     pub ssh_user: Option<String>,
+    /// Boat v1 `sshEndpoint` field.
+    pub ssh_endpoint: Option<String>,
+    /// Boat v1 `hostKey` field.
+    pub host_key: Option<String>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
@@ -587,7 +677,7 @@ mod tests {
     fn create_request_debug_redacts_env_and_setup() {
         let mut env = HashMap::new();
         env.insert("SECRET".into(), "super-secret-value".into());
-        let req = CreateBoxRequest {
+        let req = CreateSandboxRequest {
             env: Some(env),
             setup_script: Some("export TOKEN=abc".into()),
             ..Default::default()
@@ -605,7 +695,7 @@ mod tests {
             "name": "demo",
             "state": "ready"
         });
-        let b: Box = serde_json::from_value(v).unwrap();
+        let b: Sandbox = serde_json::from_value(v).unwrap();
         assert!(!b.desktop_available);
         assert!(!b.snapshot_available);
     }
@@ -624,6 +714,8 @@ mod tests {
             stderr_truncated: None,
             timed_out: false,
             cwd: None,
+            command_id: None,
+            oom_killed: None,
             started_at: None,
             finished_at: None,
         };

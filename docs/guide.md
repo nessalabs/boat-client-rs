@@ -1,10 +1,10 @@
 # Rust SDK guide
 
-`box_client` is an asynchronous client for the Ascii Box API. Use it to create and
+`boat_client` is an asynchronous client for the Boat API. Use it to create and
 operate cloud sandboxes, execute commands, read and write files, run agent prompts,
 consume events, and manage snapshots and environments.
 
-`BoxApi` is the entry point. Its methods return typed `Result<T>` values and use a
+`BoatApi` is the entry point. Its methods return typed `Result<T>` values and use a
 shared connection pool. Cloning the client is inexpensive.
 
 ## Install and configure
@@ -13,60 +13,60 @@ Requires Rust 1.89 or newer.
 
 ```toml
 [dependencies]
-box_client = { git = "https://github.com/nessalabs/asciibox-client-rs" }
+boat_client = { git = "https://github.com/nessalabs/boat-client-rs" }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 futures-util = "0.3" # StreamExt for event streams
 ```
 
-Configure an API key from the Box dashboard or CLI:
+Configure an API key from the Sandbox dashboard or CLI:
 
 ```bash
-export BOX_API_KEY=box_…
-# Optional: BOX_ORG, BOX_BASE_URL
+export BOAT_API_KEY=sandbox…
+# Optional: BOAT_ORG, BOAT_BASE_URL
 ```
 
 ```rust,no_run
-use box_client::{BoxApi, BoxClientConfig, Result};
+use boat_client::{BoatApi, BoatClientConfig, Result};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let api = BoxApi::new(BoxClientConfig::from_env()?)?;
-    let boxes = api.boxes(None).await?;
-    for item in boxes.boxes {
+    let api = BoatApi::new(BoatClientConfig::from_env()?)?;
+    let sandboxes = api.sandboxes(None).await?;
+    for item in sandboxes.sandboxes {
         println!("{}: {}", item.id, item.state.as_str());
     }
     Ok(())
 }
 ```
 
-You can also construct `BoxClientConfig::new(api_key)` directly and use its builder
+You can also construct `BoatClientConfig::new(api_key)` directly and use its builder
 methods to set the organization, base URL, timeouts, and response-size limit.
 
-## Create a Box, run commands, and use files
+## Create a Sandbox, run commands, and use files
 
-This example creates a Box with a 30-minute lifetime, waits for it to become
+This example creates a Sandbox with a 30-minute lifetime, waits for it to become
 available, writes a file, runs a command, and reads the result. It requests
 stop/archive even if one of those operations returns an error. Archive retains
 snapshots for later resume.
 
 ```rust,no_run
-use box_client::{
-    read_text, wait_until_ready, write_text, BoxApi, CreateBoxRequest, Result,
+use boat_client::{
+    read_text, wait_until_ready, write_text, BoatApi, CreateSandboxRequest, Result,
 };
 
-async fn run_job(api: &BoxApi) -> Result<String> {
-    let created = api.create(Some(CreateBoxRequest::ttl(1800)), &Default::default()).await?;
-    let box_id = &created.box_.id;
+async fn run_job(api: &BoatApi) -> Result<String> {
+    let created = api.create(Some(CreateSandboxRequest::ttl(1800)), &Default::default()).await?;
+    let sandbox_id = &created.sandbox.id;
 
     let result = async {
-        wait_until_ready(api, box_id).await?;
-        write_text(api, box_id, "/tmp/input.txt", "hello from Rust").await?;
-        let command = api.exec(box_id, "cat /tmp/input.txt > /tmp/output.txt").await?;
+        wait_until_ready(api, sandbox_id).await?;
+        write_text(api, sandbox_id, "/tmp/input.txt", "hello from Rust").await?;
+        let command = api.exec(sandbox_id, "cat /tmp/input.txt > /tmp/output.txt").await?;
         println!("exit code: {:?}", command.exit_code);
-        read_text(api, box_id, "/tmp/output.txt").await
+        read_text(api, sandbox_id, "/tmp/output.txt").await
     }.await;
 
-    let stopped = api.stop(box_id, None).await;
+    let stopped = api.stop(sandbox_id, None).await;
     stopped?;
     result
 }
@@ -88,15 +88,15 @@ once it reaches `finished` or `failed`. Use `stream_prompt` to consume that
 prompt's events as they arrive:
 
 ```rust,no_run
-use box_client::{
-    stream_prompt, BoxApi, CancellationToken, PromptProvider, PromptRequest,
+use boat_client::{
+    stream_prompt, BoatApi, CancellationToken, PromptProvider, PromptRequest,
     Result, StreamPromptOptions,
 };
 use futures_util::{pin_mut, StreamExt};
 
-async fn run_prompt(api: &BoxApi, box_id: &str, cancellation: CancellationToken) -> Result<()> {
+async fn run_prompt(api: &BoatApi, sandbox_id: &str, cancellation: CancellationToken) -> Result<()> {
     let request = PromptRequest::new(PromptProvider::Codex, "Inspect the project and summarize it.");
-    let events = stream_prompt(api, box_id, request, Some(StreamPromptOptions {
+    let events = stream_prompt(api, sandbox_id, request, Some(StreamPromptOptions {
         cancellation: Some(cancellation),
         ..Default::default()
     }));
@@ -129,14 +129,14 @@ stream's observation window.
 
 ## Snapshots and environments
 
-List snapshots globally or for a Box. Follow `page_info.next_cursor` when
+List snapshots globally or for a Sandbox. Follow `page_info.next_cursor` when
 `page_info.has_more` is true:
 
 ```rust,no_run
-use box_client::{BoxApi, Result, SnapshotsQuery};
+use boat_client::{BoatApi, Result, SnapshotsQuery};
 
-async fn inspect_snapshots(api: &BoxApi, box_id: &str) -> Result<()> {
-    let first = api.list_box_snapshots(box_id, Some(&SnapshotsQuery {
+async fn inspect_snapshots(api: &BoatApi, sandbox_id: &str) -> Result<()> {
+    let first = api.list_sandbox_snapshots(sandbox_id, Some(&SnapshotsQuery {
         limit: Some(20),
         sort: Some("desc".into()),
         ..Default::default()
@@ -146,7 +146,7 @@ async fn inspect_snapshots(api: &BoxApi, box_id: &str) -> Result<()> {
         println!("{}", snapshot.id);
     }
     if let Some(page) = first.page_info.filter(|page| page.has_more) {
-        let next = api.list_box_snapshots(box_id, Some(&SnapshotsQuery {
+        let next = api.list_sandbox_snapshots(sandbox_id, Some(&SnapshotsQuery {
             limit: Some(20),
             sort: Some("desc".into()),
             cursor: page.next_cursor,
@@ -165,9 +165,9 @@ Environment methods manage reusable variables, secret files, repositories, and
 versions. For example:
 
 ```rust,no_run
-use box_client::{BoxApi, Result, SetEnvironmentVarRequest};
+use boat_client::{BoatApi, Result, SetEnvironmentVarRequest};
 
-async fn configure_environment(api: &BoxApi, environment_id: &str) -> Result<()> {
+async fn configure_environment(api: &BoatApi, environment_id: &str) -> Result<()> {
     api.set_environment_var(environment_id, "APP_MODE", SetEnvironmentVarRequest {
         value: "development".into(),
     }).await?;
@@ -182,15 +182,15 @@ Changing data retention requires an interactive session token.
 
 ## Permanent deletion
 
-`stop` archives a Box for later resume. `delete_box` permanently deletes it and
+`stop` archives a Sandbox for later resume. `delete_sandbox` permanently deletes it and
 returns an accepted background operation. The client supplies the required
 confirmation header. Observe that operation to confirm cleanup:
 
 ```rust,no_run
-use box_client::{wait_for_deletion, BoxApi, Result, WaitOptions};
+use boat_client::{wait_for_deletion, BoatApi, Result, WaitOptions};
 
-async fn delete_and_wait(api: &BoxApi, box_id: &str) -> Result<()> {
-    let accepted = api.delete_box(box_id).await?;
+async fn delete_and_wait(api: &BoatApi, sandbox_id: &str) -> Result<()> {
+    let accepted = api.delete_sandbox(sandbox_id).await?;
     let operation = wait_for_deletion(api, &accepted.operation.id, Some(
         WaitOptions::from_millis(900_000, 5_000),
     )).await?;
@@ -199,12 +199,12 @@ async fn delete_and_wait(api: &BoxApi, box_id: &str) -> Result<()> {
 }
 ```
 
-Only `completed` proves cleanup finished. A Box can disappear from normal reads
+Only `completed` proves cleanup finished. A Sandbox can disappear from normal reads
 while its deletion remains `pending`, `processing`, or `blocked`. The default
-five-minute wait is a caller budget; Box documents no completion deadline or
+five-minute wait is a caller budget; Sandbox documents no completion deadline or
 blocked-state retry schedule. Choose a longer timeout, zero for unlimited
 observation, or check `get_deletion_operation` later. See the
-[Box deletion documentation](https://docs.ascii.dev/box/data-retention).
+[Sandbox deletion documentation](https://docs.boat.dev/data-retention).
 
 ## Options and errors
 
@@ -223,7 +223,7 @@ models with `extra` retain unrecognized fields. Response `Option` values general
 combine absent and null. IDs, counts and byte sizes use integer types, while
 fractional balances and usage use `f64`.
 
-Every API call returns `box_client::Result<T>`. Inspect `Error::status()`,
+Every API call returns `boat_client::Result<T>`. Inspect `Error::status()`,
 `api_message()`, and `api_details()` for a server failure. Non-envelope HTTP errors
 use `Error::HttpStatus`; decoding errors use `Error::Serde`. An HTTP 2xx response
 still preserves the payload's `ok` field, including `false`.
@@ -259,24 +259,24 @@ error without retrying early. Waits and streams propagate exhausted errors.
 
 Mutations are never automatically retried. For your own retry handling, supply
 the idempotency key in [`CreateOptions::idempotency_key`] when calling
-[`BoxApi::create`], or as the third argument (`Some("your-stable-key")`) to
-[`BoxApi::fork`]. Responses above the configured buffer limit return
+[`BoatApi::create`], or as the third argument (`Some("your-stable-key")`) to
+[`BoatApi::fork`]. Responses above the configured buffer limit return
 `Error::ResponseTooLarge`, including errors and chunked downloads.
 
 
 ## Configure retries and logging
 
-`BoxClientConfig` is the public configuration type. `BoxApi::config()` exposes
+`BoatClientConfig` is the public configuration type. `BoatApi::config()` exposes
 the active configuration.
 Retry settings apply to GET requests; mutations and handoff action callbacks are
 never automatically retried.
 
 ```rust,no_run
 use std::time::Duration;
-use box_client::{BoxApi, BoxClientConfig, RetryConfig, Result};
+use boat_client::{BoatApi, BoatClientConfig, RetryConfig, Result};
 
-fn client() -> Result<BoxApi> {
-    let config = BoxClientConfig::from_env()?
+fn client() -> Result<BoatApi> {
+    let config = BoatClientConfig::from_env()?
         .with_retry(RetryConfig {
             max_attempts: 5,
             initial_delay: Duration::from_millis(250),
@@ -284,7 +284,7 @@ fn client() -> Result<BoxApi> {
             multiplier: 2,
             jitter: true,
         });
-    BoxApi::new(config)
+    BoatApi::new(config)
 }
 ```
 
@@ -299,7 +299,7 @@ fn client() -> Result<BoxApi> {
 Without jitter, delays are `initial_delay × multiplier^retry_index`, capped at
 `max_delay`. With jitter, the final delay is also capped. `max_attempts` and
 `multiplier` must be at least 1, and `initial_delay` cannot exceed `max_delay`.
-Invalid settings return `Error::Config` when constructing `BoxApi`.
+Invalid settings return `Error::Config` when constructing `BoatApi`.
 
 The server's `Retry-After` is a minimum and may exceed `max_delay`. If the final
 wait would exceed `request_timeout`, the client returns the error. Request
@@ -311,7 +311,7 @@ budgets for those helpers.
 
 The SDK emits structured DEBUG events and request spans through `tracing`.
 It does not install a subscriber, parse logging environment variables, or add a
-logging switch to `BoxClientConfig`. This follows the
+logging switch to `BoatClientConfig`. This follows the
 [tracing guidance for libraries](https://docs.rs/tracing/latest/tracing/#in-libraries).
 
 To select logging with `RUST_LOG`, add this dependency to your **application**:
@@ -330,21 +330,21 @@ fn main() {
         .with_env_filter(EnvFilter::try_from_default_env()
             .unwrap_or_else(|_| EnvFilter::new("warn")))
         .init();
-    // Start your application and use BoxApi normally.
+    // Start your application and use BoatApi normally.
 }
 ```
 
 ```bash
-RUST_LOG=box_client=debug cargo run          # SDK diagnostics
-RUST_LOG=box_client::retry=debug cargo run   # Retry events only
-RUST_LOG=box_client=off cargo run            # Disable SDK diagnostics
+RUST_LOG=boat_client=debug cargo run          # SDK diagnostics
+RUST_LOG=boat_client::retry=debug cargo run   # Retry events only
+RUST_LOG=boat_client=off cargo run            # Disable SDK diagnostics
 ```
 
 Applications with an existing subscriber keep their existing setup. They can
 also set filters in code, use JSON output, or export tracing spans. Without a
 subscriber collecting the events, the SDK does not print logs.
 
-Targets are `box_client::http`, `box_client::retry`, and `box_client::handoff`.
+Targets are `boat_client::http`, `boat_client::retry`, and `boat_client::handoff`.
 Request spans identify a static operation name and HTTP method. Events report
 attempts, status, elapsed time, retry delay, and a fixed error category. Handoff
 events report phase and revision. The SDK does not log URLs, resource IDs,
@@ -366,19 +366,19 @@ are disabled/exhausted, or the failed call was a mutation. Dates are converted
 to a delay when the response arrives. Missing or invalid headers return `None`.
 The value is not a countdown; callers persisting it should record their own
 observation time. Timeout/connect errors use `Error::Http`; decoding, oversized
-responses, cancellation, and terminal Box states have their own variants.
+responses, cancellation, and terminal Sandbox states have their own variants.
 
 If your scheduler owns retries, use `RetryConfig::disabled()` to avoid multiplying
 its attempts by the SDK's attempts. Inspect a safe GET failure like this:
 
 ```rust,no_run
-use box_client::{BoxApi, BoxClientConfig, RetryConfig, Result};
+use boat_client::{BoatApi, BoatClientConfig, RetryConfig, Result};
 
 async fn inspect() -> Result<()> {
-    let api = BoxApi::new(BoxClientConfig::from_env()?
+    let api = BoatApi::new(BoatClientConfig::from_env()?
         .with_retry(RetryConfig::disabled()))?;
-    match api.boxes(None).await {
-        Ok(response) => println!("boxes={}", response.boxes.len()),
+    match api.sandboxes(None).await {
+        Ok(response) => println!("sandboxes={}", response.sandboxes.len()),
         Err(error) if error.is_retryable() => {
             // Pass this metadata to your scheduler; no retry is launched here.
             eprintln!("transient status={:?}, retry_after={:?}",

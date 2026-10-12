@@ -3,7 +3,7 @@ use std::time::Duration;
 
 use tokio::time::{sleep, timeout_at, Instant};
 
-use crate::client::BoxApi;
+use crate::client::Api;
 use crate::error::{Error, Result};
 use crate::types::*;
 
@@ -56,7 +56,7 @@ impl PollBudget {
         future: impl Future<Output = Result<T>>,
     ) -> Result<T> {
         let expired = || Error::WaitTimeout {
-            box_id: resource_id.into(),
+            sandbox_id: resource_id.into(),
             last_state: state.into(),
         };
         match self.deadline {
@@ -103,37 +103,45 @@ where
     }
 }
 
-pub async fn wait_until_ready(api: &BoxApi, box_id: &str) -> Result<Box> {
-    wait_until_ready_with(api, box_id, WaitOptions::default()).await
+pub async fn wait_until_ready(api: &Api, sandbox_id: &str) -> Result<Sandbox> {
+    wait_until_ready_with(api, sandbox_id, WaitOptions::default()).await
 }
 
-pub async fn wait_until_ready_with(api: &BoxApi, box_id: &str, opts: WaitOptions) -> Result<Box> {
-    wait_for_box(api, box_id, opts, BoxState::is_operable).await
-}
-
-pub async fn wait_until_idle(api: &BoxApi, box_id: &str) -> Result<Box> {
-    wait_until_idle_with(api, box_id, WaitOptions::from_millis(600_000, 2_000)).await
-}
-
-pub async fn wait_until_idle_with(api: &BoxApi, box_id: &str, opts: WaitOptions) -> Result<Box> {
-    wait_for_box(api, box_id, opts, |state| *state == BoxState::Idle).await
-}
-
-async fn wait_for_box(
-    api: &BoxApi,
-    box_id: &str,
+pub async fn wait_until_ready_with(
+    api: &Api,
+    sandbox_id: &str,
     opts: WaitOptions,
-    ready: impl Fn(&BoxState) -> bool,
-) -> Result<Box> {
-    poll(box_id, opts, || async {
-        let info = api.get(box_id).await?;
-        if ready(&info.box_.state) {
-            return Ok(Poll::Ready(info.box_));
+) -> Result<Sandbox> {
+    wait_for_sandbox(api, sandbox_id, opts, SandboxState::is_operable).await
+}
+
+pub async fn wait_until_idle(api: &Api, sandbox_id: &str) -> Result<Sandbox> {
+    wait_until_idle_with(api, sandbox_id, WaitOptions::from_millis(600_000, 2_000)).await
+}
+
+pub async fn wait_until_idle_with(
+    api: &Api,
+    sandbox_id: &str,
+    opts: WaitOptions,
+) -> Result<Sandbox> {
+    wait_for_sandbox(api, sandbox_id, opts, |state| *state == SandboxState::Idle).await
+}
+
+async fn wait_for_sandbox(
+    api: &Api,
+    sandbox_id: &str,
+    opts: WaitOptions,
+    ready: impl Fn(&SandboxState) -> bool,
+) -> Result<Sandbox> {
+    poll(sandbox_id, opts, || async {
+        let info = api.get(sandbox_id).await?;
+        if ready(&info.sandbox.state) {
+            return Ok(Poll::Ready(info.sandbox));
         }
-        let state = info.box_.state.as_str().to_owned();
-        if info.box_.state.is_terminal_failure() {
-            return Err(Error::BoxTerminal {
-                box_id: box_id.into(),
+        let state = info.sandbox.state.as_str().to_owned();
+        if info.sandbox.state.is_terminal_failure() {
+            return Err(Error::SandboxTerminal {
+                sandbox_id: sandbox_id.into(),
                 state,
             });
         }
@@ -144,16 +152,19 @@ async fn wait_for_box(
 
 /// Wait until a prompt finishes or fails, returning its terminal run.
 pub async fn wait_for_prompt(
-    api: &BoxApi,
-    box_id: &str,
+    api: &Api,
+    sandbox_id: &str,
     prompt_id: &str,
     opts: Option<WaitOptions>,
 ) -> Result<PromptRun> {
     poll(
-        box_id,
+        sandbox_id,
         opts.unwrap_or_else(|| WaitOptions::from_millis(1_800_000, 2_000)),
         || async {
-            let run = api.prompt_run_status(box_id, prompt_id).await?.prompt_run;
+            let run = api
+                .prompt_run_status(sandbox_id, prompt_id)
+                .await?
+                .prompt_run;
             if matches!(run.status.as_str(), "finished" | "failed") {
                 Ok(Poll::Ready(run))
             } else {
@@ -182,14 +193,14 @@ impl Default for DesktopWaitOptions {
 }
 
 pub async fn wait_for_desktop(
-    api: &BoxApi,
-    box_id: &str,
+    api: &Api,
+    sandbox_id: &str,
     public_access: bool,
     opts: Option<WaitOptions>,
 ) -> Result<DesktopResponse> {
     wait_for_desktop_with(
         api,
-        box_id,
+        sandbox_id,
         DesktopWaitOptions {
             public_access,
             wait: opts.unwrap_or_default(),
@@ -200,14 +211,14 @@ pub async fn wait_for_desktop(
 }
 
 pub async fn wait_for_desktop_with(
-    api: &BoxApi,
-    box_id: &str,
+    api: &Api,
+    sandbox_id: &str,
     opts: DesktopWaitOptions,
 ) -> Result<DesktopResponse> {
-    poll(box_id, opts.wait, || async {
+    poll(sandbox_id, opts.wait, || async {
         let desktop = api
             .desktop(
-                box_id,
+                sandbox_id,
                 Some(&crate::DesktopQuery {
                     vnc: opts.vnc,
                     ..Default::default()
@@ -231,12 +242,12 @@ pub async fn wait_for_desktop_with(
     .await
 }
 
-/// Wait for backend deletion completion. A hidden box or `blocked` operation is
+/// Wait for backend deletion completion. A hidden sandbox or `blocked` operation is
 /// not completion; those operations remain pending until completed or timed out.
 /// The five-minute default is a caller budget, not a service completion guarantee.
 /// Pass a longer `WaitOptions` timeout, or zero for unlimited observation.
 pub async fn wait_for_deletion(
-    api: &BoxApi,
+    api: &Api,
     operation_id: &str,
     opts: Option<WaitOptions>,
 ) -> Result<DeletionOperation> {

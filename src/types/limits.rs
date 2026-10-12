@@ -16,9 +16,9 @@ pub struct LimitsResponse {
     pub checkout_required: Option<bool>,
     pub start_blocked_reason: Option<String>,
     pub contact_message: Option<String>,
-    pub active_boxes: u64,
+    pub active_sandboxes: u64,
     pub active_states: Option<Vec<String>>,
-    pub max_active_boxes: u64,
+    pub max_active_sandboxes: u64,
     pub max_creation_requests_per_minute: Option<u64>,
     pub max_creation_requests_per_day: Option<u64>,
     pub start_limits: Option<LimitsFieldsStartLimits>,
@@ -56,7 +56,7 @@ impl fmt::Debug for LimitsResponse {
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LimitsFieldsCurrentLimits {
-    pub active_boxes: Option<u64>,
+    pub active_sandboxes: Option<u64>,
     pub creation_rate_per_minute: Option<u64>,
     pub creation_requests_per_day: Option<u64>,
     #[serde(flatten)]

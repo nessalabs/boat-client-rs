@@ -1,12 +1,12 @@
 #![allow(dead_code)]
 pub mod logs;
-use box_client::{BoxApi, BoxClientConfig};
+use boat_client::{BoatApi, BoatClientConfig};
 use serde_json::Value;
 use wiremock::MockServer;
-pub const BOX_ID: &str = "bx_23456789";
-pub fn client(server: &MockServer) -> BoxApi {
-    BoxApi::new(
-        BoxClientConfig::new("fixture-only")
+pub const SANDBOX_ID: &str = "bx_23456789";
+pub fn client(server: &MockServer) -> BoatApi {
+    BoatApi::new(
+        BoatClientConfig::new("fixture-only")
             .unwrap()
             .with_base_path(server.uri())
             .unwrap()

@@ -1,5 +1,5 @@
-//! RUST_LOG=box_client=debug cargo run --example logging
-use box_client::{BoxApi, BoxClientConfig, Result};
+//! RUST_LOG=boat_client=debug cargo run --example logging
+use boat_client::{BoatApi, BoatClientConfig, Result};
 use tracing_subscriber::EnvFilter;
 
 #[tokio::main]
@@ -9,8 +9,8 @@ async fn main() -> Result<()> {
             EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("warn")),
         )
         .init();
-    let api = BoxApi::new(BoxClientConfig::from_env()?)?;
-    let response = api.boxes(None).await?;
-    println!("{} boxes", response.boxes.len());
+    let api = BoatApi::new(BoatClientConfig::from_env()?)?;
+    let response = api.sandboxes(None).await?;
+    println!("{} sandboxes", response.sandboxes.len());
     Ok(())
 }

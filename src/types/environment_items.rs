@@ -65,29 +65,29 @@ impl fmt::Debug for SetEnvironmentVarRequest {
 
 #[derive(Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct UpgradeBoxEnvironmentRequest {
+pub struct UpgradeSandboxEnvironmentRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub agent_ids: Option<Vec<String>>,
 }
-impl fmt::Debug for UpgradeBoxEnvironmentRequest {
+impl fmt::Debug for UpgradeSandboxEnvironmentRequest {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("UpgradeBoxEnvironmentRequest")
+        f.debug_struct("UpgradeSandboxEnvironmentRequest")
             .finish_non_exhaustive()
     }
 }
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct UpgradeBoxEnvironmentResponse {
+pub struct UpgradeSandboxEnvironmentResponse {
     pub success: bool,
     pub upgraded: u64,
     pub failed: u64,
     #[serde(flatten)]
     pub extra: HashMap<String, serde_json::Value>,
 }
-impl fmt::Debug for UpgradeBoxEnvironmentResponse {
+impl fmt::Debug for UpgradeSandboxEnvironmentResponse {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("UpgradeBoxEnvironmentResponse")
+        f.debug_struct("UpgradeSandboxEnvironmentResponse")
             .field("success", &self.success)
             .field("upgraded", &self.upgraded)
             .field("failed", &self.failed)

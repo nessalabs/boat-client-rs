@@ -1,6 +1,6 @@
 #![cfg(unix)]
 mod common;
-use box_client::handoff::*;
+use boat_client::handoff::*;
 use std::{
     path::PathBuf,
     sync::{
@@ -13,7 +13,7 @@ struct Directory(PathBuf);
 impl Directory {
     fn new() -> Self {
         Self(std::env::temp_dir().join(format!(
-            "box-client-handoff-test-{:032x}",
+            "boat-client-handoff-test-{:032x}",
             fastrand::u128(..)
         )))
     }
@@ -28,8 +28,8 @@ impl Drop for Directory {
 }
 fn plan() -> HandoffPlan {
     HandoffPlan {
-        source_box_id: "bx_23456789".into(),
-        target_box_id: "bx_abcdefgh".into(),
+        source_sandbox_id: "bx_23456789".into(),
+        target_sandbox_id: "bx_abcdefgh".into(),
         intent: "manifest-and-command-digest".into(),
     }
 }
@@ -268,7 +268,7 @@ async fn malformed_receipts_fail_closed_and_partial_temp_files_are_ignored() {
         serde_json::json!({"schema_version":2}),
         serde_json::json!({"id":"other"}),
         serde_json::json!({"phase":"started"}),
-        serde_json::json!({"plan":{"source_box_id":"", "target_box_id":"x", "intent":"y"}}),
+        serde_json::json!({"plan":{"source_sandbox_id":"", "target_sandbox_id":"x", "intent":"y"}}),
     ] {
         let mut corrupt = original.clone();
         for (key, value) in patch.as_object().unwrap() {
@@ -532,7 +532,7 @@ async fn application_hooks_run_only_after_claim_and_never_repeat_on_stale_receip
 async fn handoff_logs_report_progress_without_identifiers_or_references() {
     if common::logs::isolated(
         "handoff_logs_report_progress_without_identifiers_or_references",
-        "box_client=trace",
+        "boat_client=trace",
     ) {
         return;
     }
@@ -545,8 +545,8 @@ async fn handoff_logs_report_progress_without_identifiers_or_references() {
             .create(
                 "secret-operation",
                 HandoffPlan {
-                    source_box_id: "secret-source".into(),
-                    target_box_id: "secret-target".into(),
+                    source_sandbox_id: "secret-source".into(),
+                    target_sandbox_id: "secret-target".into(),
                     intent: "secret-intent".into(),
                 },
             )

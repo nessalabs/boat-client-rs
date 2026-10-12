@@ -1,7 +1,8 @@
 //! Administration and resource operations using the shared HTTP transport.
 use super::*;
+use crate::service::SANDBOX_PATH;
 
-impl BoxApi {
+impl Api {
     /// Add a repository to an environment.
     ///
     /// `POST /environments/{environmentId}/repos`.
@@ -36,11 +37,14 @@ impl BoxApi {
             .await
     }
 
-    /// Download an artifact from a Box as bytes.
+    /// Download an artifact from a Sandbox as bytes.
     ///
-    /// `GET /boxes/{boxId}/artifacts`.
-    pub async fn artifact(&self, box_id: &str, path: &str) -> Result<Vec<u8>> {
-        let api_path = format!("/boxes/{}/artifacts", validate_box_id(box_id)?);
+    /// `GET /sandboxes/{sandboxId}/artifacts`.
+    pub async fn artifact(&self, sandbox_id: &str, path: &str) -> Result<Vec<u8>> {
+        let api_path = format!(
+            "{SANDBOX_PATH}/{}/artifacts",
+            validate_sandbox_id(sandbox_id)?
+        );
         self.request("artifact", Method::GET, &api_path)
             .query(Some(&[("path", path)]))
             .bytes()
@@ -131,16 +135,16 @@ impl BoxApi {
             .await
     }
 
-    /// Create an independent Box from an existing Box.
+    /// Create an independent Sandbox from an existing Sandbox.
     ///
-    /// `POST /boxes/{boxId}/fork`.
+    /// `POST /sandboxes/{sandboxId}/fork`.
     pub async fn fork(
         &self,
-        box_id: &str,
+        sandbox_id: &str,
         request: Option<ForkRequest>,
         idempotency_key: Option<&str>,
-    ) -> Result<BoxActionResponse> {
-        let api_path = format!("/boxes/{}/fork", validate_box_id(box_id)?);
+    ) -> Result<SandboxActionResponse> {
+        let api_path = format!("{SANDBOX_PATH}/{}/fork", validate_sandbox_id(sandbox_id)?);
         self.request("fork", Method::POST, &api_path)
             .json(request.as_ref())
             .header("Idempotency-Key", idempotency_key)
@@ -218,7 +222,7 @@ impl BoxApi {
             .await
     }
 
-    /// Save a named snapshot from a Box.
+    /// Save a named snapshot from a Sandbox.
     ///
     /// `POST /named-snapshots`.
     pub async fn save_named_snapshot(
@@ -240,7 +244,7 @@ impl BoxApi {
             .await
     }
 
-    /// Select a repository for new Boxes.
+    /// Select a repository for new Sandboxes.
     ///
     /// `POST /repos`.
     pub async fn select_repo(
@@ -339,8 +343,8 @@ impl BoxApi {
     pub async fn upgrade_environment(
         &self,
         environment_id: &str,
-        request: Option<UpgradeBoxEnvironmentRequest>,
-    ) -> Result<UpgradeBoxEnvironmentResponse> {
+        request: Option<UpgradeSandboxEnvironmentRequest>,
+    ) -> Result<UpgradeSandboxEnvironmentResponse> {
         let api_path = format!("/environments/{}/upgrade", segment(environment_id)?);
         self.request("upgrade_environment", Method::POST, &api_path)
             .json(request.as_ref())

@@ -4,7 +4,10 @@ use std::time::Duration;
 
 use url::Url;
 
-use crate::error::{Error, Result};
+use crate::{
+    error::{Error, Result},
+    service,
+};
 
 /// Authentication, organization scope, HTTP timeouts, retry policy and response limits.
 ///
@@ -12,12 +15,12 @@ use crate::error::{Error, Result};
 /// a short **connect** budget and a separate **request** budget. Long-running
 /// `command` calls extend the request timeout to cover `timeoutSeconds` plus slack.
 #[derive(Clone)]
-pub struct BoxClientConfig {
+pub struct ClientConfig {
     /// Automatic GET retry policy. Mutations are never automatically retried.
     pub retry: RetryConfig,
     pub base_path: String,
     pub access_token: String,
-    /// Optional org / team wallet scope (`X-Box-Org`).
+    /// Optional org / team wallet scope (`X-Boat-Org`).
     pub org: Option<String>,
     /// TCP connect timeout (default 10s).
     pub connect_timeout: Duration,
@@ -25,15 +28,15 @@ pub struct BoxClientConfig {
     pub request_timeout: Duration,
     /// Added on top of a command's `timeout_seconds` for the HTTP layer (default 15s).
     pub command_timeout_slack: Duration,
-    /// Sent as `User-Agent` (default `box_client/{crate version}`).
+    /// Sent as `User-Agent` (default `boat_client/{crate version}`).
     pub user_agent: String,
     /// Maximum buffered response body (default 64 MiB), including snapshot files.
     pub max_response_bytes: usize,
 }
 
-impl fmt::Debug for BoxClientConfig {
+impl fmt::Debug for ClientConfig {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("BoxClientConfig")
+        f.debug_struct("ClientConfig")
             .field("retry", &self.retry)
             .field("base_path", &self.base_path)
             .field("access_token", &redact_secret(&self.access_token))
@@ -47,8 +50,8 @@ impl fmt::Debug for BoxClientConfig {
     }
 }
 
-impl BoxClientConfig {
-    pub const DEFAULT_BASE_PATH: &'static str = "https://ascii.dev/api/box/v1";
+impl ClientConfig {
+    pub const DEFAULT_BASE_PATH: &'static str = service::BASE_URL;
     pub const DEFAULT_CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
     pub const DEFAULT_REQUEST_TIMEOUT: Duration = Duration::from_secs(60);
     pub const DEFAULT_COMMAND_TIMEOUT_SLACK: Duration = Duration::from_secs(15);
@@ -67,22 +70,22 @@ impl BoxClientConfig {
             request_timeout: Self::DEFAULT_REQUEST_TIMEOUT,
             command_timeout_slack: Self::DEFAULT_COMMAND_TIMEOUT_SLACK,
             max_response_bytes: 64 * 1024 * 1024,
-            user_agent: format!("box_client/{}", env!("CARGO_PKG_VERSION")),
+            user_agent: format!("{}/{}", service::CLIENT_NAME, env!("CARGO_PKG_VERSION")),
         })
     }
 
-    /// Load from `BOX_API_KEY` (required) and optional `BOX_BASE_URL` / `BOX_ORG`.
+    /// Load from `BOAT_API_KEY` (required) and optional `BOAT_BASE_URL` / `BOAT_ORG`.
     pub fn from_env() -> Result<Self> {
-        let access_token = env::var("BOX_API_KEY").map_err(|_| {
-            Error::Config("BOX_API_KEY is not set (create one with `box api-key create`)".into())
+        let access_token = env::var(service::API_KEY_ENV).map_err(|_| {
+            Error::Config("BOAT_API_KEY is not set (create one with `boat api-key create`)".into())
         })?;
         let mut cfg = Self::new(access_token)?;
-        if let Ok(base) = env::var("BOX_BASE_URL") {
+        if let Ok(base) = env::var(service::BASE_URL_ENV) {
             if !base.is_empty() {
                 cfg = cfg.with_base_path(base)?;
             }
         }
-        if let Ok(org) = env::var("BOX_ORG") {
+        if let Ok(org) = env::var(service::ORG_ENV) {
             if !org.is_empty() {
                 cfg.org = Some(org);
             }
@@ -127,13 +130,13 @@ impl BoxClientConfig {
         self
     }
 
-    /// Configure automatic GET retries. Validated when constructing `BoxApi`.
+    /// Configure automatic GET retries. Validated when constructing `Api`.
     pub fn with_retry(mut self, retry: RetryConfig) -> Self {
         self.retry = retry;
         self
     }
 
-    /// HTTP timeout for a `command` call given the in-box `timeout_seconds`.
+    /// HTTP timeout for a `command` call given the in-sandbox `timeout_seconds`.
     pub fn http_timeout_for_command(&self, timeout_seconds: Option<u32>) -> Duration {
         // Server default is 30s when omitted.
         let cmd = Duration::from_secs(u64::from(timeout_seconds.unwrap_or(30)));
@@ -149,15 +152,18 @@ fn validate_token(token: &str) -> Result<()> {
     Ok(())
 }
 
-fn validate_base_path(base: &str) -> Result<()> {
+pub(crate) fn validate_base_path(base: &str) -> Result<()> {
     let parsed =
         Url::parse(base).map_err(|e| Error::Config(format!("invalid base_path `{base}`: {e}")))?;
     match parsed.scheme() {
         "https" => {}
         "http" => {
-            let host = parsed.host_str().unwrap_or("");
-            let loopback =
-                matches!(host, "localhost" | "127.0.0.1" | "::1") || host.starts_with("127.");
+            let loopback = match parsed.host() {
+                Some(url::Host::Domain("localhost")) => true,
+                Some(url::Host::Ipv4(address)) => address.is_loopback(),
+                Some(url::Host::Ipv6(address)) => address.is_loopback(),
+                _ => false,
+            };
             if !loopback {
                 return Err(Error::Config(format!(
                     "base_path must use https (http only allowed for localhost), got `{base}`"
@@ -187,7 +193,7 @@ mod tests {
 
     #[test]
     fn debug_redacts_token() {
-        let cfg = BoxClientConfig::new("box_secret_value_here").unwrap();
+        let cfg = ClientConfig::new("box_secret_value_here").unwrap();
         let s = format!("{cfg:?}");
         assert!(s.contains("<redacted len="));
         assert!(!s.contains("box_secret"));
@@ -196,12 +202,12 @@ mod tests {
 
     #[test]
     fn rejects_empty_token() {
-        assert!(BoxClientConfig::new("").is_err());
+        assert!(ClientConfig::new("").is_err());
     }
 
     #[test]
     fn rejects_remote_http_base_path() {
-        let cfg = BoxClientConfig::new("box_test_key").unwrap();
+        let cfg = ClientConfig::new("box_test_key").unwrap();
         assert!(cfg
             .clone()
             .with_base_path("http://evil.example/api")
@@ -211,7 +217,7 @@ mod tests {
 
     #[test]
     fn command_http_timeout_covers_command_budget() {
-        let cfg = BoxClientConfig::new("box_test_key").unwrap();
+        let cfg = ClientConfig::new("box_test_key").unwrap();
         let t = cfg.http_timeout_for_command(Some(120));
         assert!(t >= Duration::from_secs(135));
     }
@@ -341,16 +347,12 @@ mod retry_tests {
             },
         ] {
             assert!(matches!(
-                crate::BoxApi::new(
-                    BoxClientConfig::new("fixture-only")
-                        .unwrap()
-                        .with_retry(retry)
-                ),
+                crate::Api::new(ClientConfig::new("fixture-only").unwrap().with_retry(retry)),
                 Err(Error::Config(_))
             ));
         }
-        assert!(crate::BoxApi::new(
-            BoxClientConfig::new("fixture-only")
+        assert!(crate::Api::new(
+            ClientConfig::new("fixture-only")
                 .unwrap()
                 .with_retry(RetryConfig::disabled())
         )

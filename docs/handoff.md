@@ -14,10 +14,10 @@ not move a running process or implement a checkpoint format.
 `HandoffJournal<S>` accepts any `ReceiptStore`. The included `FileReceiptStore`
 uses an application-selected directory on Unix. Use a database-backed
 `ReceiptStore` for controllers on different machines. This choice is separate
-from `BoxClientConfig`, which configures HTTP calls.
+from `BoatClientConfig`, which configures HTTP calls.
 
 ```rust,no_run
-use box_client::handoff::{FileReceiptStore, HandoffJournal, HandoffPlan, HandoffResult};
+use boat_client::handoff::{FileReceiptStore, HandoffJournal, HandoffPlan, HandoffResult};
 
 #[tokio::main]
 async fn main() -> HandoffResult<()> {
@@ -25,8 +25,8 @@ async fn main() -> HandoffResult<()> {
         .with_max_receipt_bytes(1024 * 1024);
     let journal = HandoffJournal::new(store);
     let receipt = journal.create("job-2026-001", HandoffPlan {
-        source_box_id: "bx_23456789".into(),
-        target_box_id: "bx_abcdefgh".into(),
+        source_sandbox_id: "bx_23456789".into(),
+        target_sandbox_id: "bx_abcdefgh".into(),
         intent: "immutable-manifest-and-continuation-digest".into(),
     }).await?;
     println!("phase={:?}, revision={}", receipt.phase(), receipt.revision());
@@ -49,7 +49,7 @@ retried. This example accepts your capture implementation as a callback:
 
 ```rust,no_run
 use std::future::Future;
-use box_client::handoff::{
+use boat_client::handoff::{
     CheckpointReference, HandoffJournal, HandoffReceipt, HandoffResult, ReceiptStore,
 };
 
@@ -92,7 +92,7 @@ your application's correlation mechanism and record `Started` with that run ID.
 The SDK's receipt alone cannot determine whether the remote launch happened.
 
 ```rust,no_run
-use box_client::handoff::{
+use boat_client::handoff::{
     HandoffJournal, HandoffPhase, HandoffResult, HandoffTransition, ReceiptStore,
 };
 

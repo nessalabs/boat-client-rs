@@ -7,7 +7,7 @@
     "promptRun": {
       "id": "pr_test-1",
       "promptId": "pr_test-1",
-      "boxId": "bx_23456789",
+      "sandboxId": "bx_23456789",
       "status": "queued",
       "done": false
     },
@@ -20,7 +20,7 @@
     "promptRun": {
       "id": "pr_test-1",
       "promptId": "pr_test-1",
-      "boxId": "bx_23456789",
+      "sandboxId": "bx_23456789",
       "status": "queued",
       "done": false
     },
@@ -36,7 +36,7 @@
         "safeForThirdParties": true,
         "passGithub": false,
         "passSecrets": false,
-        "passBoxCredentials": false,
+        "passSandboxCredentials": false,
         "passAgentsCredentials": false,
         "envContents": "TOKEN=secret-env",
         "secretFiles": [
@@ -67,7 +67,7 @@
       "safeForThirdParties": true,
       "passGithub": false,
       "passSecrets": false,
-      "passBoxCredentials": false,
+      "passSandboxCredentials": false,
       "passAgentsCredentials": false,
       "envContents": "TOKEN=secret-env",
       "secretFiles": [
@@ -92,7 +92,7 @@
     "type": "box.deleting",
     "operation": {
       "id": "del_test-1",
-      "kind": "box",
+      "kind": "sandbox",
       "targetId": "bx_23456789",
       "reason": "explicit",
       "status": "pending",
@@ -135,7 +135,7 @@
     "snapshots": [
       {
         "id": "snap_test-1",
-        "boxId": "bx_23456789",
+        "sandboxId": "bx_23456789",
         "status": "completed",
         "kind": "base",
         "generation": 0,
@@ -156,7 +156,7 @@
     "type": "snapshot.latest",
     "snapshot": {
       "id": "snap_test-1",
-      "boxId": "bx_23456789",
+      "sandboxId": "bx_23456789",
       "status": "completed",
       "kind": "base",
       "generation": 0,
@@ -170,7 +170,7 @@
     "ok": true,
     "type": "snapshot.tree",
     "snapshotId": "snap_test-1",
-    "boxId": "bx_23456789",
+    "sandboxId": "bx_23456789",
     "generation": 0,
     "treeAvailable": true,
     "truncated": false,
@@ -188,7 +188,7 @@
     "ok": true,
     "type": "snapshot.download",
     "snapshotId": "snap_test-1",
-    "boxId": "bx_23456789",
+    "sandboxId": "bx_23456789",
     "kind": "base",
     "generation": 0,
     "expiresInSeconds": 900,

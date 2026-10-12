@@ -19,6 +19,12 @@ pub struct ForkRequest {
         skip_serializing_if = "Option::is_none"
     )]
     pub ttl_seconds: Option<Option<u32>>,
+    /// Boat v1 `failFast` field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub fail_fast: Option<bool>,
+    /// Boat v1 `monitoring` field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub monitoring: Option<bool>,
 }
 impl fmt::Debug for ForkRequest {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

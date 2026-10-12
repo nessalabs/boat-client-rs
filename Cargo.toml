@@ -1,13 +1,13 @@
 [package]
-name = "box_client"
+name = "boat_client"
 version = "0.1.0"
 edition = "2021"
-description = "Async Rust SDK for the Ascii Box API"
+description = "Async Rust SDK for the Boat API"
 license = "MIT"
-repository = "https://github.com/nessalabs/asciibox-client-rs"
-homepage = "https://github.com/nessalabs/asciibox-client-rs"
+repository = "https://github.com/nessalabs/boat-client-rs"
+homepage = "https://github.com/nessalabs/boat-client-rs"
 readme = "README.md"
-keywords = ["ascii", "box", "sandbox", "cloud"]
+keywords = ["ascii", "boat", "sandbox", "cloud"]
 categories = ["api-bindings", "asynchronous"]
 rust-version = "1.89"
 

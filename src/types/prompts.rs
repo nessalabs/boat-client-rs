@@ -26,6 +26,23 @@ pub struct PromptRequest {
     )]
     pub reasoning_effort: Option<Option<String>>,
     pub prompt: String,
+    /// Boat v1 `fast` field.
+    #[serde(
+        default,
+        deserialize_with = "deserialize_optional_nullable",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub fast: Option<Option<bool>>,
+    /// Boat v1 `new` field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub new: Option<bool>,
+    /// Boat v1 `conversationId` field.
+    #[serde(
+        default,
+        deserialize_with = "deserialize_optional_nullable",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub conversation_id: Option<Option<String>>,
 }
 impl fmt::Debug for PromptRequest {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -112,7 +129,7 @@ impl fmt::Debug for PromptRunResponse {
 pub struct PromptRun {
     pub id: String,
     pub prompt_id: String,
-    pub box_id: String,
+    pub sandbox_id: String,
     pub status: String,
     pub done: bool,
     pub created_at: Option<String>,
@@ -126,7 +143,7 @@ impl fmt::Debug for PromptRun {
         f.debug_struct("PromptRun")
             .field("id", &self.id)
             .field("prompt_id", &self.prompt_id)
-            .field("box_id", &self.box_id)
+            .field("sandbox_id", &self.sandbox_id)
             .field("status", &self.status)
             .field("done", &self.done)
             .field("created_at_len", &self.created_at.as_ref().map(String::len))
@@ -142,7 +159,7 @@ impl fmt::Debug for PromptRun {
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct BoxEvent {
+pub struct SandboxEvent {
     pub id: Option<String>,
     #[serde(rename = "type")]
     pub type_: String,
@@ -152,9 +169,9 @@ pub struct BoxEvent {
     #[serde(flatten)]
     pub extra: HashMap<String, serde_json::Value>,
 }
-impl fmt::Debug for BoxEvent {
+impl fmt::Debug for SandboxEvent {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("BoxEvent")
+        f.debug_struct("SandboxEvent")
             .field("id", &self.id)
             .field("type", &self.type_)
             .field("task_id_len", &self.task_id.as_ref().map(String::len))
@@ -170,7 +187,7 @@ pub struct EventsResponse {
     #[serde(rename = "type")]
     pub type_: Option<String>,
     pub id: String,
-    pub events: Vec<BoxEvent>,
+    pub events: Vec<SandboxEvent>,
     pub page_info: Option<PageInfo>,
     #[serde(flatten)]
     pub extra: HashMap<String, serde_json::Value>,
@@ -241,11 +258,16 @@ impl PromptRequest {
             prompt: prompt.into(),
             model: None,
             reasoning_effort: None,
+            fast: None,
+            new: None,
+            conversation_id: None,
         }
     }
 }
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
 pub struct EventsQuery {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub conversation: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub limit: Option<u32>,
     #[serde(skip_serializing_if = "Option::is_none")]

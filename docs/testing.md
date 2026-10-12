@@ -23,7 +23,7 @@ and deadlines. `tests/error_contracts.rs` checks non-JSON failures, decoding
 redaction, chunked response caps and nullable/fractional wire values. No credential
 is needed.
 
-To verify fixture provenance, unpack the reference package `@asciidev/box-sdk@0.0.34` and run:
+To verify fixture provenance, unpack the reference package `@boatdev/sdk@1.9.7` and run:
 
 ```bash
 node scripts/sdk_fixtures.cjs /path/to/unpacked/package
@@ -39,7 +39,7 @@ package path is an argument; no machine-specific path or dependency is checked i
 
 ## Live checks
 
-Each live test is ignored by default. Supply a short-lived `BOX_API_KEY` through
+Each live test is ignored by default. Supply a short-lived `BOAT_API_KEY` through
 the process environment; never save it in source, fixtures or output artifacts.
 Run a named test so mutation requirements are explicit:
 
@@ -48,12 +48,12 @@ Run a named test so mutation requirements are explicit:
 cargo test --test live live_me_and_boxes -- --ignored
 # Read-only environment, snapshot tree and download-manifest contracts
 cargo test --test live live_runtime_read_contracts -- --ignored
-# Existing operable box: requires BOX_ID; runs a harmless shell command
+# Existing operable box: requires SANDBOX_ID; runs a harmless shell command
 cargo test --test live live_get_and_exec_existing_box -- --ignored
 # Creates, updates and deletes only its own uniquely named environment
-BOX_TEST_MUTATIONS=1 cargo test --test live live_environment_round_trip -- --ignored
+BOAT_TEST_MUTATIONS=1 cargo test --test live live_environment_round_trip -- --ignored
 # Creates one box; verifies Rust/SDK PUT/read parity; deletes it and waits for completion
-BOX_TEST_MUTATIONS=1 BOX_SDK_PATH=/path/to/unpacked/package cargo test --test live live_sdk_file_round_trip -- --ignored
+BOAT_TEST_MUTATIONS=1 BOAT_SDK_PATH=/path/to/unpacked/package cargo test --test live live_sdk_file_round_trip -- --ignored
 ```
 
 `live_runtime_read_contracts` reads at most one snapshot tree/download manifest and
@@ -63,11 +63,11 @@ fail, then verifies that the environment is absent. The file round-trip test cre
 a fixed scratch path inside that box, reads/writes through both clients, and waits
 for its permanent deletion even if the file check fails. It prints the file
 result before observing cleanup so a deletion timeout cannot hide that outcome.
-The cleanup wait defaults to five minutes: this is a test budget, not a Box
+The cleanup wait defaults to five minutes: this is a test budget, not a Sandbox
 completion guarantee. A documented `blocked` state may outlast that budget and
 fail the live test without proving either an SDK mismatch or a service defect.
 Use the returned operation ID to check again; only `completed` confirms cleanup.
-See [Box data-retention and deletion](https://docs.ascii.dev/box/data-retention).
+See [Sandbox data-retention and deletion](https://docs.boat.dev/data-retention).
 No live test deletes a pre-existing snapshot.
 
 ## Remaining verification scope
@@ -101,17 +101,27 @@ Two explicit live probes are available in `tests/live_recovery.rs`:
 # Inject two local 503 responses, then perform an authenticated live read.
 cargo test --test live_recovery live_read_after_injected_transient_failures -- --ignored --nocapture
 
-# Create two fixture Boxes, copy a counter checkpoint through application code,
+# Create two fixture Sandboxes, copy a counter checkpoint through application code,
 # reconcile after restore and launch, then delete both and check completion.
-BOX_TEST_MUTATIONS=1 BOX_TEST_STATE_DIR=work/live-recovery \
+BOAT_TEST_MUTATIONS=1 BOAT_TEST_STATE_DIR=work/live-recovery \
   cargo test --test live_recovery live_handoff_reconciles_completed_launch_and_cleans_up -- --ignored --nocapture
 ```
 
-Both require `BOX_API_KEY`. The mutation probe stores resource IDs, idempotency
+Both require `BOAT_API_KEY`. The mutation probe stores resource IDs, idempotency
 keys, receipts, and its non-sensitive checkpoint in the chosen state directory.
-It uses a five-minute Box lifetime, no inherited environment, and never touches
-existing Boxes. Functional and cleanup outcomes are printed separately. The test
+It uses a five-minute Sandbox lifetime, no inherited environment, and never touches
+existing Sandboxes. Functional and cleanup outcomes are printed separately. The test
 fails if deletion has not completed within its two-minute observation budget;
 `blocked` is a valid service state, so this alone does not diagnose a backend bug.
 Use the saved deletion IDs to continue checking without creating replacement
 resources. Do not remove the state directory until cleanup is confirmed.
+
+## Boat migration evidence
+
+Live checks described above were recorded against the former Box deployment.
+They are historical evidence, not a live Boat certification. The Boat migration
+uses published OpenAPI/TypeScript SDK 1.9.7 contracts, offline HTTP fixtures,
+independent boundary tests and scoped loopback measurements. No Boat cloud
+resources or real credentials were used. The 59 supported operation fixtures
+exercise JSON commands (`stream: false`); separate real NDJSON mocks prove that
+unsupported synchronous streaming is rejected before any request is delivered.

@@ -1,5 +1,5 @@
 mod common;
-use box_client::*;
+use boat_client::*;
 use common::*;
 use serde_json::{json, Value};
 use wiremock::{matchers::method, Mock, MockServer, ResponseTemplate};
@@ -86,8 +86,8 @@ async fn transport_errors_strip_private_urls() {
     let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
     let address = listener.local_addr().unwrap();
     drop(listener);
-    let api = BoxApi::new(
-        BoxClientConfig::new("fixture-only")
+    let api = BoatApi::new(
+        BoatClientConfig::new("fixture-only")
             .unwrap()
             .with_base_path(format!("http://{address}/secret-url-segment"))
             .unwrap(),
@@ -125,8 +125,8 @@ async fn chunked_response_cap_does_not_require_content_length() {
         let _ = socket.read(&mut buffer).await.unwrap();
         socket.write_all(b"HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n10\r\n0123456789abcdef\r\n10\r\n0123456789abcdef\r\n0\r\n\r\n").await.unwrap();
     });
-    let api = BoxApi::new(
-        BoxClientConfig::new("fixture-only")
+    let api = BoatApi::new(
+        BoatClientConfig::new("fixture-only")
             .unwrap()
             .with_base_path(format!("http://{address}"))
             .unwrap()
@@ -134,7 +134,7 @@ async fn chunked_response_cap_does_not_require_content_length() {
     )
     .unwrap();
     assert!(matches!(
-        api.artifact(BOX_ID, "fixture.bin").await,
+        api.artifact(SANDBOX_ID, "fixture.bin").await,
         Err(Error::ResponseTooLarge { limit: 20 })
     ));
     serve.await.unwrap();
@@ -148,8 +148,8 @@ fn nullable_requests_preserve_omission_null_and_value() {
             assert_eq!(serde_json::to_value(request).unwrap(), original);
         }
     }
-    check::<CreateBoxRequest>("ttlSeconds", json!(300));
-    check::<UpdateBoxRequest>("ttlSeconds", json!(300));
+    check::<CreateSandboxRequest>("ttlSeconds", json!(300));
+    check::<UpdateSandboxRequest>("ttlSeconds", json!(300));
     check::<ResumeRequest>("ttlSeconds", json!(300));
     check::<ForkRequest>("ttlSeconds", json!(300));
     check::<WebhookUpdateRequest>("name", json!("fixture-name"));
@@ -190,5 +190,5 @@ async fn prompt_nullable_options_send_explicit_null() {
     assert_eq!(request.model, Some(None));
     assert_eq!(request.reasoning_effort, Some(None));
     assert_eq!(serde_json::to_value(&request).unwrap(), body);
-    client(&server).prompt(BOX_ID, request).await.unwrap();
+    client(&server).prompt(SANDBOX_ID, request).await.unwrap();
 }

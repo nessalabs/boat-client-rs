@@ -1,5 +1,5 @@
 mod common;
-use box_client::*;
+use boat_client::*;
 use common::*;
 use futures_util::{pin_mut, StreamExt, TryStreamExt};
 use serde_json::{json, Value};
@@ -17,13 +17,13 @@ fn event(id: &str, task: &str, status: Option<&str>) -> Value {
     json!({"id":id,"timestamp":1000,"taskId":task,"type":if status.is_some(){"prompt"}else{"response"},"data":{"status":status}})
 }
 fn page(events: Vec<Value>, cursor: Option<&str>, more: bool) -> Value {
-    json!({"ok":true,"id":BOX_ID,"events":events,"pageInfo":{"limit":100,"nextCursor":cursor,"hasMore":more}})
+    json!({"ok":true,"id":SANDBOX_ID,"events":events,"pageInfo":{"limit":100,"nextCursor":cursor,"hasMore":more}})
 }
 async fn pages(server: &MockServer, responses: Vec<Value>) {
     let count = responses.len() as u64;
     let index = Arc::new(AtomicUsize::new(0));
     Mock::given(method("GET"))
-        .and(path(format!("/boxes/{BOX_ID}/events")))
+        .and(path(format!("/sandboxes/{SANDBOX_ID}/events")))
         .respond_with(move |_: &Request| {
             let i = index.fetch_add(1, Ordering::SeqCst);
             ResponseTemplate::new(200)
@@ -37,7 +37,7 @@ async fn queue_prompt(server: &MockServer) {
     let mut response = sdk_case("prompt")["response"].clone();
     response["promptId"] = json!("mine");
     Mock::given(method("POST"))
-        .and(path(format!("/boxes/{BOX_ID}/prompt")))
+        .and(path(format!("/sandboxes/{SANDBOX_ID}/prompt")))
         .respond_with(ResponseTemplate::new(200).set_body_json(response))
         .expect(1)
         .mount(server)
@@ -47,7 +47,7 @@ async fn status(server: &MockServer, state: &str) {
     let mut response = sdk_case("promptRunStatus")["response"].clone();
     response["promptRun"]["status"] = json!(state);
     Mock::given(method("GET"))
-        .and(path(format!("/boxes/{BOX_ID}/prompts/mine")))
+        .and(path(format!("/sandboxes/{SANDBOX_ID}/prompts/mine")))
         .respond_with(ResponseTemplate::new(200).set_body_json(response))
         .expect(1)
         .mount(server)
@@ -81,8 +81,8 @@ fn query(request: &Request, key: &str) -> Option<String> {
 async fn streams_are_lazy_and_dropping_them_starts_no_work() {
     let server = MockServer::start().await;
     let api = client(&server);
-    drop(stream_events(&api, BOX_ID, None));
-    drop(stream_prompt(&api, BOX_ID, prompt_request(), None));
+    drop(stream_events(&api, SANDBOX_ID, None));
+    drop(stream_prompt(&api, SANDBOX_ID, prompt_request(), None));
     assert!(server.received_requests().await.unwrap().is_empty());
 }
 
@@ -104,7 +104,7 @@ async fn latest_bootstrap_skips_large_history_and_encodes_cursor() {
     let api = client(&server);
     let stream = stream_events(
         &api,
-        BOX_ID,
+        SANDBOX_ID,
         Some(StreamEventsOptions {
             type_: Some("response".into()),
             ..Default::default()
@@ -145,7 +145,7 @@ async fn include_existing_drains_pages_without_sleeping() {
         wait: WaitOptions::from_millis(500, 60_000),
         ..events_options()
     };
-    let results: Vec<_> = stream_events(&api, BOX_ID, Some(options))
+    let results: Vec<_> = stream_events(&api, SANDBOX_ID, Some(options))
         .take(2)
         .try_collect()
         .await
@@ -177,7 +177,7 @@ async fn terminal_prompt_event_drains_all_pages_and_filters_other_tasks() {
     .await;
     queue_prompt(&server).await;
     let api = client(&server);
-    let results: Vec<_> = stream_prompt(&api, BOX_ID, prompt_request(), prompt_options())
+    let results: Vec<_> = stream_prompt(&api, SANDBOX_ID, prompt_request(), prompt_options())
         .try_collect()
         .await
         .unwrap();
@@ -216,7 +216,7 @@ async fn terminal_status_refreshes_and_drains_final_events() {
         queue_prompt(&server).await;
         status(&server, state).await;
         let api = client(&server);
-        let results: Vec<_> = stream_prompt(&api, BOX_ID, prompt_request(), prompt_options())
+        let results: Vec<_> = stream_prompt(&api, SANDBOX_ID, prompt_request(), prompt_options())
             .try_collect()
             .await
             .unwrap();
@@ -238,7 +238,7 @@ async fn cancellation_before_first_poll_sends_no_prompt_or_request() {
     token.cancel();
     let stream = stream_prompt(
         &api,
-        BOX_ID,
+        SANDBOX_ID,
         prompt_request(),
         Some(StreamPromptOptions {
             cancellation: Some(token),
@@ -271,7 +271,7 @@ async fn cancellation_interrupts_inflight_http() {
     let cancel = token.clone();
     let stream = stream_events(
         &api,
-        BOX_ID,
+        SANDBOX_ID,
         Some(StreamEventsOptions {
             cancellation: Some(token),
             ..events_options()
@@ -301,7 +301,7 @@ async fn cancellation_interrupts_sleep_and_buffered_events() {
     let token = CancellationToken::new();
     let stream = stream_events(
         &api,
-        BOX_ID,
+        SANDBOX_ID,
         Some(StreamEventsOptions {
             cancellation: Some(token.clone()),
             ..events_options()
@@ -322,7 +322,7 @@ async fn cancellation_interrupts_sleep_and_buffered_events() {
     let token = CancellationToken::new();
     let stream = stream_events(
         &api,
-        BOX_ID,
+        SANDBOX_ID,
         Some(StreamEventsOptions {
             cancellation: Some(token.clone()),
             wait: WaitOptions::from_millis(0, 60_000),
@@ -359,7 +359,7 @@ async fn deadline_covers_http_sleep_and_buffered_pages() {
             .await;
         let stream = stream_events(
             &api,
-            BOX_ID,
+            SANDBOX_ID,
             Some(StreamEventsOptions {
                 wait: WaitOptions::from_millis(30, 60_000),
                 ..events_options()
@@ -388,7 +388,7 @@ async fn repeated_cursor_fails_before_yielding_duplicates() {
     let api = client(&server);
     let repeated = page(vec![event("same", "mine", None)], Some("same"), true);
     pages(&server, vec![repeated.clone(), repeated]).await;
-    let stream = stream_events(&api, BOX_ID, Some(events_options()));
+    let stream = stream_events(&api, SANDBOX_ID, Some(events_options()));
     pin_mut!(stream);
     stream.next().await.unwrap().unwrap();
     assert!(matches!(
@@ -407,7 +407,7 @@ async fn missing_cursor_cannot_loop_or_replay() {
         let server = MockServer::start().await;
         let api = client(&server);
         pages(&server, vec![body]).await;
-        let stream = stream_events(&api, BOX_ID, Some(events_options()));
+        let stream = stream_events(&api, SANDBOX_ID, Some(events_options()));
         pin_mut!(stream);
         assert!(matches!(
             stream.next().await,
@@ -422,7 +422,7 @@ async fn invalid_limit_fails_before_network() {
     let api = client(&server);
     let stream = stream_events(
         &api,
-        BOX_ID,
+        SANDBOX_ID,
         Some(StreamEventsOptions {
             limit: 0,
             ..Default::default()
@@ -442,7 +442,7 @@ async fn dropping_stream_does_not_prefetch() {
         vec![page(vec![event("1", "mine", None)], Some("next"), true)],
     )
     .await;
-    let stream = stream_events(&api, BOX_ID, Some(events_options()));
+    let stream = stream_events(&api, SANDBOX_ID, Some(events_options()));
     let first = stream.take(1).try_collect::<Vec<_>>().await.unwrap();
     assert_eq!(first.len(), 1);
     tokio::task::yield_now().await;

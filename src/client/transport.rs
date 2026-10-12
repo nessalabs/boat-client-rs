@@ -1,6 +1,6 @@
 //! Request construction, safe diagnostics, retries, bounded reads and decoding.
-use super::BoxApi;
-use crate::{ApiErrorBody, Error, Result};
+use super::Api;
+use crate::{service, ApiErrorBody, Error, Result};
 use reqwest::{Method, Request, RequestBuilder, StatusCode};
 use serde::{de::DeserializeOwned, Serialize};
 use std::time::{Duration, Instant};
@@ -10,12 +10,12 @@ const ERROR_BODY_MAX: usize = 2_048;
 
 /// Private builder: endpoint methods supply only their operation and wire inputs.
 pub(super) struct ApiRequest<'a> {
-    api: &'a BoxApi,
+    api: &'a Api,
     operation: &'static str,
     request: RequestBuilder,
 }
 
-impl BoxApi {
+impl Api {
     pub(super) fn request(
         &self,
         operation: &'static str,
@@ -38,7 +38,11 @@ impl BoxApi {
             .bearer_auth(&self.config.access_token)
             .header("Accept", "application/json");
         if let Some(org) = org.or(self.config.org.as_deref()) {
-            request = request.header("X-Box-Org", org);
+            if path == "/environments" || path.starts_with("/environments/") {
+                request = request.query(&[("org", org)]);
+            } else {
+                request = request.header(service::ORG_HEADER, org);
+            }
         }
         ApiRequest {
             api: self,
@@ -54,20 +58,20 @@ impl BoxApi {
         decode: impl FnOnce(Vec<u8>) -> Result<T>,
     ) -> Result<T> {
         let request = builder.build().map_err(|error| {
-            tracing::debug!(target: "box_client::http", operation, "request construction failed");
+            tracing::debug!(target: "boat_client::http", operation, "request construction failed");
             Error::from(error)
         })?;
         // Only explicitly supplied static operation names are logged. Never record
         // a Request, URL, header, body, server error text, or user-provided identifier.
-        let span = tracing::debug_span!(target: "box_client::http", "request",
+        let span = tracing::debug_span!(target: "boat_client::http", "request",
             operation, method = %request.method());
         async {
             let start = Instant::now();
-            tracing::debug!(target: "box_client::http", "request started");
+            tracing::debug!(target: "boat_client::http", "request started");
             let result = self.execute_bytes(&request, operation).await.and_then(decode);
             match &result {
-                Ok(_) => tracing::debug!(target: "box_client::http", elapsed_ms = millis(start.elapsed()), "request completed"),
-                Err(error) => tracing::debug!(target: "box_client::http", elapsed_ms = millis(start.elapsed()),
+                Ok(_) => tracing::debug!(target: "boat_client::http", elapsed_ms = millis(start.elapsed()), "request completed"),
+                Err(error) => tracing::debug!(target: "boat_client::http", elapsed_ms = millis(start.elapsed()),
                     error_kind = error_kind(error), status = ?error.status(), "request failed"),
             }
             result
@@ -89,7 +93,7 @@ impl BoxApi {
                 .ok_or_else(|| Error::Unexpected("request body is not retryable".into()))?;
             let start = Instant::now();
             let (result, retry_after, status) = self.send_once(pending).await;
-            tracing::debug!(target: "box_client::http", attempt = attempt + 1, max_attempts,
+            tracing::debug!(target: "boat_client::http", attempt = attempt + 1, max_attempts,
                 status = ?status, elapsed_ms = millis(start.elapsed()),
                 error_kind = result.as_ref().err().map(error_kind).unwrap_or("none"), "request attempt finished");
             match result {
@@ -98,11 +102,11 @@ impl BoxApi {
                     let backoff = self.config.retry.delay(attempt);
                     let delay = retry_after.map(|d| d.max(backoff)).unwrap_or(backoff);
                     if delay > self.config.request_timeout {
-                        tracing::debug!(target: "box_client::retry", operation, method = %request.method(), attempt = attempt + 1,
+                        tracing::debug!(target: "boat_client::retry", operation, method = %request.method(), attempt = attempt + 1,
                             delay_ms = millis(delay), "retry delay exceeds request timeout; returning error");
                         return Err(error);
                     }
-                    tracing::debug!(target: "box_client::retry", operation, method = %request.method(), attempt = attempt + 1,
+                    tracing::debug!(target: "boat_client::retry", operation, method = %request.method(), attempt = attempt + 1,
                         next_attempt = attempt + 2, max_attempts, delay_ms = millis(delay),
                         status = ?error.status(), error_kind = error_kind(&error), "retrying GET request");
                     tokio::time::sleep(delay).await;

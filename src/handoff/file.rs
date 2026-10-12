@@ -207,7 +207,7 @@ mod unix {
         #[test]
         fn lock_release_does_not_wait_for_duplicate_descriptors() {
             let path = std::env::temp_dir().join(format!(
-                "box-client-lock-release-{:032x}",
+                "boat-client-lock-release-{:032x}",
                 fastrand::u128(..)
             ));
             let cleanup = TempPath(path.clone());

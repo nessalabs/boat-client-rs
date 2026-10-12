@@ -23,6 +23,8 @@ jobs:
         run: cargo clippy --all-targets -- -D warnings
       - name: test
         run: cargo test --all-targets
+      - name: scoped loopback qualification
+        run: cargo test --test client_performance -- --ignored --nocapture
       - name: documentation examples
         run: cargo test --doc
 
@@ -45,7 +47,7 @@ jobs:
         run: |
           mkdir -p work/sdk
           cd work/sdk
-          npm pack --ignore-scripts @asciidev/box-sdk@0.0.34
-          tar -xzf asciidev-box-sdk-0.0.34.tgz
+          npm pack --ignore-scripts @boatdev/sdk@1.9.7
+          tar -xzf boatdev-sdk-1.9.7.tgz
       - run: node scripts/sdk_fixtures.cjs work/sdk/package
       - run: node tests/verify_ts_contract.cjs work/sdk/package

@@ -9,13 +9,13 @@ pub struct LimitsOptions {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub team_id: Option<String>,
     #[serde(skip)]
-    pub x_box_org: Option<String>,
+    pub x_boat_org: Option<String>,
 }
 
 #[derive(Clone, Debug, Default)]
 pub struct CreateOptions {
     pub org: Option<String>,
-    pub x_box_org: Option<String>,
+    pub x_boat_org: Option<String>,
     pub idempotency_key: Option<String>,
 }
 
@@ -41,4 +41,11 @@ pub struct ReposQuery {
     pub q: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub selected: Option<bool>,
+}
+
+/// Select one conversation when interrupting a sandbox; omit for the default scope.
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct InterruptQuery {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub conversation: Option<String>,
 }

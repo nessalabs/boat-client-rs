@@ -47,17 +47,20 @@ pub enum Error {
     Unexpected(String),
 
     #[error("invalid box id `{0}` (expected bx_ + 8 chars)")]
-    InvalidBoxId(String),
+    InvalidSandboxId(String),
 
-    #[error("timeout waiting for box {box_id} (last state={last_state})")]
-    WaitTimeout { box_id: String, last_state: String },
+    #[error("timeout waiting for box {sandbox_id} (last state={last_state})")]
+    WaitTimeout {
+        sandbox_id: String,
+        last_state: String,
+    },
 
-    /// The Box entered a state that cannot satisfy a readiness wait.
-    #[error("box {box_id} entered terminal state {state}")]
-    BoxTerminal { box_id: String, state: String },
+    /// The Sandbox entered a state that cannot satisfy a readiness wait.
+    #[error("box {sandbox_id} entered terminal state {state}")]
+    SandboxTerminal { sandbox_id: String, state: String },
 
-    #[error("box {box_id} entered error state")]
-    BoxFailed { box_id: String },
+    #[error("box {sandbox_id} entered error state")]
+    SandboxFailed { sandbox_id: String },
 
     #[error("response decoding failed (details redacted)")]
     Serde(#[from] serde_json::Error),
@@ -99,20 +102,24 @@ impl fmt::Debug for Error {
                 .debug_struct("Unexpected")
                 .field("body_len", &body.len())
                 .finish(),
-            Self::InvalidBoxId(id) => f.debug_tuple("InvalidBoxId").field(id).finish(),
-            Self::WaitTimeout { box_id, last_state } => f
+            Self::InvalidSandboxId(id) => f.debug_tuple("InvalidSandboxId").field(id).finish(),
+            Self::WaitTimeout {
+                sandbox_id,
+                last_state,
+            } => f
                 .debug_struct("WaitTimeout")
-                .field("box_id", box_id)
+                .field("sandbox_id", sandbox_id)
                 .field("last_state", last_state)
                 .finish(),
-            Self::BoxTerminal { box_id, state } => f
-                .debug_struct("BoxTerminal")
-                .field("box_id", box_id)
+            Self::SandboxTerminal { sandbox_id, state } => f
+                .debug_struct("SandboxTerminal")
+                .field("sandbox_id", sandbox_id)
                 .field("state", state)
                 .finish(),
-            Self::BoxFailed { box_id } => {
-                f.debug_struct("BoxFailed").field("box_id", box_id).finish()
-            }
+            Self::SandboxFailed { sandbox_id } => f
+                .debug_struct("SandboxFailed")
+                .field("sandbox_id", sandbox_id)
+                .finish(),
             Self::Serde(e) => f
                 .debug_struct("Serde")
                 .field("line", &e.line())
@@ -148,7 +155,7 @@ impl Error {
             Error::Api { status, code, .. } => match *status {
                 429 => true,
                 502..=504 => true,
-                409 => code == "box_starting" || code == "box_securing",
+                409 => code == "boat_starting" || code == "box_starting" || code == "box_securing",
                 _ => false,
             },
             Error::Http(e) => e.is_timeout() || e.is_connect(),

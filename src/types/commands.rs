@@ -12,6 +12,10 @@ pub enum CommandResult {
 pub struct CommandStatusQuery {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tail_bytes: Option<u32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stdout_offset: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub stderr_offset: Option<u64>,
 }
 
 #[derive(Clone, Deserialize, Serialize)]

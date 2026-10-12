@@ -1,3 +1,4 @@
+use crate::service::SANDBOX_PATH;
 mod administration;
 mod transport;
 
@@ -5,7 +6,7 @@ use std::time::Duration;
 
 use reqwest::{Client, Method};
 
-use crate::config::BoxClientConfig;
+use crate::config::ClientConfig;
 use crate::error::{Error, Result};
 use crate::types::*;
 use percent_encoding::{utf8_percent_encode, AsciiSet, NON_ALPHANUMERIC};
@@ -22,23 +23,24 @@ const PATH_SEGMENT: &AsciiSet = &NON_ALPHANUMERIC
     .remove(b')')
     .remove(b'*');
 
-/// Ascii Box id pattern: `bx_` + 8 chars from a Crockford-like alphabet.
-const BOX_ID_PREFIX: &str = "bx_";
-const BOX_ID_BODY_LEN: usize = 8;
-const BOX_ID_ALPHABET: &[u8] = b"23456789abcdefghjkmnpqrstuvwxyz";
+/// Boat id pattern: `bx_` + 8 chars from a Crockford-like alphabet.
+const SANDBOX_ID_PREFIX: &str = "bx_";
+const SANDBOX_ID_BODY_LEN: usize = 8;
+const SANDBOX_ID_ALPHABET: &[u8] = b"23456789abcdefghjkmnpqrstuvwxyz";
 
-/// Asynchronous client for the Ascii Box API.
+/// Asynchronous client for the Boat API.
 ///
 /// Cheap to clone: wraps a pooled `reqwest::Client`.
 #[derive(Clone, Debug)]
-pub struct BoxApi {
+pub struct Api {
     http: Client,
-    config: BoxClientConfig,
+    config: ClientConfig,
     base: String,
 }
 
-impl BoxApi {
-    pub fn new(config: BoxClientConfig) -> Result<Self> {
+impl Api {
+    pub fn new(config: ClientConfig) -> Result<Self> {
+        crate::config::validate_base_path(&config.base_path)?;
         config.retry.validate()?;
         let http = Client::builder()
             .connect_timeout(config.connect_timeout)
@@ -52,8 +54,17 @@ impl BoxApi {
         Ok(Self { http, config, base })
     }
 
+    /// Return an independently scoped clone. Environment operations use `?org=`;
+    /// other operations use the wallet header. `None` clears explicit scope:
+    /// sandbox operations use the account's active wallet, while environments
+    /// use personal scope. Use `Some("personal".into())` for explicit personal billing.
+    pub fn with_org(mut self, org: Option<String>) -> Self {
+        self.config.org = org;
+        self
+    }
+
     /// Read the configuration used by this client.
-    pub fn config(&self) -> &BoxClientConfig {
+    pub fn config(&self) -> &ClientConfig {
         &self.config
     }
 
@@ -70,7 +81,7 @@ impl BoxApi {
             "limits",
             Method::GET,
             "/limits",
-            options.x_box_org.as_deref(),
+            options.x_boat_org.as_deref(),
         )
         .query(Some(options))
         .send()
@@ -79,25 +90,30 @@ impl BoxApi {
 
     // --- Lifecycle ---
 
-    /// List Boxes with optional state filters and pagination.
-    pub async fn boxes(&self, query: Option<&BoxesQuery>) -> Result<BoxListResponse> {
-        self.request("boxes", Method::GET, "/boxes")
-            .query(query)
-            .send()
-            .await
+    /// List Sandboxes with optional state filters and pagination.
+    pub async fn sandboxes(&self, query: Option<&SandboxesQuery>) -> Result<SandboxListResponse> {
+        self.request_with_org(
+            "sandboxes",
+            Method::GET,
+            SANDBOX_PATH,
+            query.and_then(|q| q.x_boat_org.as_deref()),
+        )
+        .query(query)
+        .send()
+        .await
     }
 
-    /// Create a Box with optional body, organization scope, and idempotency key.
+    /// Create a Sandbox with optional body, organization scope, and idempotency key.
     pub async fn create(
         &self,
-        request: Option<CreateBoxRequest>,
+        request: Option<CreateSandboxRequest>,
         options: &CreateOptions,
-    ) -> Result<CreateBoxResponse> {
+    ) -> Result<CreateSandboxResponse> {
         self.request_with_org(
             "create",
             Method::POST,
-            "/boxes",
-            options.x_box_org.as_deref(),
+            SANDBOX_PATH,
+            options.x_boat_org.as_deref(),
         )
         .json(request.as_ref())
         .query(options.org.as_ref().map(|org| [("org", org)]).as_ref())
@@ -106,97 +122,118 @@ impl BoxApi {
         .await
     }
 
-    /// Read the current state and configuration of a Box.
-    pub async fn get(&self, box_id: &str) -> Result<BoxInfoResponse> {
+    /// Read the current state and configuration of a Sandbox.
+    pub async fn get(&self, sandbox_id: &str) -> Result<SandboxInfoResponse> {
         self.request(
             "get",
             Method::GET,
-            &format!("/boxes/{}", validate_box_id(box_id)?),
+            &format!("{SANDBOX_PATH}/{}", validate_sandbox_id(sandbox_id)?),
         )
         .send()
         .await
     }
 
-    /// Update the name, subdomain, or lifetime of a Box.
-    pub async fn update(&self, box_id: &str, request: UpdateBoxRequest) -> Result<BoxInfoResponse> {
+    /// Update the name, subdomain, or lifetime of a Sandbox.
+    pub async fn update(
+        &self,
+        sandbox_id: &str,
+        request: UpdateSandboxRequest,
+    ) -> Result<SandboxInfoResponse> {
         self.request(
             "update",
             Method::PATCH,
-            &format!("/boxes/{}", validate_box_id(box_id)?),
+            &format!("{SANDBOX_PATH}/{}", validate_sandbox_id(sandbox_id)?),
         )
         .json(Some(&request))
         .send()
         .await
     }
 
-    /// Stop and archive a Box, retaining snapshots for later resume.
+    /// Stop and archive a Sandbox, retaining snapshots for later resume.
     pub async fn stop(
         &self,
-        box_id: &str,
+        sandbox_id: &str,
         request: Option<StopRequest>,
-    ) -> Result<BoxActionResponse> {
+    ) -> Result<SandboxActionResponse> {
         self.request(
             "stop",
             Method::POST,
-            &format!("/boxes/{}/stop", validate_box_id(box_id)?),
+            &format!("{SANDBOX_PATH}/{}/stop", validate_sandbox_id(sandbox_id)?),
         )
         .json(request.as_ref())
         .send()
         .await
     }
 
-    /// Resume an archived Box with optional settings.
+    /// Resume an archived Sandbox with optional settings.
     pub async fn resume(
         &self,
-        box_id: &str,
+        sandbox_id: &str,
         request: Option<ResumeRequest>,
-    ) -> Result<BoxActionResponse> {
+    ) -> Result<SandboxActionResponse> {
         self.request(
             "resume",
             Method::POST,
-            &format!("/boxes/{}/resume", validate_box_id(box_id)?),
+            &format!("{SANDBOX_PATH}/{}/resume", validate_sandbox_id(sandbox_id)?),
         )
         .json(request.as_ref())
         .send()
         .await
     }
 
-    /// Permanently delete a box and its exclusively-owned snapshot chains.
-    /// The API requires the box id again in the confirmation header.
-    pub async fn delete_box(&self, box_id: &str) -> Result<DeletionOperationResponse> {
+    /// Permanently delete a sandbox and its exclusively-owned snapshot chains.
+    /// The API requires the sandbox id again in the confirmation header.
+    pub async fn delete_sandbox(&self, sandbox_id: &str) -> Result<DeletionOperationResponse> {
         self.request(
-            "delete_box",
+            "delete_sandbox",
             Method::DELETE,
-            &format!("/boxes/{}", validate_box_id(box_id)?),
+            &format!("{SANDBOX_PATH}/{}", validate_sandbox_id(sandbox_id)?),
         )
-        .header("X-Ascii-Confirm-Delete", Some(box_id))
+        .header("X-Ascii-Confirm-Delete", Some(sandbox_id))
         .send()
         .await
     }
 
-    /// Interrupt work running in a Box.
-    pub async fn interrupt(&self, box_id: &str) -> Result<BoxActionResponse> {
+    /// Interrupt work running in a Sandbox.
+    pub async fn interrupt(&self, sandbox_id: &str) -> Result<SandboxActionResponse> {
+        self.interrupt_with_query(sandbox_id, None).await
+    }
+
+    /// Interrupt the selected conversation without automatically retrying delivery.
+    pub async fn interrupt_with_query(
+        &self,
+        sandbox_id: &str,
+        query: Option<&InterruptQuery>,
+    ) -> Result<SandboxActionResponse> {
         self.request(
             "interrupt",
             Method::POST,
-            &format!("/boxes/{}/interrupt", validate_box_id(box_id)?),
+            &format!(
+                "{SANDBOX_PATH}/{}/interrupt",
+                validate_sandbox_id(sandbox_id)?
+            ),
         )
+        .query(query)
         .send()
         .await
     }
 
-    // --- In-box ops ---
+    // --- In-sandbox ops ---
 
     /// HTTP timeout is raised to cover `timeout_seconds` + slack. Commands are
     /// never auto-retried (Ascii: execution may already be running).
     ///
-    pub async fn command(&self, box_id: &str, request: CommandRequest) -> Result<CommandResponse> {
+    pub async fn command(
+        &self,
+        sandbox_id: &str,
+        request: CommandRequest,
+    ) -> Result<CommandResponse> {
         if request.detached == Some(true) {
             return Err(Error::Config(
                 "use command_raw for detached commands".into(),
             ));
         }
-        match self.command_raw(box_id, request).await? {
+        match self.command_raw(sandbox_id, request).await? {
             CommandResult::Completed(response) => Ok(response),
             CommandResult::Started(_) => Err(Error::Unexpected(
                 "detached response for synchronous command".into(),
@@ -204,16 +241,25 @@ impl BoxApi {
         }
     }
 
-    /// Start either a synchronous or detached command and preserve the union response.
+    /// Start a JSON synchronous or detached command and preserve the union response.
+    /// NDJSON streaming is rejected before delivery; detached commands ignore `stream`.
     pub async fn command_raw(
         &self,
-        box_id: &str,
+        sandbox_id: &str,
         request: CommandRequest,
     ) -> Result<CommandResult> {
+        if request.stream == Some(true) && request.detached != Some(true) {
+            return Err(Error::Config(
+                "NDJSON command streaming is unsupported by the JSON command API".into(),
+            ));
+        }
         self.request(
             "command",
             Method::POST,
-            &format!("/boxes/{}/commands", validate_box_id(box_id)?),
+            &format!(
+                "{SANDBOX_PATH}/{}/commands",
+                validate_sandbox_id(sandbox_id)?
+            ),
         )
         .timeout(
             self.config
@@ -227,7 +273,7 @@ impl BoxApi {
     /// Read a detached command status and optionally limit its log tail.
     pub async fn command_status(
         &self,
-        box_id: &str,
+        sandbox_id: &str,
         process_id: &str,
         query: Option<&CommandStatusQuery>,
     ) -> Result<CommandStatusResponse> {
@@ -235,8 +281,8 @@ impl BoxApi {
             "command_status",
             Method::GET,
             &format!(
-                "/boxes/{}/commands/{}",
-                validate_box_id(box_id)?,
+                "{SANDBOX_PATH}/{}/commands/{}",
+                validate_sandbox_id(sandbox_id)?,
                 segment(process_id)?
             ),
         )
@@ -245,12 +291,12 @@ impl BoxApi {
         .await
     }
 
-    /// Queue an agent prompt in a Box.
-    pub async fn prompt(&self, box_id: &str, request: PromptRequest) -> Result<PromptResponse> {
+    /// Queue an agent prompt in a Sandbox.
+    pub async fn prompt(&self, sandbox_id: &str, request: PromptRequest) -> Result<PromptResponse> {
         self.request(
             "prompt",
             Method::POST,
-            &format!("/boxes/{}/prompt", validate_box_id(box_id)?),
+            &format!("{SANDBOX_PATH}/{}/prompt", validate_sandbox_id(sandbox_id)?),
         )
         .json(Some(&request))
         .send()
@@ -260,15 +306,15 @@ impl BoxApi {
     /// Read the state of a queued prompt.
     pub async fn prompt_run_status(
         &self,
-        box_id: &str,
+        sandbox_id: &str,
         prompt_id: &str,
     ) -> Result<PromptRunResponse> {
         self.request(
             "prompt_run_status",
             Method::GET,
             &format!(
-                "/boxes/{}/prompts/{}",
-                validate_box_id(box_id)?,
+                "{SANDBOX_PATH}/{}/prompts/{}",
+                validate_sandbox_id(sandbox_id)?,
                 segment(prompt_id)?
             ),
         )
@@ -276,16 +322,16 @@ impl BoxApi {
         .await
     }
 
-    /// Read a page of Box events with optional cursor and type filters.
+    /// Read a page of Sandbox events with optional cursor and type filters.
     pub async fn events(
         &self,
-        box_id: &str,
+        sandbox_id: &str,
         query: Option<&EventsQuery>,
     ) -> Result<EventsResponse> {
         self.request(
             "events",
             Method::GET,
-            &format!("/boxes/{}/events", validate_box_id(box_id)?),
+            &format!("{SANDBOX_PATH}/{}/events", validate_sandbox_id(sandbox_id)?),
         )
         .query(query)
         .send()
@@ -295,14 +341,17 @@ impl BoxApi {
     /// Request desktop access with connection and theme options.
     pub async fn desktop(
         &self,
-        box_id: &str,
+        sandbox_id: &str,
         query: Option<&DesktopQuery>,
         request: Option<DesktopRequest>,
     ) -> Result<DesktopResponse> {
         self.request(
             "desktop",
             Method::POST,
-            &format!("/boxes/{}/desktop", validate_box_id(box_id)?),
+            &format!(
+                "{SANDBOX_PATH}/{}/desktop",
+                validate_sandbox_id(sandbox_id)?
+            ),
         )
         .json(request.as_ref())
         .query(query)
@@ -311,27 +360,36 @@ impl BoxApi {
     }
 
     // --- Snapshots ---
-    /// List snapshot history for one Box.
-    pub async fn list_box_snapshots(
+    /// List snapshot history for one Sandbox.
+    pub async fn list_sandbox_snapshots(
         &self,
-        box_id: &str,
+        sandbox_id: &str,
         query: Option<&SnapshotsQuery>,
     ) -> Result<SnapshotListResponse> {
         self.request(
-            "list_box_snapshots",
+            "list_sandbox_snapshots",
             Method::GET,
-            &format!("/boxes/{}/snapshots", validate_box_id(box_id)?),
+            &format!(
+                "{SANDBOX_PATH}/{}/snapshots",
+                validate_sandbox_id(sandbox_id)?
+            ),
         )
         .query(query)
         .send()
         .await
     }
-    /// Read the most recent snapshot for a Box, if available.
-    pub async fn latest_box_snapshot(&self, box_id: &str) -> Result<SnapshotLatestResponse> {
+    /// Read the most recent snapshot for a Sandbox, if available.
+    pub async fn latest_sandbox_snapshot(
+        &self,
+        sandbox_id: &str,
+    ) -> Result<SnapshotLatestResponse> {
         self.request(
-            "latest_box_snapshot",
+            "latest_sandbox_snapshot",
             Method::GET,
-            &format!("/boxes/{}/snapshots/latest", validate_box_id(box_id)?),
+            &format!(
+                "{SANDBOX_PATH}/{}/snapshots/latest",
+                validate_sandbox_id(sandbox_id)?
+            ),
         )
         .send()
         .await
@@ -407,7 +465,7 @@ impl BoxApi {
 
     // --- Environments ---
     /// List configured environments.
-    pub async fn environments(&self) -> Result<BoxEnvironmentListResponse> {
+    pub async fn environments(&self) -> Result<SandboxEnvironmentListResponse> {
         self.request("environments", Method::GET, "/environments")
             .send()
             .await
@@ -415,8 +473,8 @@ impl BoxApi {
     /// Create a named environment.
     pub async fn create_environment(
         &self,
-        request: CreateBoxEnvironmentRequest,
-    ) -> Result<BoxEnvironmentListResponse> {
+        request: CreateSandboxEnvironmentRequest,
+    ) -> Result<SandboxEnvironmentListResponse> {
         self.request("create_environment", Method::POST, "/environments")
             .json(Some(&request))
             .send()
@@ -426,8 +484,8 @@ impl BoxApi {
     pub async fn update_environment(
         &self,
         id: &str,
-        request: UpdateBoxEnvironmentRequest,
-    ) -> Result<BoxEnvironmentResponse> {
+        request: UpdateSandboxEnvironmentRequest,
+    ) -> Result<SandboxEnvironmentResponse> {
         self.request(
             "update_environment",
             Method::PUT,
@@ -438,7 +496,7 @@ impl BoxApi {
         .await
     }
     /// Delete an environment.
-    pub async fn delete_environment(&self, id: &str) -> Result<BoxEnvironmentResponse> {
+    pub async fn delete_environment(&self, id: &str) -> Result<SandboxEnvironmentResponse> {
         self.request(
             "delete_environment",
             Method::DELETE,
@@ -449,9 +507,13 @@ impl BoxApi {
     }
 
     /// Run a shell command and wait for its result, with a 30-second command timeout.
-    pub async fn exec(&self, box_id: &str, command: impl Into<String>) -> Result<CommandResponse> {
+    pub async fn exec(
+        &self,
+        sandbox_id: &str,
+        command: impl Into<String>,
+    ) -> Result<CommandResponse> {
         self.command(
-            box_id,
+            sandbox_id,
             CommandRequest::new(command).with_timeout_seconds(30),
         )
         .await
@@ -460,7 +522,7 @@ impl BoxApi {
     /// Read a file with an optional encoding.
     pub async fn read_file(
         &self,
-        box_id: &str,
+        sandbox_id: &str,
         path: impl Into<String>,
         encoding: Option<&str>,
     ) -> Result<FileReadResponse> {
@@ -469,7 +531,7 @@ impl BoxApi {
         self.request(
             "read_file",
             Method::GET,
-            &format!("/boxes/{}/files", validate_box_id(box_id)?),
+            &format!("{SANDBOX_PATH}/{}/files", validate_sandbox_id(sandbox_id)?),
         )
         .query(Some(&FileReadQuery {
             path,
@@ -482,14 +544,14 @@ impl BoxApi {
     /// Write a file using the supplied path, content, and encoding.
     pub async fn write_file(
         &self,
-        box_id: &str,
+        sandbox_id: &str,
         request: FileWriteRequest,
     ) -> Result<FileWriteResponse> {
         validate_file_path(&request.path)?;
         self.request(
             "write_file",
             Method::PUT,
-            &format!("/boxes/{}/files", validate_box_id(box_id)?),
+            &format!("{SANDBOX_PATH}/{}/files", validate_sandbox_id(sandbox_id)?),
         )
         .json(Some(&request))
         .send()
@@ -499,29 +561,29 @@ impl BoxApi {
     /// Expose a port with explicit visibility and title options.
     pub async fn host_port(
         &self,
-        box_id: &str,
+        sandbox_id: &str,
         request: HostPortRequest,
     ) -> Result<HostPortResponse> {
         self.request(
             "host_port",
             Method::POST,
-            &format!("/boxes/{}/host", validate_box_id(box_id)?),
+            &format!("{SANDBOX_PATH}/{}/host", validate_sandbox_id(sandbox_id)?),
         )
         .json(Some(&request))
         .send()
         .await
     }
 
-    /// Configure a public SSH key for a Box.
+    /// Configure a public SSH key for a Sandbox.
     pub async fn ssh_key(
         &self,
-        box_id: &str,
+        sandbox_id: &str,
         public_key: impl Into<String>,
     ) -> Result<SshKeyResponse> {
         self.request(
             "ssh_key",
             Method::POST,
-            &format!("/boxes/{}/sshkey", validate_box_id(box_id)?),
+            &format!("{SANDBOX_PATH}/{}/sshkey", validate_sandbox_id(sandbox_id)?),
         )
         .json(Some(&SshKeyRequest {
             public_key: public_key.into(),
@@ -531,15 +593,15 @@ impl BoxApi {
     }
 }
 
-pub(crate) fn validate_box_id(box_id: &str) -> Result<&str> {
-    let rest = match box_id.strip_prefix(BOX_ID_PREFIX) {
-        Some(r) if r.len() == BOX_ID_BODY_LEN => r,
-        _ => return Err(Error::InvalidBoxId(box_id.to_string())),
+pub(crate) fn validate_sandbox_id(sandbox_id: &str) -> Result<&str> {
+    let rest = match sandbox_id.strip_prefix(SANDBOX_ID_PREFIX) {
+        Some(r) if r.len() == SANDBOX_ID_BODY_LEN => r,
+        _ => return Err(Error::InvalidSandboxId(sandbox_id.to_string())),
     };
-    if !rest.bytes().all(|b| BOX_ID_ALPHABET.contains(&b)) {
-        return Err(Error::InvalidBoxId(box_id.to_string()));
+    if !rest.bytes().all(|b| SANDBOX_ID_ALPHABET.contains(&b)) {
+        return Err(Error::InvalidSandboxId(sandbox_id.to_string()));
     }
-    Ok(box_id)
+    Ok(sandbox_id)
 }
 
 fn validate_file_path(path: &str) -> Result<()> {
@@ -563,16 +625,16 @@ mod tests {
     use super::*;
 
     #[test]
-    fn accepts_valid_box_id() {
-        assert_eq!(validate_box_id("bx_23456789").unwrap(), "bx_23456789");
-        assert_eq!(validate_box_id("bx_abcdefgh").unwrap(), "bx_abcdefgh");
+    fn accepts_valid_sandbox_id() {
+        assert_eq!(validate_sandbox_id("bx_23456789").unwrap(), "bx_23456789");
+        assert_eq!(validate_sandbox_id("bx_abcdefgh").unwrap(), "bx_abcdefgh");
     }
 
     #[test]
-    fn rejects_bad_box_id() {
-        assert!(validate_box_id("bx_SHORT").is_err());
-        assert!(validate_box_id("../etc/passwd").is_err());
-        assert!(validate_box_id("bx_AAAAAAAA").is_err());
-        assert!(validate_box_id("bx_23456789/../x").is_err());
+    fn rejects_bad_sandbox_id() {
+        assert!(validate_sandbox_id("bx_SHORT").is_err());
+        assert!(validate_sandbox_id("../etc/passwd").is_err());
+        assert!(validate_sandbox_id("bx_AAAAAAAA").is_err());
+        assert!(validate_sandbox_id("bx_23456789/../x").is_err());
     }
 }

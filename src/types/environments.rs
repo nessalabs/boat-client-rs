@@ -67,20 +67,20 @@ impl fmt::Debug for SelectedRepository {
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct BoxEnvironmentVersionSummary {
+pub struct SandboxEnvironmentVersionSummary {
     pub id: String,
     pub version_number: u64,
-    pub box_count: u64,
+    pub sandbox_count: u64,
     pub created_at: String,
     #[serde(flatten)]
     pub extra: HashMap<String, serde_json::Value>,
 }
-impl fmt::Debug for BoxEnvironmentVersionSummary {
+impl fmt::Debug for SandboxEnvironmentVersionSummary {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("BoxEnvironmentVersionSummary")
+        f.debug_struct("SandboxEnvironmentVersionSummary")
             .field("id", &self.id)
             .field("version_number", &self.version_number)
-            .field("box_count", &self.box_count)
+            .field("sandbox_count", &self.sandbox_count)
             .field("created_at_len", &self.created_at.len())
             .field("extra_count", &self.extra.len())
             .finish()
@@ -89,7 +89,7 @@ impl fmt::Debug for BoxEnvironmentVersionSummary {
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct BoxEnvironment {
+pub struct SandboxEnvironment {
     pub id: String,
     pub name: String,
     pub is_default: bool,
@@ -97,18 +97,18 @@ pub struct BoxEnvironment {
     pub safe_for_third_parties: bool,
     pub pass_github: bool,
     pub pass_secrets: bool,
-    pub pass_box_credentials: bool,
+    pub pass_sandbox_credentials: bool,
     pub pass_agents_credentials: bool,
     pub env_contents: String,
     pub secret_files: Vec<SecretFile>,
     pub selected_repositories: Option<Vec<SelectedRepository>>,
-    pub versions: Vec<BoxEnvironmentVersionSummary>,
+    pub versions: Vec<SandboxEnvironmentVersionSummary>,
     #[serde(flatten)]
     pub extra: HashMap<String, serde_json::Value>,
 }
-impl fmt::Debug for BoxEnvironment {
+impl fmt::Debug for SandboxEnvironment {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("BoxEnvironment")
+        f.debug_struct("SandboxEnvironment")
             .field("id", &self.id)
             .field("name_len", &self.name.len())
             .field("is_default", &self.is_default)
@@ -119,7 +119,7 @@ impl fmt::Debug for BoxEnvironment {
             .field("safe_for_third_parties", &self.safe_for_third_parties)
             .field("pass_github", &self.pass_github)
             .field("pass_secrets", &self.pass_secrets)
-            .field("pass_box_credentials", &self.pass_box_credentials)
+            .field("pass_sandbox_credentials", &self.pass_sandbox_credentials)
             .field("pass_agents_credentials", &self.pass_agents_credentials)
             .field("env_contents_len", &self.env_contents.len())
             .field("secret_files_count", &self.secret_files.len())
@@ -135,12 +135,12 @@ impl fmt::Debug for BoxEnvironment {
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CreateBoxEnvironmentRequest {
+pub struct CreateSandboxEnvironmentRequest {
     pub name: String,
 }
-impl fmt::Debug for CreateBoxEnvironmentRequest {
+impl fmt::Debug for CreateSandboxEnvironmentRequest {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("CreateBoxEnvironmentRequest")
+        f.debug_struct("CreateSandboxEnvironmentRequest")
             .field("name_len", &self.name.len())
             .finish()
     }
@@ -175,7 +175,7 @@ impl fmt::Debug for EnvironmentRepository {
 
 #[derive(Clone, Deserialize, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
-pub struct UpdateBoxEnvironmentRequest {
+pub struct UpdateSandboxEnvironmentRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub name: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -187,7 +187,7 @@ pub struct UpdateBoxEnvironmentRequest {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pass_secrets: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub pass_box_credentials: Option<bool>,
+    pub pass_sandbox_credentials: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub pass_agents_credentials: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -196,16 +196,26 @@ pub struct UpdateBoxEnvironmentRequest {
     pub secret_files: Option<Vec<SecretFile>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub repositories: Option<Vec<EnvironmentRepository>>,
+    /// Boat v1 `credentialProfileId` field.
+    #[serde(
+        default,
+        deserialize_with = "deserialize_optional_nullable",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub credential_profile_id: Option<Option<String>>,
+    /// Boat v1 `proxyAiCredentials` field.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub proxy_ai_credentials: Option<bool>,
 }
-impl fmt::Debug for UpdateBoxEnvironmentRequest {
+impl fmt::Debug for UpdateSandboxEnvironmentRequest {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("UpdateBoxEnvironmentRequest")
+        f.debug_struct("UpdateSandboxEnvironmentRequest")
             .field("name_len", &self.name.as_ref().map(String::len))
             .field("is_default", &self.is_default)
             .field("safe_for_third_parties", &self.safe_for_third_parties)
             .field("pass_github", &self.pass_github)
             .field("pass_secrets", &self.pass_secrets)
-            .field("pass_box_credentials", &self.pass_box_credentials)
+            .field("pass_sandbox_credentials", &self.pass_sandbox_credentials)
             .field("pass_agents_credentials", &self.pass_agents_credentials)
             .field(
                 "env_contents_len",
@@ -225,14 +235,14 @@ impl fmt::Debug for UpdateBoxEnvironmentRequest {
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct BoxEnvironmentListResponse {
-    pub environments: Vec<BoxEnvironment>,
+pub struct SandboxEnvironmentListResponse {
+    pub environments: Vec<SandboxEnvironment>,
     #[serde(flatten)]
     pub extra: HashMap<String, serde_json::Value>,
 }
-impl fmt::Debug for BoxEnvironmentListResponse {
+impl fmt::Debug for SandboxEnvironmentListResponse {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("BoxEnvironmentListResponse")
+        f.debug_struct("SandboxEnvironmentListResponse")
             .field("environments_count", &self.environments.len())
             .field("extra_count", &self.extra.len())
             .finish()
@@ -241,15 +251,15 @@ impl fmt::Debug for BoxEnvironmentListResponse {
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct BoxEnvironmentResponse {
+pub struct SandboxEnvironmentResponse {
     pub success: bool,
-    pub environment: Option<BoxEnvironment>,
+    pub environment: Option<SandboxEnvironment>,
     #[serde(flatten)]
     pub extra: HashMap<String, serde_json::Value>,
 }
-impl fmt::Debug for BoxEnvironmentResponse {
+impl fmt::Debug for SandboxEnvironmentResponse {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("BoxEnvironmentResponse")
+        f.debug_struct("SandboxEnvironmentResponse")
             .field("success", &self.success)
             .field("extra_count", &self.extra.len())
             .finish()

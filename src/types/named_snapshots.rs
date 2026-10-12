@@ -50,7 +50,7 @@ pub struct NamedSnapshot {
     pub name: String,
     pub status: String,
     pub error: Option<String>,
-    pub source_box_id: String,
+    pub source_sandbox_id: String,
     pub snapshot_id: Option<String>,
     #[serde(rename = "type")]
     pub type_: Option<String>,
@@ -64,7 +64,7 @@ impl fmt::Debug for NamedSnapshot {
         f.debug_struct("NamedSnapshot")
             .field("name_len", &self.name.len())
             .field("status", &self.status)
-            .field("source_box_id_len", &self.source_box_id.len())
+            .field("source_box_id_len", &self.source_sandbox_id.len())
             .field("size_bytes", &self.size_bytes)
             .field("created_at_len", &self.created_at.len())
             .field("extra_count", &self.extra.len())
@@ -96,13 +96,13 @@ impl fmt::Debug for NamedSnapshotListResponse {
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NamedSnapshotSaveRequest {
-    pub box_id: String,
+    pub sandbox_id: String,
     pub name: String,
 }
 impl fmt::Debug for NamedSnapshotSaveRequest {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("NamedSnapshotSaveRequest")
-            .field("box_id_len", &self.box_id.len())
+            .field("box_id_len", &self.sandbox_id.len())
             .field("name_len", &self.name.len())
             .finish_non_exhaustive()
     }
