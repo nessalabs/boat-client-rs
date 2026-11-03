@@ -1,0 +1,37 @@
+{
+  "sourceRevision": "4d68256bb0b6a889633abc567fb09214681874db",
+  "toolchain": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "os": "macos",
+  "arch": "aarch64",
+  "commands": [
+    {
+      "command": "cargo test",
+      "exitCode": 0,
+      "log": "cargo-test.log"
+    },
+    {
+      "command": "cargo fmt -- --check",
+      "exitCode": 0
+    },
+    {
+      "command": "cargo clippy --all-targets -- -D warnings",
+      "exitCode": 0
+    },
+    {
+      "command": "cargo test --test client_performance -- --ignored --nocapture",
+      "exitCode": 0,
+      "samples_ms": [17.757915999999998, 16.450958, 13.642875],
+      "scenario": "128 sequential loopback reads per sample",
+      "limits": "mock server; excludes WAN, cloud, RSS and statistical regression qualification"
+    },
+    {
+      "command": "RUSTDOCFLAGS='-D warnings' cargo doc --no-deps",
+      "exitCode": 0
+    }
+  ],
+  "exclusions": [
+    "No live cloud credentials/resources",
+    "No rerun of pinned upstream Node fixture provenance scripts",
+    "Only local arm64 macOS qualification"
+  ]
+}
