@@ -36,6 +36,8 @@ async fn main() -> Result<()> {
 
 ## Documentation
 
+- [Browsable system map and recovery decisions](docs/state/README.md).
+
 - [SDK guide](docs/guide.md): complete Rust examples for commands, files, prompts,
   streams, snapshots, environments, cleanup, and error handling.
 - [API reference](docs/api.md): all 59 endpoint operations and convenience helpers.

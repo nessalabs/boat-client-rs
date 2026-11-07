@@ -1,0 +1,463 @@
+    Updating crates.io index
+     Locking 162 packages to highest compatible versions
+      Adding base64 v0.22.1 (available: v0.23.1)
+      Adding reqwest v0.12.28 (available: v0.13.5)
+ Downloading crates ...
+  Downloaded zerofrom-derive v0.1.8
+  Downloaded equivalent v1.0.3
+  Downloaded lazy_static v1.5.1
+  Downloaded assert-json-diff v2.0.2
+  Downloaded deadpool-runtime v0.1.4
+  Downloaded want v0.3.2
+  Downloaded yoke-derive v0.8.4
+  Downloaded num_cpus v1.17.0
+  Downloaded utf8_iter v1.1.0
+  Downloaded ipnet v2.12.2
+  Downloaded lru-slab v0.1.3
+  Downloaded cfg-if v1.0.5
+  Downloaded futures-executor v0.3.34
+  Downloaded thiserror v2.0.21
+  Downloaded tokio-rustls v0.26.6
+  Downloaded utf_types v1.0.0
+  Downloaded zerovec-derive v0.11.7
+  Downloaded thiserror-impl v2.0.21
+  Downloaded zeroize v1.9.1
+  Downloaded find-msvc-tools v0.1.15
+  Downloaded hyper-rustls v0.27.10
+  Downloaded synstructure v0.14.0
+  Downloaded tinystr v0.8.5
+  Downloaded smallvec v1.16.4
+  Downloaded deadpool v0.12.3
+  Downloaded yoke v0.8.4
+  Downloaded unicode-ident v1.0.27
+  Downloaded icu_provider v2.4.0
+  Downloaded log v0.4.35
+  Downloaded tinyvec v1.13.3
+  Downloaded quinn-udp v0.5.16
+  Downloaded wiremock v0.6.5
+  Downloaded icu_normalizer_data v2.4.0
+  Downloaded quinn v0.11.12
+  Downloaded icu_locale_core v2.4.0
+  Downloaded icu_collections v2.4.0
+  Downloaded base64 v0.23.1
+  Downloaded rustls-webpki v0.103.16
+  Downloaded rand v0.10.3
+  Downloaded mio v1.2.4
+  Downloaded zerovec v0.11.9
+  Downloaded hyper-util v0.1.21
+  Downloaded cc v1.11.0
+  Downloaded icu_properties v2.4.0
+  Downloaded tokio-util v0.7.20
+  Downloaded h2 v0.4.20
+  Downloaded hyper v1.12.0
+  Downloaded icu_properties_data v2.4.0
+  Downloaded serde_json v1.0.154
+  Downloaded webpki-roots v1.0.11
+  Downloaded quinn-proto v0.11.19
+  Downloaded syn v3.0.9
+  Downloaded rustls v0.23.46
+  Downloaded icu_normalizer v2.4.0
+  Downloaded libc v0.2.191
+  Downloaded tokio v1.54.1
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling libc v0.2.191
+   Compiling memchr v2.8.3
+   Compiling pin-project-lite v0.2.17
+   Compiling stable_deref_trait v1.2.1
+   Compiling futures-core v0.3.34
+   Compiling bytes v1.12.1
+   Compiling futures-sink v0.3.34
+   Compiling itoa v1.0.18
+   Compiling slab v0.4.12
+   Compiling futures-channel v0.3.34
+   Compiling once_cell v1.21.4
+   Compiling futures-io v0.3.34
+   Compiling futures-task v0.3.34
+   Compiling smallvec v1.16.4
+   Compiling utf_types v1.0.0
+   Compiling shlex v2.0.1
+   Compiling find-msvc-tools v0.1.15
+   Compiling writeable v0.6.4
+   Compiling litemap v0.8.3
+   Compiling http v1.5.0
+   Compiling utf8_iter v1.1.0
+   Compiling cc v1.11.0
+   Compiling tracing-core v0.1.36
+   Compiling cfg-if v1.0.5
+   Compiling icu_normalizer_data v2.4.0
+   Compiling icu_properties_data v2.4.0
+   Compiling serde_core v1.0.229
+   Compiling percent-encoding v2.3.2
+   Compiling equivalent v1.0.3
+   Compiling hashbrown v0.17.1
+   Compiling tracing v0.1.44
+   Compiling zeroize v1.9.1
+   Compiling httparse v1.10.1
+   Compiling http-body v1.1.0
+   Compiling indexmap v2.14.2
+   Compiling rustls-pki-types v1.15.1
+   Compiling zmij v1.0.23
+   Compiling atomic-waker v1.1.2
+   Compiling tower-service v0.3.3
+   Compiling syn v3.0.9
+   Compiling untrusted v0.9.0
+   Compiling fnv v1.0.7
+   Compiling serde v1.0.229
+   Compiling try-lock v0.2.5
+   Compiling want v0.3.2
+   Compiling ring v0.17.14
+   Compiling form_urlencoded v1.2.2
+   Compiling httpdate v1.0.3
+   Compiling serde_json v1.0.154
+   Compiling socket2 v0.6.5
+   Compiling mio v1.2.4
+   Compiling getrandom v0.2.17
+   Compiling rustls v0.23.46
+   Compiling aho-corasick v1.1.5
+   Compiling regex-syntax v0.8.11
+   Compiling subtle v2.6.1
+   Compiling base64 v0.23.1
+   Compiling log v0.4.35
+   Compiling ipnet v2.12.2
+   Compiling sync_wrapper v1.0.2
+   Compiling lazy_static v1.5.1
+   Compiling tower-layer v0.3.3
+   Compiling webpki-roots v1.0.11
+   Compiling regex-automata v0.4.18
+   Compiling http-body-util v0.1.5
+   Compiling base64 v0.22.1
+   Compiling synstructure v0.14.0
+   Compiling ryu v1.0.23
+   Compiling thiserror v2.0.21
+   Compiling bitflags v2.13.2
+   Compiling num_cpus v1.17.0
+   Compiling deadpool-runtime v0.1.4
+   Compiling sharded-slab v0.1.7
+   Compiling tracing-log v0.2.0
+   Compiling thread_local v1.1.10
+   Compiling nu-ansi-term v0.50.3
+   Compiling fastrand v2.5.0
+   Compiling zerofrom-derive v0.1.8
+   Compiling yoke-derive v0.8.4
+   Compiling zerovec-derive v0.11.7
+   Compiling displaydoc v0.2.7
+   Compiling tokio-macros v2.7.2
+   Compiling futures-macro v0.3.34
+   Compiling serde_derive v1.0.229
+   Compiling tokio v1.54.1
+   Compiling thiserror-impl v2.0.21
+   Compiling futures-util v0.3.34
+   Compiling zerofrom v0.1.8
+   Compiling matchers v0.2.0
+   Compiling regex v1.13.1
+   Compiling tracing-subscriber v0.3.23
+   Compiling yoke v0.8.4
+   Compiling zerovec v0.11.9
+   Compiling zerotrie v0.2.5
+   Compiling rustls-webpki v0.103.16
+   Compiling futures-executor v0.3.34
+   Compiling futures v0.3.34
+   Compiling serde_urlencoded v0.7.1
+   Compiling assert-json-diff v2.0.2
+   Compiling tinystr v0.8.5
+   Compiling potential_utf v0.1.6
+   Compiling tokio-util v0.7.20
+   Compiling tower v0.5.3
+   Compiling deadpool v0.12.3
+   Compiling icu_collections v2.4.0
+   Compiling icu_locale_core v2.4.0
+   Compiling h2 v0.4.20
+   Compiling icu_provider v2.4.0
+   Compiling icu_properties v2.4.0
+   Compiling icu_normalizer v2.4.0
+   Compiling tokio-rustls v0.26.6
+   Compiling idna_adapter v1.2.2
+   Compiling idna v1.1.0
+   Compiling url v2.5.8
+   Compiling tower-http v0.6.11
+   Compiling hyper v1.12.0
+   Compiling hyper-util v0.1.21
+   Compiling hyper-rustls v0.27.10
+   Compiling wiremock v0.6.5
+   Compiling reqwest v0.12.28
+   Compiling boat_client v0.1.0 (/Users/nessa/Documents/Codex/2026-11-02/hey-can-you-update-the-nessa/work/org-docs/boat-client-rs)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 20.89s
+     Running unittests src/lib.rs (target/debug/deps/boat_client-f9a0e8e5edcbb696)
+
+running 16 tests
+test config::retry_tests::exponential_backoff_caps_and_handles_extreme_indices ... ok
+test client::tests::rejects_bad_sandbox_id ... ok
+test client::tests::accepts_valid_sandbox_id ... ok
+test config::tests::rejects_empty_token ... ok
+test client::transport::truncate_tests::truncate_respects_utf8_boundaries ... ok
+test error::tests::api_display_and_debug_omit_message_and_details ... ok
+test error::tests::unexpected_display_and_debug_omit_body ... ok
+test config::tests::command_http_timeout_covers_command_budget ... ok
+test config::tests::rejects_remote_http_base_path ... ok
+test config::tests::debug_redacts_token ... ok
+test types::tests::box_deserializes_without_desktop_flags ... ok
+test types::tests::command_response_debug_hides_streams ... ok
+test handoff::file::unix::tests::lock_release_does_not_wait_for_duplicate_descriptors ... ok
+test config::retry_tests::jitter_is_bounded_by_base_and_maximum ... ok
+test types::tests::create_request_debug_redacts_env_and_setup ... ok
+test config::retry_tests::invalid_retry_configuration_fails_before_network_io ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/api_contracts.rs (target/debug/deps/api_contracts-60674ebaaa68f6f2)
+
+running 19 tests
+test create_request_ttl_preserves_null_and_omission ... ok
+test invalid_box_id_is_rejected ... ok
+test api_error_envelope ... ok
+test exec_command_with_cwd_and_timeout ... ok
+test exec_command_default_timeout_30 ... ok
+test boxes_list_and_query ... ok
+test create_with_idempotency_key ... ok
+test limits ... ok
+test rejects_detached_command ... ok
+test host_port_and_ssh_key ... ok
+test extended_snapshot_and_environment_routes ... ok
+test get_update_stop_resume ... ok
+test me ... ok
+test extended_prompt_events_desktop_and_delete_routes ... ok
+test write_file_uses_put_and_serializes_body ... ok
+test read_text_write_text_utf8 ... ok
+test wait_until_ready_success_states ... ok
+test wait_until_ready_terminal_states ... ok
+test wait_until_ready_polls_then_succeeds ... ok
+
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/boat_boundaries.rs (target/debug/deps/boat_boundaries-3cf02ca10ea300b4)
+
+running 7 tests
+test client_construction_validates_a_publicly_modified_api_root ... ok
+test remote_http_hosts_cannot_impersonate_loopback_with_a_numeric_prefix ... ok
+test current_handoff_receipts_use_sandbox_identity_fields_and_reject_old_only_names ... ok
+test json_command_methods_reject_streaming_before_executing_remote_work ... ok
+test actual_ipv4_ipv6_and_localhost_loopback_roots_remain_available ... ok
+test environments_use_query_scope_while_sandboxes_keep_the_wallet_header ... ok
+test cleared_scope_omits_wallet_selection_and_personal_scope_is_explicit ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/boat_command_stream.rs (target/debug/deps/boat_command_stream-06f4565d1b807456)
+
+running 4 tests
+test command_rejects_sync_stream_before_submitting_the_command ... ok
+test command_raw_rejects_sync_stream_before_submitting_the_command ... ok
+test explicit_false_stream_keeps_the_synchronous_json_contract ... ok
+test detached_stream_flag_preserves_single_post_and_started_response ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/boat_wire_contract.rs (target/debug/deps/boat_wire_contract-76305d2004d67519)
+
+running 5 tests
+test default_endpoint_matches_boat_openapi_and_published_sdk ... ok
+test get_uses_existing_bx_identity_and_the_sandbox_response_envelope ... ok
+test create_keeps_org_scopes_idempotency_and_current_boat_request_options ... ok
+test list_uses_boat_scope_and_decodes_sandboxes_with_pagination ... ok
+test minimal_cancelled_response_stops_readiness_without_a_second_request ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/client_performance.rs (target/debug/deps/client_performance-3ea366e9c9929274)
+
+running 1 test
+test repeated_sandbox_reads_preserve_payload_and_reuse_the_client ... ignored, explicit scoped performance qualification
+
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/error_contracts.rs (target/debug/deps/error_contracts-31bc98e262d69a30)
+
+running 10 tests
+test nullable_requests_preserve_omission_null_and_value ... ok
+test decoding_errors_hide_invalid_values_and_are_not_retried ... ok
+test chunked_response_cap_does_not_require_content_length ... ok
+test error_envelopes_preserve_details_without_logging_them ... ok
+test non_envelope_errors_do_not_retry_other_statuses ... ok
+test limits_preserve_fractional_and_negative_balances ... ok
+test successful_http_preserves_ok_false_as_sdk_does ... ok
+test prompt_nullable_options_send_explicit_null ... ok
+test transport_errors_strip_private_urls ... ok
+test non_json_transient_errors_retain_status_and_use_three_attempts ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.82s
+
+     Running tests/handoff.rs (target/debug/deps/handoff-757ebd1ad6985e76)
+
+running 14 tests
+test child_process_lock_probe ... ignored, internal helper spawned by the cross-process lock test
+test file_permissions_size_limits_and_ids_are_enforced ... ok
+test file_locks_prevent_other_processes_reading_uncommitted_receipts ... ok
+test concurrent_workers_cannot_both_claim_the_same_step ... ok
+test cancellation_after_commit_requires_reconciliation ... ok
+test debug_output_does_not_expose_checkpoint_or_intent_contents ... ok
+test handoff_logs_report_progress_without_identifiers_or_references ... ok
+test malformed_receipts_fail_closed_and_partial_temp_files_are_ignored ... ok
+test mixed_case_ids_have_distinct_files_and_locks ... ok
+test stable_id_rejects_different_intent_and_stale_or_invalid_transitions ... ok
+test application_hooks_run_only_after_claim_and_never_repeat_on_stale_receipts ... ok
+test pending_actions_require_explicit_reconciliation_before_retry ... ok
+test lost_storage_acknowledgements_reload_committed_state_without_repeating_work ... ok
+test restarts_preserve_each_intent_checkpoint_and_run_receipt ... ok
+
+test result: ok. 13 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.57s
+
+     Running tests/live.rs (target/debug/deps/live-a1d247af7522fa00)
+
+running 5 tests
+test live_environment_round_trip ... ignored, requires BOAT_API_KEY and BOAT_TEST_MUTATIONS=1; creates a temporary environment
+test live_get_and_exec_existing_box ... ignored, requires BOAT_API_KEY and SANDBOX_ID; live network
+test live_me_and_boxes ... ignored, requires BOAT_API_KEY; live network
+test live_runtime_read_contracts ... ignored, requires BOAT_API_KEY; live network, read-only
+test live_sdk_file_round_trip ... ignored, requires BOAT_API_KEY, BOAT_TEST_MUTATIONS=1 and BOAT_SDK_PATH; creates and deletes a disposable box
+
+test result: ok. 0 passed; 0 failed; 5 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/live_recovery.rs (target/debug/deps/live_recovery-6d1976dbd7c7de67)
+
+running 2 tests
+test live_handoff_reconciles_completed_launch_and_cleans_up ... ignored, requires BOAT_API_KEY, BOAT_TEST_MUTATIONS=1 and BOAT_TEST_STATE_DIR; creates and deletes two fixture Sandboxes
+test live_read_after_injected_transient_failures ... ignored, requires BOAT_API_KEY; local fault injection with a live read, creates no resources
+
+test result: ok. 0 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/retries.rs (target/debug/deps/retries-906f4dd90d2a2a4e)
+
+running 5 tests
+test retry_after_date_and_invalid_header_are_exposed_correctly ... ok
+test retry_after_survives_exhaustion_and_mutations_are_not_replayed ... ok
+test configurable_attempts_retry_to_success_and_can_be_disabled ... ok
+test transport_logs_success_decode_failure_and_mutation_safely ... ok
+test subscriber_filters_control_http_and_retry_logs_without_sensitive_data ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/runtime_regressions.rs (target/debug/deps/runtime_regressions-2b564a54f96d7957)
+
+running 15 tests
+test excessive_retry_after_returns_error_without_retrying_early ... ok
+test polling_does_not_restart_transport_after_retry_after_refusal ... ok
+test nested_debug_hides_secrets_but_explicit_payload_access_remains ... ok
+test dot_segments_are_rejected_without_requests_and_delimiters_stay_in_segment ... ok
+test prompt_constructor_emits_required_provider ... ok
+test command_union_and_status_preserve_truncation_and_recovery_fields ... ok
+test snapshot_file_path_is_a_query_and_binary_is_preserved ... ok
+test response_cap_applies_to_success_and_error_bodies ... ok
+test identifiers_work_across_environment_snapshot_and_prompt_routes ... ok
+test stop_or_delete_retains_original_response_and_confirmation_is_not_retried ... ok
+test snapshot_pagination_preserves_cursor_limit_and_sort_for_both_routes ... ok
+test zero_timeout_keeps_polling_until_success ... ok
+test deletion_wait_observes_blocked_processing_then_completed ... ok
+test prompt_failed_is_terminal_and_empty_desktop_url_is_not_ready ... ok
+test finite_deadline_bounds_http_retries_and_sleep ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+     Running tests/sdk_operations.rs (target/debug/deps/sdk_operations-9d0bac4798e697b3)
+
+running 59 tests
+test api_key_usage ... ok
+test command_status ... ok
+test add_environment_repo ... ok
+test delete_environment ... ok
+test create_webhook ... ok
+test api_keys ... ok
+test artifact ... ok
+test command ... ok
+test create ... ok
+test create_environment ... ok
+test delete_environment_repo ... ok
+test delete_environment_secret_file ... ok
+test environments ... ok
+test delete_sandbox ... ok
+test delete_snapshot ... ok
+test delete_named_snapshot ... ok
+test events ... ok
+test delete_environment_var ... ok
+test desktop ... ok
+test delete_webhook ... ok
+test get ... ok
+test get_deletion_operation ... ok
+test get_named_snapshot ... ok
+test get_latest_sandbox_snapshot ... ok
+test get_snapshot_download ... ok
+test get_data_retention ... ok
+test get_snapshot_file ... ok
+test get_snapshot_tree ... ok
+test fork ... ok
+test get_webhook ... ok
+test host_port ... ok
+test list_sandbox_snapshots ... ok
+test interrupt ... ok
+test list_named_snapshots ... ok
+test limits ... ok
+test me ... ok
+test list_webhooks ... ok
+test list_snapshots ... ok
+test prompt_run_status ... ok
+test prompt ... ok
+test read_file ... ok
+test repos ... ok
+test rotate_webhook_signing_secret ... ok
+test resume ... ok
+test sandboxes ... ok
+test secrets ... ok
+test save_named_snapshot ... ok
+test select_repo ... ok
+test set_environment_secret_file ... ok
+test ssh_key ... ok
+test update ... ok
+test stop ... ok
+test update_data_retention ... ok
+test set_environment_var ... ok
+test update_environment ... ok
+test update_secrets ... ok
+test write_file ... ok
+test upgrade_environment ... ok
+test update_webhook ... ok
+
+test result: ok. 59 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/streams.rs (target/debug/deps/streams-8c545802c13a6642)
+
+running 13 tests
+test invalid_limit_fails_before_network ... ok
+test cancellation_before_first_poll_sends_no_prompt_or_request ... ok
+test streams_are_lazy_and_dropping_them_starts_no_work ... ok
+test cancellation_interrupts_inflight_http ... ok
+test dropping_stream_does_not_prefetch ... ok
+test repeated_cursor_fails_before_yielding_duplicates ... ok
+test latest_bootstrap_skips_large_history_and_encodes_cursor ... ok
+test include_existing_drains_pages_without_sleeping ... ok
+test missing_cursor_cannot_loop_or_replay ... ok
+test terminal_prompt_event_drains_all_pages_and_filters_other_tasks ... ok
+test cancellation_interrupts_sleep_and_buffered_events ... ok
+test terminal_status_refreshes_and_drains_final_events ... ok
+test deadline_covers_http_sleep_and_buffered_pages ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+   Doc-tests boat_client
+
+running 12 tests
+test src/lib.rs - (line 325) - compile ... ok
+test src/handoff/mod.rs - handoff (line 19) - compile ... ok
+test src/handoff/mod.rs - handoff (line 94) - compile ... ok
+test src/lib.rs - (line 274) - compile ... ok
+test src/lib.rs - (line 28) - compile ... ok
+test src/lib.rs - (line 167) - compile ... ok
+test src/lib.rs - (line 135) - compile ... ok
+test src/handoff/mod.rs - handoff (line 50) - compile ... ok
+test src/lib.rs - (line 189) - compile ... ok
+test src/lib.rs - (line 374) - compile ... ok
+test src/lib.rs - (line 90) - compile ... ok
+test src/lib.rs - (line 52) - compile ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+

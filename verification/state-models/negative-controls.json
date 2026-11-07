@@ -1,0 +1,202 @@
+{
+  "ok": true,
+  "checker": "tlc-1.7.4",
+  "date": "2026-11-03T08:52:33.337Z",
+  "models": 4,
+  "baselines": [
+    {
+      "document": "handoff",
+      "state": "passed",
+      "states": 5,
+      "modelDigest": "2df4b15cbcd8f11ee80bb682e5a849de26112fe80b1a79bd40943092e8942109",
+      "sourceRevision": "4d68256bb0b6a889633abc567fb09214681874db",
+      "checker": "tlc-1.7.4",
+      "date": "2026-11-03T08:52:22.425Z",
+      "held": ["SingleWinner", "ActionAfterIntent"]
+    },
+    {
+      "document": "http-retries",
+      "state": "passed",
+      "states": 12,
+      "modelDigest": "365756272ae38da045baa02e63f5c133c67e513d9d68f5653bc97e89e98d3b2f",
+      "sourceRevision": "4d68256bb0b6a889633abc567fb09214681874db",
+      "checker": "tlc-1.7.4",
+      "date": "2026-11-03T08:52:23.114Z",
+      "held": ["MutationOnce", "AttemptBound"]
+    },
+    {
+      "document": "streams",
+      "state": "passed",
+      "states": 15,
+      "modelDigest": "88d4dee2592587ff2927d0df64c15cd8cb6c5613ec878d26a2dc81aa81341158",
+      "sourceRevision": "4d68256bb0b6a889633abc567fb09214681874db",
+      "checker": "tlc-1.7.4",
+      "date": "2026-11-03T08:52:23.789Z",
+      "held": ["BufferDrained", "KnownPagesDrained"]
+    },
+    {
+      "document": "waits",
+      "state": "passed",
+      "states": 8,
+      "modelDigest": "c0a12916d01a4e57119e8b1b859c924623ef7b84b2ba4f5fcf4d43f2f164cbcf",
+      "sourceRevision": "4d68256bb0b6a889633abc567fb09214681874db",
+      "checker": "tlc-1.7.4",
+      "date": "2026-11-03T08:52:24.461Z",
+      "held": ["OnlyCompleted"]
+    }
+  ],
+  "probes": 7,
+  "completed": 7,
+  "results": [
+    {
+      "document": "http-retries",
+      "name": "retry-mutation",
+      "ok": true,
+      "state": "broke",
+      "expected": ["MutationOnce"],
+      "broke": ["MutationOnce"],
+      "unchecked": [],
+      "counterexamples": [
+        {
+          "rule": "MutationOnce",
+          "path": [
+            "Start with transient is TRUE, attempts is 1, phase is FailedAttempt, method is POST.",
+            "Retry: transient is TRUE, attempts is 2, phase is FailedAttempt, method is POST."
+          ],
+          "states": []
+        }
+      ],
+      "modelDigest": "57df0b2bed48f100b5b9150d56ab28c73c1f446e34eea50e4d2e3bb53ca51df5"
+    },
+    {
+      "document": "http-retries",
+      "name": "exceed-attempt-cap",
+      "ok": true,
+      "state": "broke",
+      "expected": ["AttemptBound"],
+      "broke": ["AttemptBound"],
+      "unchecked": [],
+      "counterexamples": [
+        {
+          "rule": "AttemptBound",
+          "path": [
+            "Start with transient is TRUE, attempts is 1, phase is FailedAttempt, method is GET.",
+            "Retry: transient is TRUE, attempts is 2, phase is FailedAttempt, method is GET.",
+            "Retry: transient is TRUE, attempts is 3, phase is FailedAttempt, method is GET.",
+            "Retry: transient is TRUE, attempts is 4, phase is FailedAttempt, method is GET."
+          ],
+          "states": []
+        }
+      ],
+      "modelDigest": "893d7583dd09e278e7589073ce06e98665c05adc686ca31eb609be034b1779fa"
+    },
+    {
+      "document": "waits",
+      "name": "blocked-is-not-completed",
+      "ok": true,
+      "state": "broke",
+      "expected": ["OnlyCompleted"],
+      "broke": ["OnlyCompleted"],
+      "unchecked": [],
+      "counterexamples": [
+        {
+          "rule": "OnlyCompleted",
+          "path": [
+            "Start with hidden is FALSE, done is FALSE, status is pending, accepted is none.",
+            "Observe: hidden is FALSE, done is FALSE, status is blocked, accepted is none.",
+            "Complete: hidden is FALSE, done is TRUE, status is blocked, accepted is blocked."
+          ],
+          "states": []
+        }
+      ],
+      "modelDigest": "63079dc059e0c4502db8890f1c878164430ab7174f17c6b7e49ac729a00065a2"
+    },
+    {
+      "document": "streams",
+      "name": "finish-with-buffered-events",
+      "ok": true,
+      "state": "broke",
+      "expected": ["BufferDrained"],
+      "broke": ["BufferDrained"],
+      "unchecked": [],
+      "counterexamples": [
+        {
+          "rule": "BufferDrained",
+          "path": [
+            "Start with pending is 0, done is FALSE, more is TRUE, terminal is FALSE, pages is 0.",
+            "Fetch: pending is 2, done is FALSE, more is TRUE, terminal is FALSE, pages is 1.",
+            "Yield: pending is 1, done is FALSE, more is TRUE, terminal is FALSE, pages is 1.",
+            "Yield: pending is 0, done is FALSE, more is TRUE, terminal is FALSE, pages is 1.",
+            "Fetch: pending is 2, done is FALSE, more is FALSE, terminal is FALSE, pages is 2.",
+            "Terminal: pending is 2, done is FALSE, more is FALSE, terminal is TRUE, pages is 2.",
+            "Finish: pending is 2, done is TRUE, more is FALSE, terminal is TRUE, pages is 2."
+          ],
+          "states": []
+        }
+      ],
+      "modelDigest": "d3c29b1c682c7e85c65fb7b27ccc245f61c16a4f512c3520cbae41e9d6a47235"
+    },
+    {
+      "document": "streams",
+      "name": "finish-before-last-page",
+      "ok": true,
+      "state": "broke",
+      "expected": ["KnownPagesDrained"],
+      "broke": ["KnownPagesDrained"],
+      "unchecked": [],
+      "counterexamples": [
+        {
+          "rule": "KnownPagesDrained",
+          "path": [
+            "Start with pending is 0, done is FALSE, more is TRUE, terminal is FALSE, pages is 0.",
+            "Terminal: pending is 0, done is FALSE, more is TRUE, terminal is TRUE, pages is 0.",
+            "Finish: pending is 0, done is TRUE, more is TRUE, terminal is TRUE, pages is 0."
+          ],
+          "states": []
+        }
+      ],
+      "modelDigest": "e91521245f9f8a38d13a37bf0bb3de2879cbf7c75fc9c42a94d8c3a6c21f7539"
+    },
+    {
+      "document": "handoff",
+      "name": "stale-controller-wins",
+      "ok": true,
+      "state": "broke",
+      "expected": ["SingleWinner"],
+      "broke": ["SingleWinner"],
+      "unchecked": [],
+      "counterexamples": [
+        {
+          "rule": "SingleWinner",
+          "path": [
+            "Start with revision is 0, acted is {}, begun is {}.",
+            "Begin: revision is 1, acted is {}, begun is {1}.",
+            "Begin: revision is 2, acted is {}, begun is {1, 2}."
+          ],
+          "states": []
+        }
+      ],
+      "modelDigest": "19a113d0a0da03939f0c73d0414a7137b929dd7f42b59ddfab1760f6a8d67f92"
+    },
+    {
+      "document": "handoff",
+      "name": "action-without-commit",
+      "ok": true,
+      "state": "broke",
+      "expected": ["ActionAfterIntent"],
+      "broke": ["ActionAfterIntent"],
+      "unchecked": [],
+      "counterexamples": [
+        {
+          "rule": "ActionAfterIntent",
+          "path": [
+            "Start with revision is 0, acted is {}, begun is {}.",
+            "Act: revision is 0, acted is {1}, begun is {}."
+          ],
+          "states": []
+        }
+      ],
+      "modelDigest": "5a532c4de28773dd244f291b59292c77189a8c238e6ec3177c1f6e56cf0dfe21"
+    }
+  ]
+}

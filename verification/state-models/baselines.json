@@ -1,0 +1,76 @@
+{
+  "ok": true,
+  "documents": 10,
+  "issues": [],
+  "models": [
+    {
+      "document": "handoff",
+      "state": "passed",
+      "message": "Every rule held. This checks the design, not the code.",
+      "saved": true,
+      "result": {
+        "sourceRevision": "4d68256bb0b6a889633abc567fb09214681874db",
+        "checker": "tlc-1.7.4",
+        "date": "2026-11-03T08:52:19.224Z",
+        "config": "tla/handoff.cfg",
+        "modelDigest": "2df4b15cbcd8f11ee80bb682e5a849de26112fe80b1a79bd40943092e8942109",
+        "states": 5,
+        "held": ["SingleWinner", "ActionAfterIntent"],
+        "broke": [],
+        "unchecked": []
+      }
+    },
+    {
+      "document": "http-retries",
+      "state": "passed",
+      "message": "Every rule held. This checks the design, not the code.",
+      "saved": true,
+      "result": {
+        "sourceRevision": "4d68256bb0b6a889633abc567fb09214681874db",
+        "checker": "tlc-1.7.4",
+        "date": "2026-11-03T08:52:19.905Z",
+        "config": "tla/http-retries.cfg",
+        "modelDigest": "365756272ae38da045baa02e63f5c133c67e513d9d68f5653bc97e89e98d3b2f",
+        "states": 12,
+        "held": ["MutationOnce", "AttemptBound"],
+        "broke": [],
+        "unchecked": []
+      }
+    },
+    {
+      "document": "streams",
+      "state": "passed",
+      "message": "Every rule held. This checks the design, not the code.",
+      "saved": true,
+      "result": {
+        "sourceRevision": "4d68256bb0b6a889633abc567fb09214681874db",
+        "checker": "tlc-1.7.4",
+        "date": "2026-11-03T08:52:20.586Z",
+        "config": "tla/streams.cfg",
+        "modelDigest": "88d4dee2592587ff2927d0df64c15cd8cb6c5613ec878d26a2dc81aa81341158",
+        "states": 15,
+        "held": ["BufferDrained", "KnownPagesDrained"],
+        "broke": [],
+        "unchecked": []
+      }
+    },
+    {
+      "document": "waits",
+      "state": "passed",
+      "message": "Every rule held. This checks the design, not the code.",
+      "saved": true,
+      "result": {
+        "sourceRevision": "4d68256bb0b6a889633abc567fb09214681874db",
+        "checker": "tlc-1.7.4",
+        "date": "2026-11-03T08:52:21.274Z",
+        "config": "tla/waits.cfg",
+        "modelDigest": "c0a12916d01a4e57119e8b1b859c924623ef7b84b2ba4f5fcf4d43f2f164cbcf",
+        "states": 8,
+        "held": ["OnlyCompleted"],
+        "broke": [],
+        "unchecked": []
+      }
+    }
+  ],
+  "saved": ["handoff", "http-retries", "streams", "waits"]
+}

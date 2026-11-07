@@ -1,0 +1,63 @@
+{
+  "ok": true,
+  "browser": "156.0.8078.80",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "pages": 10,
+  "diagrams": 5,
+  "errors": [],
+  "results": [
+    {
+      "id": "boat-client",
+      "figures": 1,
+      "failed": 0
+    },
+    {
+      "id": "commands-files",
+      "figures": 0,
+      "failed": 0
+    },
+    {
+      "id": "configuration",
+      "figures": 0,
+      "failed": 0
+    },
+    {
+      "id": "handoff",
+      "figures": 1,
+      "failed": 0
+    },
+    {
+      "id": "http-retries",
+      "figures": 1,
+      "failed": 0
+    },
+    {
+      "id": "inventory",
+      "figures": 0,
+      "failed": 0
+    },
+    {
+      "id": "resources",
+      "figures": 0,
+      "failed": 0
+    },
+    {
+      "id": "streams",
+      "figures": 1,
+      "failed": 0
+    },
+    {
+      "id": "verification",
+      "figures": 0,
+      "failed": 0
+    },
+    {
+      "id": "waits",
+      "figures": 1,
+      "failed": 0
+    }
+  ]
+}
